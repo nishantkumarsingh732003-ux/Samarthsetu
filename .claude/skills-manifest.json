@@ -1,0 +1,1889 @@
+{
+  "source_repo": "https://github.com/alirezarezvani/claude-skills",
+  "commit": "19392f7a08264ed00486a251f5b2098321771f94",
+  "vendored_on": "2026-08-28",
+  "skill_count": 376,
+  "note": "Canonical skills only; .gemini/.codex/.vibe/.hermes agent mirrors excluded. 12 byte-identical duplicates deduped; 'run' and 'handoff' existed twice with different content and were renamed (frontmatter name patched to match).",
+  "skills": [
+    {
+      "skill": "a11y-audit",
+      "source_path": "engineering-team/a11y-audit/skills/a11y-audit",
+      "renamed_from": null
+    },
+    {
+      "skill": "ab-test-setup",
+      "source_path": "marketing-skill/skills/ab-test-setup",
+      "renamed_from": null
+    },
+    {
+      "skill": "ad-creative",
+      "source_path": "marketing-skill/skills/ad-creative",
+      "renamed_from": null
+    },
+    {
+      "skill": "adversarial-reviewer",
+      "source_path": "engineering-team/skills/adversarial-reviewer",
+      "renamed_from": null
+    },
+    {
+      "skill": "aeo",
+      "source_path": "marketing-skill/skills/aeo",
+      "renamed_from": null
+    },
+    {
+      "skill": "agent-decision-receipts",
+      "source_path": "ra-qm-team/skills/agent-decision-receipts",
+      "renamed_from": null
+    },
+    {
+      "skill": "agent-designer",
+      "source_path": "engineering/skills/agent-designer",
+      "renamed_from": null
+    },
+    {
+      "skill": "agent-harness",
+      "source_path": "engineering/agent-harness/skills/agent-harness",
+      "renamed_from": null
+    },
+    {
+      "skill": "agent-launcher-orchestrator",
+      "source_path": "agent-launcher/skills/agent-launcher-orchestrator",
+      "renamed_from": null
+    },
+    {
+      "skill": "agent-memory",
+      "source_path": "engineering/agent-memory/skills/agent-memory",
+      "renamed_from": null
+    },
+    {
+      "skill": "agent-protocol",
+      "source_path": "c-level-advisor/skills/agent-protocol",
+      "renamed_from": null
+    },
+    {
+      "skill": "agent-workflow-designer",
+      "source_path": "engineering/skills/agent-workflow-designer",
+      "renamed_from": null
+    },
+    {
+      "skill": "agenthub",
+      "source_path": "engineering/agenthub/skills/agenthub",
+      "renamed_from": null
+    },
+    {
+      "skill": "agile-product-owner",
+      "source_path": "product-team/agile-product-owner/skills/agile-product-owner",
+      "renamed_from": null
+    },
+    {
+      "skill": "ai-act-readiness",
+      "source_path": "compliance-os/skills/ai-act-readiness",
+      "renamed_from": null
+    },
+    {
+      "skill": "ai-security",
+      "source_path": "engineering-team/skills/ai-security",
+      "renamed_from": null
+    },
+    {
+      "skill": "aims-audit",
+      "source_path": "compliance-os/skills/aims-audit",
+      "renamed_from": null
+    },
+    {
+      "skill": "analytics-tracking",
+      "source_path": "marketing-skill/skills/analytics-tracking",
+      "renamed_from": null
+    },
+    {
+      "skill": "andreessen",
+      "source_path": "productivity/andreessen/skills/andreessen",
+      "renamed_from": null
+    },
+    {
+      "skill": "api-design-reviewer",
+      "source_path": "engineering/skills/api-design-reviewer",
+      "renamed_from": null
+    },
+    {
+      "skill": "api-test-suite-builder",
+      "source_path": "engineering/skills/api-test-suite-builder",
+      "renamed_from": null
+    },
+    {
+      "skill": "app-store-optimization",
+      "source_path": "marketing-skill/skills/app-store-optimization",
+      "renamed_from": null
+    },
+    {
+      "skill": "apple-hig-expert",
+      "source_path": "product-team/apple-hig-expert/skills/apple-hig-expert",
+      "renamed_from": null
+    },
+    {
+      "skill": "ar-resume",
+      "source_path": "engineering/autoresearch-agent/skills/ar-resume",
+      "renamed_from": null
+    },
+    {
+      "skill": "ar-status",
+      "source_path": "engineering/autoresearch-agent/skills/ar-status",
+      "renamed_from": null
+    },
+    {
+      "skill": "arquiteto-de-empresa",
+      "source_path": "c-level-advisor/arquiteto-de-empresa/skills/arquiteto-de-empresa",
+      "renamed_from": null
+    },
+    {
+      "skill": "atlassian-admin",
+      "source_path": "project-management/skills/atlassian-admin",
+      "renamed_from": null
+    },
+    {
+      "skill": "atlassian-templates",
+      "source_path": "project-management/skills/atlassian-templates",
+      "renamed_from": null
+    },
+    {
+      "skill": "autoresearch-agent",
+      "source_path": "engineering/autoresearch-agent/skills/autoresearch-agent",
+      "renamed_from": null
+    },
+    {
+      "skill": "aws-solution-architect",
+      "source_path": "engineering-team/skills/aws-solution-architect",
+      "renamed_from": null
+    },
+    {
+      "skill": "azure-cloud-architect",
+      "source_path": "engineering-team/skills/azure-cloud-architect",
+      "renamed_from": null
+    },
+    {
+      "skill": "behuman",
+      "source_path": "engineering/behuman/skills/behuman",
+      "renamed_from": null
+    },
+    {
+      "skill": "board",
+      "source_path": "engineering/agenthub/skills/board",
+      "renamed_from": null
+    },
+    {
+      "skill": "board-deck-builder",
+      "source_path": "c-level-advisor/skills/board-deck-builder",
+      "renamed_from": null
+    },
+    {
+      "skill": "board-meeting",
+      "source_path": "c-level-advisor/skills/board-meeting",
+      "renamed_from": null
+    },
+    {
+      "skill": "board-prep",
+      "source_path": "c-level-advisor/executive-mentor/skills/board-prep",
+      "renamed_from": null
+    },
+    {
+      "skill": "boardroom",
+      "source_path": "c-level-agents/skills/boardroom",
+      "renamed_from": null
+    },
+    {
+      "skill": "book-to-skill",
+      "source_path": "engineering/book-to-skill/skills/book-to-skill",
+      "renamed_from": null
+    },
+    {
+      "skill": "boost-asio-pro",
+      "source_path": "engineering/boost-asio-pro",
+      "renamed_from": null
+    },
+    {
+      "skill": "brand-guidelines",
+      "source_path": "marketing-skill/skills/brand-guidelines",
+      "renamed_from": null
+    },
+    {
+      "skill": "brief",
+      "source_path": "c-level-agents/skills/brief",
+      "renamed_from": null
+    },
+    {
+      "skill": "browser-automation",
+      "source_path": "engineering/skills/browser-automation",
+      "renamed_from": null
+    },
+    {
+      "skill": "browserstack",
+      "source_path": "engineering-team/playwright-pro/skills/browserstack",
+      "renamed_from": null
+    },
+    {
+      "skill": "business-growth-skills",
+      "source_path": "business-growth/skills/business-growth-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "business-investment-advisor",
+      "source_path": "finance/business-investment-advisor/skills/business-investment-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "business-name-fit",
+      "source_path": "marketing-skill/skills/business-name-fit",
+      "renamed_from": null
+    },
+    {
+      "skill": "business-operations-skills",
+      "source_path": "business-operations/skills/business-operations-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "c-level-agents",
+      "source_path": "c-level-agents/skills/c-level-agents",
+      "renamed_from": null
+    },
+    {
+      "skill": "c-level-skills",
+      "source_path": "c-level-advisor/skills/c-level-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "caio-review",
+      "source_path": "c-level-agents/skills/caio-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "campaign-analytics",
+      "source_path": "marketing-skill/skills/campaign-analytics",
+      "renamed_from": null
+    },
+    {
+      "skill": "capa-officer",
+      "source_path": "ra-qm-team/skills/capa-officer",
+      "renamed_from": null
+    },
+    {
+      "skill": "capacity-planner",
+      "source_path": "business-operations/skills/capacity-planner",
+      "renamed_from": null
+    },
+    {
+      "skill": "capture",
+      "source_path": "productivity/capture/skills/capture",
+      "renamed_from": null
+    },
+    {
+      "skill": "caveman",
+      "source_path": "engineering/caveman/skills/caveman",
+      "renamed_from": null
+    },
+    {
+      "skill": "cco-review",
+      "source_path": "c-level-agents/skills/cco-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "cdo-review",
+      "source_path": "c-level-agents/skills/cdo-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "ceo-advisor",
+      "source_path": "c-level-advisor/skills/ceo-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "cfo-advisor",
+      "source_path": "c-level-advisor/skills/cfo-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "cfo-review",
+      "source_path": "c-level-agents/skills/cfo-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "challenge",
+      "source_path": "c-level-advisor/executive-mentor/skills/challenge",
+      "renamed_from": null
+    },
+    {
+      "skill": "change-management",
+      "source_path": "c-level-advisor/skills/change-management",
+      "renamed_from": null
+    },
+    {
+      "skill": "changelog-generator",
+      "source_path": "engineering/skills/changelog-generator",
+      "renamed_from": null
+    },
+    {
+      "skill": "channel-economics",
+      "source_path": "commercial/skills/channel-economics",
+      "renamed_from": null
+    },
+    {
+      "skill": "chaos-engineering",
+      "source_path": "engineering/chaos-engineering/skills/chaos-engineering",
+      "renamed_from": null
+    },
+    {
+      "skill": "chief-ai-officer-advisor",
+      "source_path": "c-level-advisor/chief-ai-officer-advisor/skills/chief-ai-officer-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "chief-customer-officer-advisor",
+      "source_path": "c-level-advisor/chief-customer-officer-advisor/skills/chief-customer-officer-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "chief-data-officer-advisor",
+      "source_path": "c-level-advisor/chief-data-officer-advisor/skills/chief-data-officer-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "chief-of-staff",
+      "source_path": "c-level-advisor/skills/chief-of-staff",
+      "renamed_from": null
+    },
+    {
+      "skill": "chro-advisor",
+      "source_path": "c-level-advisor/skills/chro-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "churn-prevention",
+      "source_path": "marketing-skill/skills/churn-prevention",
+      "renamed_from": null
+    },
+    {
+      "skill": "ci-cd-pipeline-builder",
+      "source_path": "engineering/skills/ci-cd-pipeline-builder",
+      "renamed_from": null
+    },
+    {
+      "skill": "ciso-advisor",
+      "source_path": "c-level-advisor/skills/ciso-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "ciso-review",
+      "source_path": "c-level-agents/skills/ciso-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "claude-coach",
+      "source_path": "engineering/claude-coach/skills/claude-coach",
+      "renamed_from": null
+    },
+    {
+      "skill": "clinical-research",
+      "source_path": "research-ops/skills/clinical-research",
+      "renamed_from": null
+    },
+    {
+      "skill": "cloud-security",
+      "source_path": "engineering-team/skills/cloud-security",
+      "renamed_from": null
+    },
+    {
+      "skill": "cmo-advisor",
+      "source_path": "c-level-advisor/skills/cmo-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "cmo-review",
+      "source_path": "c-level-agents/skills/cmo-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "code-reviewer",
+      "source_path": "engineering-team/skills/code-reviewer",
+      "renamed_from": null
+    },
+    {
+      "skill": "code-to-prd",
+      "source_path": "product-team/code-to-prd/skills/code-to-prd",
+      "renamed_from": null
+    },
+    {
+      "skill": "code-tour",
+      "source_path": "engineering/code-tour/skills/code-tour",
+      "renamed_from": null
+    },
+    {
+      "skill": "codebase-onboarding",
+      "source_path": "engineering/skills/codebase-onboarding",
+      "renamed_from": null
+    },
+    {
+      "skill": "cold-email",
+      "source_path": "marketing-skill/skills/cold-email",
+      "renamed_from": null
+    },
+    {
+      "skill": "collab-proof",
+      "source_path": "engineering/collab-proof/skills/collab-proof",
+      "renamed_from": null
+    },
+    {
+      "skill": "commercial-forecaster",
+      "source_path": "commercial/skills/commercial-forecaster",
+      "renamed_from": null
+    },
+    {
+      "skill": "commercial-policy",
+      "source_path": "commercial/skills/commercial-policy",
+      "renamed_from": null
+    },
+    {
+      "skill": "commercial-skills",
+      "source_path": "commercial/skills/commercial-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "company-os",
+      "source_path": "c-level-advisor/skills/company-os",
+      "renamed_from": null
+    },
+    {
+      "skill": "competitive-intel",
+      "source_path": "c-level-advisor/skills/competitive-intel",
+      "renamed_from": null
+    },
+    {
+      "skill": "competitive-teardown",
+      "source_path": "product-team/skills/competitive-teardown",
+      "renamed_from": null
+    },
+    {
+      "skill": "competitor-alternatives",
+      "source_path": "marketing-skill/skills/competitor-alternatives",
+      "renamed_from": null
+    },
+    {
+      "skill": "compliance-os",
+      "source_path": "compliance-os/skills/compliance-os",
+      "renamed_from": null
+    },
+    {
+      "skill": "compliance-readiness",
+      "source_path": "compliance-os/skills/compliance-readiness",
+      "renamed_from": null
+    },
+    {
+      "skill": "confluence-expert",
+      "source_path": "project-management/skills/confluence-expert",
+      "renamed_from": null
+    },
+    {
+      "skill": "content-creator",
+      "source_path": "marketing-skill/skills/content-creator",
+      "renamed_from": null
+    },
+    {
+      "skill": "content-humanizer",
+      "source_path": "marketing-skill/skills/content-humanizer",
+      "renamed_from": null
+    },
+    {
+      "skill": "content-production",
+      "source_path": "marketing-skill/skills/content-production",
+      "renamed_from": null
+    },
+    {
+      "skill": "content-strategy",
+      "source_path": "marketing-skill/skills/content-strategy",
+      "renamed_from": null
+    },
+    {
+      "skill": "context-engine",
+      "source_path": "c-level-advisor/skills/context-engine",
+      "renamed_from": null
+    },
+    {
+      "skill": "contract-and-proposal-writer",
+      "source_path": "business-growth/skills/contract-and-proposal-writer",
+      "renamed_from": null
+    },
+    {
+      "skill": "coo-advisor",
+      "source_path": "c-level-advisor/skills/coo-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "copy-editing",
+      "source_path": "marketing-skill/skills/copy-editing",
+      "renamed_from": null
+    },
+    {
+      "skill": "copywriting",
+      "source_path": "marketing-skill/skills/copywriting",
+      "renamed_from": null
+    },
+    {
+      "skill": "coverage",
+      "source_path": "engineering-team/playwright-pro/skills/coverage",
+      "renamed_from": null
+    },
+    {
+      "skill": "cpo-advisor",
+      "source_path": "c-level-advisor/skills/cpo-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "cpo-review",
+      "source_path": "c-level-agents/skills/cpo-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "cro-advisor",
+      "source_path": "c-level-advisor/skills/cro-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "cro-review",
+      "source_path": "c-level-agents/skills/cro-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "cross-eval",
+      "source_path": "c-level-agents/skills/cross-eval",
+      "renamed_from": null
+    },
+    {
+      "skill": "cs-onboard",
+      "source_path": "c-level-advisor/skills/cs-onboard",
+      "renamed_from": null
+    },
+    {
+      "skill": "cto-advisor",
+      "source_path": "c-level-advisor/skills/cto-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "cto-review",
+      "source_path": "c-level-agents/skills/cto-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "culture-architect",
+      "source_path": "c-level-advisor/skills/culture-architect",
+      "renamed_from": null
+    },
+    {
+      "skill": "customer-success-manager",
+      "source_path": "business-growth/skills/customer-success-manager",
+      "renamed_from": null
+    },
+    {
+      "skill": "data-quality-auditor",
+      "source_path": "engineering/data-quality-auditor/skills/data-quality-auditor",
+      "renamed_from": null
+    },
+    {
+      "skill": "database-designer",
+      "source_path": "engineering/skills/database-designer",
+      "renamed_from": null
+    },
+    {
+      "skill": "database-schema-designer",
+      "source_path": "engineering/skills/database-schema-designer",
+      "renamed_from": null
+    },
+    {
+      "skill": "deal-desk",
+      "source_path": "commercial/skills/deal-desk",
+      "renamed_from": null
+    },
+    {
+      "skill": "decide",
+      "source_path": "c-level-agents/skills/decide",
+      "renamed_from": null
+    },
+    {
+      "skill": "decision-logger",
+      "source_path": "c-level-advisor/skills/decision-logger",
+      "renamed_from": null
+    },
+    {
+      "skill": "deep-learning-book",
+      "source_path": "engineering/deep-learning-book/skills/deep-learning-book",
+      "renamed_from": null
+    },
+    {
+      "skill": "deep-research",
+      "source_path": "research/deep-research/skills/deep-research",
+      "renamed_from": null
+    },
+    {
+      "skill": "deep-work",
+      "source_path": "productivity/deep-work/skills/deep-work",
+      "renamed_from": null
+    },
+    {
+      "skill": "deepread",
+      "source_path": "research/deepread",
+      "renamed_from": null
+    },
+    {
+      "skill": "demo-video",
+      "source_path": "engineering/demo-video/skills/demo-video",
+      "renamed_from": null
+    },
+    {
+      "skill": "dependency-auditor",
+      "source_path": "engineering/skills/dependency-auditor",
+      "renamed_from": null
+    },
+    {
+      "skill": "design-system",
+      "source_path": "markdown-html/skills/design-system",
+      "renamed_from": null
+    },
+    {
+      "skill": "docker-development",
+      "source_path": "engineering/docker-development/skills/docker-development",
+      "renamed_from": null
+    },
+    {
+      "skill": "dossier",
+      "source_path": "research/dossier/skills/dossier",
+      "renamed_from": null
+    },
+    {
+      "skill": "email-sequence",
+      "source_path": "marketing-skill/skills/email-sequence",
+      "renamed_from": null
+    },
+    {
+      "skill": "email-template-builder",
+      "source_path": "engineering-team/skills/email-template-builder",
+      "renamed_from": null
+    },
+    {
+      "skill": "embedded-iot-mentor",
+      "source_path": "engineering-team/skills/embedded-iot-mentor",
+      "renamed_from": null
+    },
+    {
+      "skill": "engineering-advanced-skills",
+      "source_path": "engineering/skills/engineering-advanced-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "engineering-skills",
+      "source_path": "engineering-team/skills/engineering-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "env-secrets-manager",
+      "source_path": "engineering/skills/env-secrets-manager",
+      "renamed_from": null
+    },
+    {
+      "skill": "epic-design",
+      "source_path": "engineering-team/skills/epic-design",
+      "renamed_from": null
+    },
+    {
+      "skill": "eu-ai-act-specialist",
+      "source_path": "ra-qm-team/compliance-team-eu-ai-act/skills/eu-ai-act-specialist",
+      "renamed_from": null
+    },
+    {
+      "skill": "eval",
+      "source_path": "engineering/agenthub/skills/eval",
+      "renamed_from": null
+    },
+    {
+      "skill": "execute",
+      "source_path": "c-level-agents/skills/execute",
+      "renamed_from": null
+    },
+    {
+      "skill": "executive-mentor",
+      "source_path": "c-level-advisor/executive-mentor/skills/executive-mentor",
+      "renamed_from": null
+    },
+    {
+      "skill": "experiment-designer",
+      "source_path": "product-team/skills/experiment-designer",
+      "renamed_from": null
+    },
+    {
+      "skill": "extract",
+      "source_path": "engineering-team/self-improving-agent/skills/extract",
+      "renamed_from": null
+    },
+    {
+      "skill": "fable-goal",
+      "source_path": "productivity/fable-goal/skills/fable-goal",
+      "renamed_from": null
+    },
+    {
+      "skill": "fda-consultant-specialist",
+      "source_path": "ra-qm-team/skills/fda-consultant-specialist",
+      "renamed_from": null
+    },
+    {
+      "skill": "fda-qsr-audit-prep",
+      "source_path": "compliance-os/skills/fda-qsr-audit-prep",
+      "renamed_from": null
+    },
+    {
+      "skill": "feature-flags-architect",
+      "source_path": "engineering/feature-flags-architect/skills/feature-flags-architect",
+      "renamed_from": null
+    },
+    {
+      "skill": "finance-skills",
+      "source_path": "finance/skills/finance-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "financial-analyst",
+      "source_path": "finance/skills/financial-analyst",
+      "renamed_from": null
+    },
+    {
+      "skill": "fix",
+      "source_path": "engineering-team/playwright-pro/skills/fix",
+      "renamed_from": null
+    },
+    {
+      "skill": "focused-fix",
+      "source_path": "engineering/skills/focused-fix",
+      "renamed_from": null
+    },
+    {
+      "skill": "form-cro",
+      "source_path": "marketing-skill/skills/form-cro",
+      "renamed_from": null
+    },
+    {
+      "skill": "founder-coach",
+      "source_path": "c-level-advisor/skills/founder-coach",
+      "renamed_from": null
+    },
+    {
+      "skill": "founder-mode",
+      "source_path": "c-level-agents/skills/founder-mode",
+      "renamed_from": null
+    },
+    {
+      "skill": "free-tool-strategy",
+      "source_path": "marketing-skill/skills/free-tool-strategy",
+      "renamed_from": null
+    },
+    {
+      "skill": "freeze",
+      "source_path": "c-level-agents/skills/freeze",
+      "renamed_from": null
+    },
+    {
+      "skill": "full-page-screenshot",
+      "source_path": "engineering/skills/full-page-screenshot",
+      "renamed_from": null
+    },
+    {
+      "skill": "gc-review",
+      "source_path": "c-level-agents/skills/gc-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "gcp-cloud-architect",
+      "source_path": "engineering-team/skills/gcp-cloud-architect",
+      "renamed_from": null
+    },
+    {
+      "skill": "gdpr-audit-prep",
+      "source_path": "compliance-os/skills/gdpr-audit-prep",
+      "renamed_from": null
+    },
+    {
+      "skill": "gdpr-dsgvo-expert",
+      "source_path": "ra-qm-team/skills/gdpr-dsgvo-expert",
+      "renamed_from": null
+    },
+    {
+      "skill": "general-counsel-advisor",
+      "source_path": "c-level-advisor/general-counsel-advisor/skills/general-counsel-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "generate",
+      "source_path": "engineering-team/playwright-pro/skills/generate",
+      "renamed_from": null
+    },
+    {
+      "skill": "git-worktree-manager",
+      "source_path": "engineering/skills/git-worktree-manager",
+      "renamed_from": null
+    },
+    {
+      "skill": "google-workspace-cli",
+      "source_path": "engineering-team/google-workspace-cli/skills/google-workspace-cli",
+      "renamed_from": null
+    },
+    {
+      "skill": "grade-iterate",
+      "source_path": "agent-launcher/skills/grade-iterate",
+      "renamed_from": null
+    },
+    {
+      "skill": "grants",
+      "source_path": "research/grants/skills/grants",
+      "renamed_from": null
+    },
+    {
+      "skill": "grill-me",
+      "source_path": "engineering/grill-me/skills/grill-me",
+      "renamed_from": null
+    },
+    {
+      "skill": "grill-with-docs",
+      "source_path": "engineering/grill-with-docs/skills/grill-with-docs",
+      "renamed_from": null
+    },
+    {
+      "skill": "handoff-engineering",
+      "source_path": "engineering/handoff/skills/handoff",
+      "renamed_from": "handoff"
+    },
+    {
+      "skill": "handoff-productivity",
+      "source_path": "productivity/handoff/skills/handoff",
+      "renamed_from": "handoff"
+    },
+    {
+      "skill": "hard-call",
+      "source_path": "c-level-advisor/executive-mentor/skills/hard-call",
+      "renamed_from": null
+    },
+    {
+      "skill": "helm-chart-builder",
+      "source_path": "engineering/helm-chart-builder/skills/helm-chart-builder",
+      "renamed_from": null
+    },
+    {
+      "skill": "hivemind",
+      "source_path": "engineering/hivemind",
+      "renamed_from": null
+    },
+    {
+      "skill": "hub-init",
+      "source_path": "engineering/agenthub/skills/hub-init",
+      "renamed_from": null
+    },
+    {
+      "skill": "hub-status",
+      "source_path": "engineering/agenthub/skills/hub-status",
+      "renamed_from": null
+    },
+    {
+      "skill": "human-gate",
+      "source_path": "engineering/human-gate/skills/human-gate",
+      "renamed_from": null
+    },
+    {
+      "skill": "inbox-setup",
+      "source_path": "productivity/email/skills/inbox-setup",
+      "renamed_from": null
+    },
+    {
+      "skill": "inbox-triage",
+      "source_path": "productivity/email/skills/inbox-triage",
+      "renamed_from": null
+    },
+    {
+      "skill": "incident-commander",
+      "source_path": "engineering-team/skills/incident-commander",
+      "renamed_from": null
+    },
+    {
+      "skill": "incident-response",
+      "source_path": "engineering-team/skills/incident-response",
+      "renamed_from": null
+    },
+    {
+      "skill": "information-security-manager-iso27001",
+      "source_path": "ra-qm-team/skills/information-security-manager-iso27001",
+      "renamed_from": null
+    },
+    {
+      "skill": "internal-comms",
+      "source_path": "business-operations/skills/internal-comms",
+      "renamed_from": null
+    },
+    {
+      "skill": "internal-narrative",
+      "source_path": "c-level-advisor/skills/internal-narrative",
+      "renamed_from": null
+    },
+    {
+      "skill": "interview",
+      "source_path": "agent-launcher/skills/interview",
+      "renamed_from": null
+    },
+    {
+      "skill": "interview-system-designer",
+      "source_path": "engineering/skills/interview-system-designer",
+      "renamed_from": null
+    },
+    {
+      "skill": "intl-expansion",
+      "source_path": "c-level-advisor/skills/intl-expansion",
+      "renamed_from": null
+    },
+    {
+      "skill": "isms-audit-expert",
+      "source_path": "ra-qm-team/skills/isms-audit-expert",
+      "renamed_from": null
+    },
+    {
+      "skill": "iso13485-audit-prep",
+      "source_path": "compliance-os/skills/iso13485-audit-prep",
+      "renamed_from": null
+    },
+    {
+      "skill": "iso27001-audit-prep",
+      "source_path": "compliance-os/skills/iso27001-audit-prep",
+      "renamed_from": null
+    },
+    {
+      "skill": "iso42001-specialist",
+      "source_path": "ra-qm-team/compliance-team-iso42001/skills/iso42001-specialist",
+      "renamed_from": null
+    },
+    {
+      "skill": "jira-expert",
+      "source_path": "project-management/skills/jira-expert",
+      "renamed_from": null
+    },
+    {
+      "skill": "karpathy-coder",
+      "source_path": "engineering/karpathy-coder/skills/karpathy-coder",
+      "renamed_from": null
+    },
+    {
+      "skill": "knowledge-ops",
+      "source_path": "business-operations/skills/knowledge-ops",
+      "renamed_from": null
+    },
+    {
+      "skill": "kubernetes-operator",
+      "source_path": "engineering/kubernetes-operator/skills/kubernetes-operator",
+      "renamed_from": null
+    },
+    {
+      "skill": "landing",
+      "source_path": "marketing/landing/skills/landing",
+      "renamed_from": null
+    },
+    {
+      "skill": "landing-page-generator",
+      "source_path": "product-team/skills/landing-page-generator",
+      "renamed_from": null
+    },
+    {
+      "skill": "launch-strategy",
+      "source_path": "marketing-skill/skills/launch-strategy",
+      "renamed_from": null
+    },
+    {
+      "skill": "linkedin-analytics",
+      "source_path": "marketing/linkedin/skills/linkedin-analytics",
+      "renamed_from": null
+    },
+    {
+      "skill": "linkedin-content",
+      "source_path": "marketing/linkedin/skills/linkedin-content",
+      "renamed_from": null
+    },
+    {
+      "skill": "linkedin-engagement",
+      "source_path": "marketing/linkedin/skills/linkedin-engagement",
+      "renamed_from": null
+    },
+    {
+      "skill": "linkedin-profile",
+      "source_path": "marketing/linkedin/skills/linkedin-profile",
+      "renamed_from": null
+    },
+    {
+      "skill": "linkedin-skills",
+      "source_path": "marketing/linkedin/skills/linkedin-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "linkedin-strategy",
+      "source_path": "marketing/linkedin/skills/linkedin-strategy",
+      "renamed_from": null
+    },
+    {
+      "skill": "litreview",
+      "source_path": "research/litreview/skills/litreview",
+      "renamed_from": null
+    },
+    {
+      "skill": "llm-cost-optimizer",
+      "source_path": "engineering/llm-cost-optimizer/skills/llm-cost-optimizer",
+      "renamed_from": null
+    },
+    {
+      "skill": "llm-wiki",
+      "source_path": "engineering/llm-wiki/skills/llm-wiki",
+      "renamed_from": null
+    },
+    {
+      "skill": "local-seo-manager",
+      "source_path": "marketing-skill/skills/local-seo-manager",
+      "renamed_from": null
+    },
+    {
+      "skill": "loop",
+      "source_path": "engineering/autoresearch-agent/skills/loop",
+      "renamed_from": null
+    },
+    {
+      "skill": "loop-library",
+      "source_path": "loop-library",
+      "renamed_from": null
+    },
+    {
+      "skill": "ma-playbook",
+      "source_path": "c-level-advisor/skills/ma-playbook",
+      "renamed_from": null
+    },
+    {
+      "skill": "markdown-html-orchestrator",
+      "source_path": "markdown-html/skills/markdown-html-orchestrator",
+      "renamed_from": null
+    },
+    {
+      "skill": "market-research",
+      "source_path": "research-ops/skills/market-research",
+      "renamed_from": null
+    },
+    {
+      "skill": "marketing-context",
+      "source_path": "marketing-skill/skills/marketing-context",
+      "renamed_from": null
+    },
+    {
+      "skill": "marketing-demand-acquisition",
+      "source_path": "marketing-skill/skills/marketing-demand-acquisition",
+      "renamed_from": null
+    },
+    {
+      "skill": "marketing-ideas",
+      "source_path": "marketing-skill/skills/marketing-ideas",
+      "renamed_from": null
+    },
+    {
+      "skill": "marketing-ops",
+      "source_path": "marketing-skill/skills/marketing-ops",
+      "renamed_from": null
+    },
+    {
+      "skill": "marketing-psychology",
+      "source_path": "marketing-skill/skills/marketing-psychology",
+      "renamed_from": null
+    },
+    {
+      "skill": "marketing-skills",
+      "source_path": "marketing-skill/skills/marketing-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "marketing-strategy-pmm",
+      "source_path": "marketing-skill/skills/marketing-strategy-pmm",
+      "renamed_from": null
+    },
+    {
+      "skill": "mcp-server-builder",
+      "source_path": "engineering/skills/mcp-server-builder",
+      "renamed_from": null
+    },
+    {
+      "skill": "md-document",
+      "source_path": "markdown-html/skills/md-document",
+      "renamed_from": null
+    },
+    {
+      "skill": "md-review",
+      "source_path": "markdown-html/skills/md-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "md-slides",
+      "source_path": "markdown-html/skills/md-slides",
+      "renamed_from": null
+    },
+    {
+      "skill": "mdr-745-specialist",
+      "source_path": "ra-qm-team/skills/mdr-745-specialist",
+      "renamed_from": null
+    },
+    {
+      "skill": "meeting-analyzer",
+      "source_path": "project-management/skills/meeting-analyzer",
+      "renamed_from": null
+    },
+    {
+      "skill": "meetings",
+      "source_path": "productivity/meetings/skills/meetings",
+      "renamed_from": null
+    },
+    {
+      "skill": "memory-engineering",
+      "source_path": "engineering/memory-engineering/skills/memory-engineering",
+      "renamed_from": null
+    },
+    {
+      "skill": "memory-review",
+      "source_path": "engineering-team/self-improving-agent/skills/memory-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "memory-status",
+      "source_path": "engineering-team/self-improving-agent/skills/memory-status",
+      "renamed_from": null
+    },
+    {
+      "skill": "merge",
+      "source_path": "engineering/agenthub/skills/merge",
+      "renamed_from": null
+    },
+    {
+      "skill": "migrate",
+      "source_path": "engineering-team/playwright-pro/skills/migrate",
+      "renamed_from": null
+    },
+    {
+      "skill": "migration-architect",
+      "source_path": "engineering/skills/migration-architect",
+      "renamed_from": null
+    },
+    {
+      "skill": "minimalist",
+      "source_path": "engineering/minimalist",
+      "renamed_from": null
+    },
+    {
+      "skill": "monorepo-navigator",
+      "source_path": "engineering/skills/monorepo-navigator",
+      "renamed_from": null
+    },
+    {
+      "skill": "ms365-tenant-manager",
+      "source_path": "engineering-team/skills/ms365-tenant-manager",
+      "renamed_from": null
+    },
+    {
+      "skill": "named-persona-adversarial-review",
+      "source_path": "engineering-team/skills/named-persona-adversarial-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "notebooklm",
+      "source_path": "research/notebooklm/skills/notebooklm",
+      "renamed_from": null
+    },
+    {
+      "skill": "observability-designer",
+      "source_path": "engineering/skills/observability-designer",
+      "renamed_from": null
+    },
+    {
+      "skill": "office-hours",
+      "source_path": "c-level-agents/skills/office-hours",
+      "renamed_from": null
+    },
+    {
+      "skill": "onboard",
+      "source_path": "c-level-agents/skills/onboard",
+      "renamed_from": null
+    },
+    {
+      "skill": "onboarding-cro",
+      "source_path": "marketing-skill/skills/onboarding-cro",
+      "renamed_from": null
+    },
+    {
+      "skill": "org-health-diagnostic",
+      "source_path": "c-level-advisor/skills/org-health-diagnostic",
+      "renamed_from": null
+    },
+    {
+      "skill": "page-cro",
+      "source_path": "marketing-skill/skills/page-cro",
+      "renamed_from": null
+    },
+    {
+      "skill": "paid-ads",
+      "source_path": "marketing-skill/skills/paid-ads",
+      "renamed_from": null
+    },
+    {
+      "skill": "partnerships-architect",
+      "source_path": "commercial/skills/partnerships-architect",
+      "renamed_from": null
+    },
+    {
+      "skill": "patent",
+      "source_path": "research/patent/skills/patent",
+      "renamed_from": null
+    },
+    {
+      "skill": "paywall-upgrade-cro",
+      "source_path": "marketing-skill/skills/paywall-upgrade-cro",
+      "renamed_from": null
+    },
+    {
+      "skill": "performance-profiler",
+      "source_path": "engineering/skills/performance-profiler",
+      "renamed_from": null
+    },
+    {
+      "skill": "playwright-pro",
+      "source_path": "engineering-team/playwright-pro/skills/pw",
+      "renamed_from": null
+    },
+    {
+      "skill": "pm-skills",
+      "source_path": "project-management/skills/pm-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "popup-cro",
+      "source_path": "marketing-skill/skills/popup-cro",
+      "renamed_from": null
+    },
+    {
+      "skill": "post-mortem",
+      "source_path": "c-level-agents/skills/post-mortem",
+      "renamed_from": null
+    },
+    {
+      "skill": "postmortem",
+      "source_path": "c-level-advisor/executive-mentor/skills/postmortem",
+      "renamed_from": null
+    },
+    {
+      "skill": "pr-review-expert",
+      "source_path": "engineering/skills/pr-review-expert",
+      "renamed_from": null
+    },
+    {
+      "skill": "pricing-strategist",
+      "source_path": "commercial/skills/pricing-strategist",
+      "renamed_from": null
+    },
+    {
+      "skill": "pricing-strategy",
+      "source_path": "marketing-skill/skills/pricing-strategy",
+      "renamed_from": null
+    },
+    {
+      "skill": "process-mapper",
+      "source_path": "business-operations/skills/process-mapper",
+      "renamed_from": null
+    },
+    {
+      "skill": "procurement-optimizer",
+      "source_path": "business-operations/skills/procurement-optimizer",
+      "renamed_from": null
+    },
+    {
+      "skill": "product-analytics",
+      "source_path": "product-team/skills/product-analytics",
+      "renamed_from": null
+    },
+    {
+      "skill": "product-discovery",
+      "source_path": "product-team/skills/product-discovery",
+      "renamed_from": null
+    },
+    {
+      "skill": "product-manager-toolkit",
+      "source_path": "product-team/skills/product-manager-toolkit",
+      "renamed_from": null
+    },
+    {
+      "skill": "product-research",
+      "source_path": "research-ops/skills/product-research",
+      "renamed_from": null
+    },
+    {
+      "skill": "product-skills",
+      "source_path": "product-team/skills/product-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "product-strategist",
+      "source_path": "product-team/skills/product-strategist",
+      "renamed_from": null
+    },
+    {
+      "skill": "programmatic-seo",
+      "source_path": "marketing-skill/skills/programmatic-seo",
+      "renamed_from": null
+    },
+    {
+      "skill": "promote",
+      "source_path": "engineering-team/self-improving-agent/skills/promote",
+      "renamed_from": null
+    },
+    {
+      "skill": "prompt-engineer-toolkit",
+      "source_path": "marketing-skill/skills/prompt-engineer-toolkit",
+      "renamed_from": null
+    },
+    {
+      "skill": "prompt-governance",
+      "source_path": "engineering/prompt-governance/skills/prompt-governance",
+      "renamed_from": null
+    },
+    {
+      "skill": "pulse",
+      "source_path": "research/pulse/skills/pulse",
+      "renamed_from": null
+    },
+    {
+      "skill": "pw-init",
+      "source_path": "engineering-team/playwright-pro/skills/pw-init",
+      "renamed_from": null
+    },
+    {
+      "skill": "pw-review",
+      "source_path": "engineering-team/playwright-pro/skills/pw-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "qms-audit-expert",
+      "source_path": "ra-qm-team/skills/qms-audit-expert",
+      "renamed_from": null
+    },
+    {
+      "skill": "quality-documentation-manager",
+      "source_path": "ra-qm-team/skills/quality-documentation-manager",
+      "renamed_from": null
+    },
+    {
+      "skill": "quality-manager-qmr",
+      "source_path": "ra-qm-team/skills/quality-manager-qmr",
+      "renamed_from": null
+    },
+    {
+      "skill": "quality-manager-qms-iso13485",
+      "source_path": "ra-qm-team/skills/quality-manager-qms-iso13485",
+      "renamed_from": null
+    },
+    {
+      "skill": "ra-qm-skills",
+      "source_path": "ra-qm-team/skills/ra-qm-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "rag-architect",
+      "source_path": "engineering/skills/rag-architect",
+      "renamed_from": null
+    },
+    {
+      "skill": "red-team",
+      "source_path": "engineering-team/skills/red-team",
+      "renamed_from": null
+    },
+    {
+      "skill": "referral-program",
+      "source_path": "marketing-skill/skills/referral-program",
+      "renamed_from": null
+    },
+    {
+      "skill": "reflect",
+      "source_path": "productivity/reflect/skills/reflect",
+      "renamed_from": null
+    },
+    {
+      "skill": "regulatory-affairs-head",
+      "source_path": "ra-qm-team/skills/regulatory-affairs-head",
+      "renamed_from": null
+    },
+    {
+      "skill": "remember",
+      "source_path": "engineering-team/self-improving-agent/skills/remember",
+      "renamed_from": null
+    },
+    {
+      "skill": "report",
+      "source_path": "engineering-team/playwright-pro/skills/report",
+      "renamed_from": null
+    },
+    {
+      "skill": "research",
+      "source_path": "research/research/skills/research",
+      "renamed_from": null
+    },
+    {
+      "skill": "research-finance",
+      "source_path": "research-ops/skills/research-finance",
+      "renamed_from": null
+    },
+    {
+      "skill": "research-ops-skills",
+      "source_path": "research-ops/skills/research-ops-skills",
+      "renamed_from": null
+    },
+    {
+      "skill": "research-summarizer",
+      "source_path": "product-team/research-summarizer/skills/research-summarizer",
+      "renamed_from": null
+    },
+    {
+      "skill": "revenue-operations",
+      "source_path": "business-growth/skills/revenue-operations",
+      "renamed_from": null
+    },
+    {
+      "skill": "rfp-responder",
+      "source_path": "commercial/skills/rfp-responder",
+      "renamed_from": null
+    },
+    {
+      "skill": "risk-management-specialist",
+      "source_path": "ra-qm-team/skills/risk-management-specialist",
+      "renamed_from": null
+    },
+    {
+      "skill": "roadmap-communicator",
+      "source_path": "product-team/skills/roadmap-communicator",
+      "renamed_from": null
+    },
+    {
+      "skill": "roast",
+      "source_path": "productivity/roast/skills/roast",
+      "renamed_from": null
+    },
+    {
+      "skill": "agenthub-run",
+      "source_path": "engineering/agenthub/skills/run",
+      "renamed_from": "run"
+    },
+    {
+      "skill": "autoresearch-run",
+      "source_path": "engineering/autoresearch-agent/skills/run",
+      "renamed_from": "run"
+    },
+    {
+      "skill": "run-without-you",
+      "source_path": "agent-launcher/skills/run-without-you",
+      "renamed_from": null
+    },
+    {
+      "skill": "runbook-generator",
+      "source_path": "engineering/skills/runbook-generator",
+      "renamed_from": null
+    },
+    {
+      "skill": "saas-metrics-coach",
+      "source_path": "finance/skills/saas-metrics-coach",
+      "renamed_from": null
+    },
+    {
+      "skill": "saas-scaffolder",
+      "source_path": "product-team/skills/saas-scaffolder",
+      "renamed_from": null
+    },
+    {
+      "skill": "sales-engineer",
+      "source_path": "business-growth/skills/sales-engineer",
+      "renamed_from": null
+    },
+    {
+      "skill": "sample-text-processor",
+      "source_path": "engineering/skills/skill-tester/assets/sample-skill",
+      "renamed_from": null
+    },
+    {
+      "skill": "scenario-war-room",
+      "source_path": "c-level-advisor/skills/scenario-war-room",
+      "renamed_from": null
+    },
+    {
+      "skill": "schema-markup",
+      "source_path": "marketing-skill/skills/schema-markup",
+      "renamed_from": null
+    },
+    {
+      "skill": "scrum-master",
+      "source_path": "project-management/skills/scrum-master",
+      "renamed_from": null
+    },
+    {
+      "skill": "secrets-vault-manager",
+      "source_path": "engineering/skills/secrets-vault-manager",
+      "renamed_from": null
+    },
+    {
+      "skill": "security-guidance",
+      "source_path": "engineering/security-guidance/skills/security-guidance",
+      "renamed_from": null
+    },
+    {
+      "skill": "security-pen-testing",
+      "source_path": "engineering-team/skills/security-pen-testing",
+      "renamed_from": null
+    },
+    {
+      "skill": "self-eval",
+      "source_path": "engineering/skills/self-eval",
+      "renamed_from": null
+    },
+    {
+      "skill": "self-improving-agent",
+      "source_path": "engineering-team/self-improving-agent/skills/self-improving-agent",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-architect",
+      "source_path": "engineering-team/skills/senior-architect",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-backend",
+      "source_path": "engineering-team/skills/senior-backend",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-computer-vision",
+      "source_path": "engineering-team/skills/senior-computer-vision",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-data-engineer",
+      "source_path": "engineering-team/skills/senior-data-engineer",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-data-scientist",
+      "source_path": "engineering-team/skills/senior-data-scientist",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-devops",
+      "source_path": "engineering-team/skills/senior-devops",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-frontend",
+      "source_path": "engineering-team/skills/senior-frontend",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-fullstack",
+      "source_path": "engineering-team/skills/senior-fullstack",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-ml-engineer",
+      "source_path": "engineering-team/skills/senior-ml-engineer",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-pm",
+      "source_path": "project-management/skills/senior-pm",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-prompt-engineer",
+      "source_path": "engineering-team/skills/senior-prompt-engineer",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-qa",
+      "source_path": "engineering-team/skills/senior-qa",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-secops",
+      "source_path": "engineering-team/skills/senior-secops",
+      "renamed_from": null
+    },
+    {
+      "skill": "senior-security",
+      "source_path": "engineering-team/skills/senior-security",
+      "renamed_from": null
+    },
+    {
+      "skill": "seo-audit",
+      "source_path": "marketing-skill/skills/seo-audit",
+      "renamed_from": null
+    },
+    {
+      "skill": "setup",
+      "source_path": "engineering/autoresearch-agent/skills/setup",
+      "renamed_from": null
+    },
+    {
+      "skill": "ship-gate",
+      "source_path": "engineering/skills/ship-gate",
+      "renamed_from": null
+    },
+    {
+      "skill": "signup-flow-cro",
+      "source_path": "marketing-skill/skills/signup-flow-cro",
+      "renamed_from": null
+    },
+    {
+      "skill": "site-architecture",
+      "source_path": "marketing-skill/skills/site-architecture",
+      "renamed_from": null
+    },
+    {
+      "skill": "skill-doctor",
+      "source_path": "engineering/skill-doctor/skills/skill-doctor",
+      "renamed_from": null
+    },
+    {
+      "skill": "skill-security-auditor",
+      "source_path": "engineering/skills/skill-security-auditor",
+      "renamed_from": null
+    },
+    {
+      "skill": "skill-tester",
+      "source_path": "engineering/skills/skill-tester",
+      "renamed_from": null
+    },
+    {
+      "skill": "skillopt-sleep",
+      "source_path": "engineering/skillopt-sleep/skills/skillopt-sleep",
+      "renamed_from": null
+    },
+    {
+      "skill": "slo-architect",
+      "source_path": "engineering/skills/slo-architect",
+      "renamed_from": null
+    },
+    {
+      "skill": "snowflake-development",
+      "source_path": "engineering-team/snowflake-development/skills/snowflake-development",
+      "renamed_from": null
+    },
+    {
+      "skill": "soc2-audit-prep",
+      "source_path": "compliance-os/skills/soc2-audit-prep",
+      "renamed_from": null
+    },
+    {
+      "skill": "soc2-compliance",
+      "source_path": "ra-qm-team/skills/soc2-compliance",
+      "renamed_from": null
+    },
+    {
+      "skill": "social-content",
+      "source_path": "marketing-skill/skills/social-content",
+      "renamed_from": null
+    },
+    {
+      "skill": "social-media-analyzer",
+      "source_path": "marketing-skill/skills/social-media-analyzer",
+      "renamed_from": null
+    },
+    {
+      "skill": "social-media-manager",
+      "source_path": "marketing-skill/skills/social-media-manager",
+      "renamed_from": null
+    },
+    {
+      "skill": "spawn",
+      "source_path": "engineering/agenthub/skills/spawn",
+      "renamed_from": null
+    },
+    {
+      "skill": "spec-driven-workflow",
+      "source_path": "engineering/skills/spec-driven-workflow",
+      "renamed_from": null
+    },
+    {
+      "skill": "spec-to-repo",
+      "source_path": "product-team/skills/spec-to-repo",
+      "renamed_from": null
+    },
+    {
+      "skill": "spinning-up-deep-rl",
+      "source_path": "engineering/spinning-up-deep-rl/skills/spinning-up-deep-rl",
+      "renamed_from": null
+    },
+    {
+      "skill": "sql-database-assistant",
+      "source_path": "engineering/skills/sql-database-assistant",
+      "renamed_from": null
+    },
+    {
+      "skill": "stage-launch",
+      "source_path": "agent-launcher/skills/stage-launch",
+      "renamed_from": null
+    },
+    {
+      "skill": "statistical-analyst",
+      "source_path": "engineering/statistical-analyst/skills/statistical-analyst",
+      "renamed_from": null
+    },
+    {
+      "skill": "stock-analysis",
+      "source_path": "finance/skills/stock-analysis",
+      "renamed_from": null
+    },
+    {
+      "skill": "strategic-alignment",
+      "source_path": "c-level-advisor/skills/strategic-alignment",
+      "renamed_from": null
+    },
+    {
+      "skill": "stress-test",
+      "source_path": "c-level-advisor/executive-mentor/skills/stress-test",
+      "renamed_from": null
+    },
+    {
+      "skill": "strict-api",
+      "source_path": "engineering/strict-api",
+      "renamed_from": null
+    },
+    {
+      "skill": "stripe-integration-expert",
+      "source_path": "engineering-team/skills/stripe-integration-expert",
+      "renamed_from": null
+    },
+    {
+      "skill": "swedish-mentor",
+      "source_path": "productivity/swedish-mentor",
+      "renamed_from": null
+    },
+    {
+      "skill": "syllabus",
+      "source_path": "research/syllabus/skills/syllabus",
+      "renamed_from": null
+    },
+    {
+      "skill": "tc-tracker",
+      "source_path": "engineering/skills/tc-tracker",
+      "renamed_from": null
+    },
+    {
+      "skill": "tdd-guide",
+      "source_path": "engineering-team/skills/tdd-guide",
+      "renamed_from": null
+    },
+    {
+      "skill": "team-communications",
+      "source_path": "project-management/skills/team-communications",
+      "renamed_from": null
+    },
+    {
+      "skill": "tech-debt-tracker",
+      "source_path": "engineering/skills/tech-debt-tracker",
+      "renamed_from": null
+    },
+    {
+      "skill": "tech-stack-evaluator",
+      "source_path": "engineering-team/skills/tech-stack-evaluator",
+      "renamed_from": null
+    },
+    {
+      "skill": "terraform-patterns",
+      "source_path": "engineering/terraform-patterns/skills/terraform-patterns",
+      "renamed_from": null
+    },
+    {
+      "skill": "testrail",
+      "source_path": "engineering-team/playwright-pro/skills/testrail",
+      "renamed_from": null
+    },
+    {
+      "skill": "threat-detection",
+      "source_path": "engineering-team/skills/threat-detection",
+      "renamed_from": null
+    },
+    {
+      "skill": "ui-design-system",
+      "source_path": "product-team/skills/ui-design-system",
+      "renamed_from": null
+    },
+    {
+      "skill": "universal-scraping-architect",
+      "source_path": "engineering/universal-scraping-architect/skills/universal-scraping-architect",
+      "renamed_from": null
+    },
+    {
+      "skill": "ux-researcher-designer",
+      "source_path": "product-team/skills/ux-researcher-designer",
+      "renamed_from": null
+    },
+    {
+      "skill": "vendor-management",
+      "source_path": "business-operations/skills/vendor-management",
+      "renamed_from": null
+    },
+    {
+      "skill": "video-content-strategist",
+      "source_path": "marketing-skill/video-content-strategist/skills/video-content-strategist",
+      "renamed_from": null
+    },
+    {
+      "skill": "vpe-advisor",
+      "source_path": "c-level-advisor/skills/vpe-advisor",
+      "renamed_from": null
+    },
+    {
+      "skill": "vpe-review",
+      "source_path": "c-level-agents/skills/vpe-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "webinar-marketing",
+      "source_path": "marketing-skill/skills/webinar-marketing",
+      "renamed_from": null
+    },
+    {
+      "skill": "weekly-review",
+      "source_path": "productivity/weekly-review/skills/weekly-review",
+      "renamed_from": null
+    },
+    {
+      "skill": "workflow-builder",
+      "source_path": "engineering/workflow-builder/skills/workflow-builder",
+      "renamed_from": null
+    },
+    {
+      "skill": "wrap-up",
+      "source_path": "agent-launcher/skills/wrap-up",
+      "renamed_from": null
+    },
+    {
+      "skill": "write-a-skill",
+      "source_path": "engineering/write-a-skill/skills/write-a-skill",
+      "renamed_from": null
+    },
+    {
+      "skill": "x-twitter-growth",
+      "source_path": "marketing-skill/skills/x-twitter-growth",
+      "renamed_from": null
+    },
+    {
+      "skill": "youtube-full",
+      "source_path": "marketing-skill/skills/youtube-full",
+      "renamed_from": null
+    },
+    {
+      "skill": "zero-hallucination-coder",
+      "source_path": "engineering/zero-hallucination-coder/skills/zero-hallucination-coder",
+      "renamed_from": null
+    }
+  ]
+}
