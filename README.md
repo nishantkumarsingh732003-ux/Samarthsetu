@@ -44,7 +44,7 @@ language. Every verdict is reproducible and traceable to a rule ID. See
 | `apps/web/` | Next.js citizen app (multilingual, low-literacy friendly, offline-first) |
 | [`packages/rules/`](packages/rules/README.md) | Versioned YAML scheme rules + the deterministic eligibility engine (Python + TypeScript) |
 | `infra/` | Docker, Kubernetes, nginx, Terraform |
-| `docs/` | [Architecture](docs/architecture.md), [data model](docs/data-model.md), API spec, ADRs, problem statement |
+| `docs/` | [Architecture](docs/architecture.md), [data model](docs/data-model.md), [open items](docs/OPEN_ITEMS.md), API spec, ADRs |
 | `scripts/` | Setup and seed scripts |
 | `.claude/skills/` | Vendored skill library (see below) |
 
@@ -110,19 +110,22 @@ Phases 0 (foundation) and 1 (eligibility engine) are complete. See [CLAUDE.md](C
 for the engineering contract every phase must satisfy.
 
 ```bash
-pytest packages/rules -q          # 90 tests — the eligibility engine
+pytest packages/rules -q          # 97 tests — the eligibility engine
 pnpm --filter @setu/rules test    # 19 tests — TypeScript conformance with Python
 cd apps/api && pytest -q          # 10 tests — schema guarantees
 ```
+
+Known gaps and blockers are tracked in [docs/OPEN_ITEMS.md](docs/OPEN_ITEMS.md).
 
 ## Data disclaimer
 
 Channel Partner records used in the demo are **synthetic**, pending the official MoSJE
 partner master.
 
-Every scheme figure in `packages/rules/schemes/` is transcribed from the SIH problem
-statement, **not** from an NSFDC or MoSJE circular. All three schemes therefore carry
-`needs_verification: true` with `source_url` and `circular_ref` left null rather than
-guessed. Figures the problem statement does not state — the Educational Loan ceiling,
-every tenure and moratorium — are null, not invented. See
-[packages/rules/README.md](packages/rules/README.md#provenance-status--read-before-quoting-any-number).
+Scheme figures in `packages/rules/schemes/` are verified against
+[nsfdc.nic.in](https://nsfdc.nic.in/scheme) as of 2026-08-29, but no scheme **circular
+number** has been located, so all three carry `needs_verification: true` with
+`circular_ref` and `effective_from` null rather than guessed. Figures with no single
+sourced value stay null and are recorded as open questions. See
+[packages/rules/README.md](packages/rules/README.md#provenance-status--read-before-quoting-any-number)
+and [docs/OPEN_ITEMS.md](docs/OPEN_ITEMS.md).

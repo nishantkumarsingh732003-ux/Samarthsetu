@@ -103,20 +103,47 @@ Step 3 is enforced. `test_versioning.py` pins the content hash of `schemes/`, so
 fails until the version and digest are updated together. Eligibility policy cannot
 change quietly, and no code deploy is required to change it.
 
+## Two ceilings, never one
+
+NSFDC states an eligibility **band** on what the unit or course may cost, and separately
+a cap on the **loan** it will advance. These are different numbers and conflating them
+overstates what a citizen can borrow:
+
+| | Project-cost band | Loan cap |
+|---|---|---|
+| Micro Finance | up to Rs 1,40,000 | Rs 1,25,000 |
+| Term Loan | over Rs 1,40,000, up to Rs 50,00,000 | Rs 45,00,000 |
+| Educational Loan | not stated | Rs 40,00,000 |
+
+The problem statement quotes only the band. 90% of a Rs 1,40,000 micro-finance project
+is Rs 1,26,000 — above the Rs 1,25,000 loan cap. `indicative_amount` therefore uses
+`max_loan_amount`, ranking uses `max_project_cost`, and a `SOFT_WARN` fires from
+Rs 1,38,889 upward telling the citizen they must fund the difference themselves.
+
 ## Provenance status — read before quoting any number
 
-Every figure in `schemes/*.yaml` is transcribed from **SIH 2026 Problem Statement
-26092**, not from an NSFDC or MoSJE circular. Consequently every scheme carries
-`needs_verification: true`, and `source_url` / `circular_ref` / `effective_from` are
-`null` rather than guessed.
+Amounts, interest rates, tenure, and moratorium are verified against
+[nsfdc.nic.in/scheme](https://nsfdc.nic.in/scheme) as of **2026-08-29**. The
+Rs 5,00,000 income ceiling comes from
+[nsfdc.nic.in/eligibility-requirements](https://nsfdc.nic.in/eligibility-requirements),
+which states it as effective 2026-01-07.
 
-Figures the problem statement does **not** state are `null`, not invented:
+No scheme **circular number** has been located, so `circular_ref` and `effective_from`
+remain null and all three schemes keep `needs_verification: true`.
 
-- The Educational Loan Scheme has **no** `max_amount` and therefore no cost-ceiling rule.
-- `tenure_months` and `moratorium_months` are null for all three schemes.
+Figures with no single sourced value are `null`, not invented, and each is recorded as
+a `provenance.open_questions` entry:
 
-`test_versioning.py` enforces this: a scheme with no `source_url` must declare
-`needs_verification` and carry a note saying what to verify.
+- The Educational Loan Scheme has **no project-cost band** and therefore no band rule.
+- Its `tenure_months` is null — NSFDC states 12 years *or* 10 years depending on
+  disbursement status — and its `moratorium_months` is null, being "course period plus
+  one year".
+- The Term Loan's 12-month plantation/construction moratorium is not modelled; the
+  profile holds no activity-type field.
+
+`test_versioning.py` enforces all of this: every scheme must cite an `https://`
+`source_url`, must declare at least one open question, and interest rates must sit
+inside the problem statement's 6.5–8.0% band.
 
 ## Translation status
 
