@@ -1,0 +1,41 @@
+[
+  {
+    "code": "NSFDC-MF",
+    "name": "Micro Finance Scheme",
+    "loan_category": "micro_finance",
+    "max_amount": 140000,
+    "funding_share_pct": 90,
+    "interest_rate_pa": 6.0,
+    "tenure_months": 48,
+    "purpose": ["self_employment", "micro_enterprise"],
+    "eligibility_summary": "SC applicant, annual family income up to Rs. 5.00 lakh",
+    "documents": ["caste_certificate", "income_certificate", "aadhaar", "project_report"],
+    "channel_partner_types": ["SCA", "NBFC-MFI"]
+  },
+  {
+    "code": "NSFDC-TL",
+    "name": "Term Loan Scheme",
+    "loan_category": "term_loan",
+    "max_amount": 5000000,
+    "funding_share_pct": 90,
+    "interest_rate_pa": 8.0,
+    "tenure_months": 120,
+    "purpose": ["enterprise", "expansion", "equipment"],
+    "eligibility_summary": "SC applicant, annual family income up to Rs. 5.00 lakh",
+    "documents": ["caste_certificate", "income_certificate", "aadhaar", "project_report", "quotations"],
+    "channel_partner_types": ["SCA", "PSB", "RRB"]
+  },
+  {
+    "code": "NSFDC-EL",
+    "name": "Educational Loan Scheme",
+    "loan_category": "education_loan",
+    "max_amount": 3000000,
+    "funding_share_pct": 90,
+    "interest_rate_pa": 6.5,
+    "tenure_months": 120,
+    "purpose": ["education"],
+    "eligibility_summary": "SC student with confirmed admission, family income up to Rs. 5.00 lakh",
+    "documents": ["caste_certificate", "income_certificate", "aadhaar", "admission_letter", "fee_structure"],
+    "channel_partner_types": ["SCA", "PSB"]
+  }
+]

@@ -1,0 +1,24 @@
+{
+  "app": {
+    "title": "Scheme Saarthi",
+    "tagline": "Find the right loan scheme and the nearest partner who can process it"
+  },
+  "onboarding": {
+    "start": "Get started",
+    "speakInstead": "Speak instead of typing",
+    "income": "Annual family income",
+    "purpose": "What do you need the money for?",
+    "amount": "How much do you need?"
+  },
+  "match": {
+    "eligible": "You are eligible for",
+    "notEligible": "Not available to you",
+    "whyThis": "Why this scheme",
+    "documents": "Documents you will need"
+  },
+  "partners": {
+    "nearest": "Nearest authorized partner",
+    "distance": "{km} km away",
+    "handles": "Handles: {categories}"
+  }
+}

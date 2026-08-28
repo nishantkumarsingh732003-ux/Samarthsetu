@@ -1,0 +1,14 @@
+{
+  "name": "setu",
+  "version": "0.1.0",
+  "private": true,
+  "description": "SETU — Scheme Eligibility & Transparent Uptake (SIH 2026, PS 26092)",
+  "scripts": {
+    "dev": "pnpm --filter @setu/web dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "engines": { "node": ">=20" }
+}

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "SCA-RJ-01",
+    "name": "Rajasthan SC/ST Finance & Development Cooperative Corporation",
+    "type": "SCA",
+    "state": "Rajasthan",
+    "district": "Jaipur",
+    "address": "Jaipur, Rajasthan",
+    "lat": 26.9124,
+    "lon": 75.7873,
+    "phone": "",
+    "authorized_categories": ["micro_finance", "term_loan", "education_loan"]
+  },
+  {
+    "id": "PSB-XX-01",
+    "name": "Sample Public Sector Bank - District Branch",
+    "type": "PSB",
+    "state": "Rajasthan",
+    "district": "Jaipur",
+    "address": "",
+    "lat": 26.9000,
+    "lon": 75.8000,
+    "phone": "",
+    "authorized_categories": ["term_loan", "education_loan"]
+  }
+]

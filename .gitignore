@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+htmlcov/
+.coverage
+
+# Node
+node_modules/
+.next/
+dist/
+build/
+.turbo/
+*.tsbuildinfo
+
+# ...except the compiled rule bundle. It is the contract the TypeScript engine imports
+# and the Python/TS conformance test asserts against, so a fresh clone must have it or
+# CI cannot run. Regenerate with `make rules`.
+!packages/rules/dist/
+!packages/rules/dist/**
+
+# Env & secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ML / model artifacts
+*.pkl
+*.joblib
+*.onnx
+*.faiss
+
+# Uploaded / generated documents (never commit citizen data)
+storage/
+uploads/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/

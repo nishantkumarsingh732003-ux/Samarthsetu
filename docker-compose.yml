@@ -1,0 +1,48 @@
+services:
+  postgres:
+    build: ./infra/docker/postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-saarthi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-saarthi}
+      POSTGRES_DB: ${POSTGRES_DB:-saarthi}
+    ports: ["5432:5432"]
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./scripts/seed/00_extensions.sql:/docker-entrypoint-initdb.d/00_extensions.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-saarthi}"]
+      interval: 10s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports: ["6379:6379"]
+
+  api:
+    build: ./apps/api
+    env_file: .env
+    environment:
+      # .env targets localhost for running the API outside Docker; inside the network
+      # the services are reachable by name.
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-saarthi}:${POSTGRES_PASSWORD:-saarthi}@postgres:5432/${POSTGRES_DB:-saarthi}
+      REDIS_URL: redis://redis:6379/0
+    ports: ["8000:8000"]
+    depends_on:
+      postgres: {condition: service_healthy}
+      redis: {condition: service_started}
+    volumes:
+      - ./apps/api:/app
+      - ./packages/rules:/packages/rules
+      - ./scripts:/scripts
+
+  web:
+    build: ./apps/web
+    env_file: .env
+    ports: ["3000:3000"]
+    depends_on: [api]
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+
+volumes:
+  pgdata:
