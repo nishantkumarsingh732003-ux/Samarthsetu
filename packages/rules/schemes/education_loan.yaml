@@ -1,0 +1,116 @@
+# Educational Loan Scheme (ELS)
+#
+# PROVENANCE: figures verified against nsfdc.nic.in/scheme on 2026-08-29.
+#
+# The problem statement names this scheme family but states NO figures for it. The
+# Rs 40,00,000 cap below therefore comes entirely from NSFDC, not from the problem
+# statement. Secondary sources describe a lower cap for study within India
+# (Rs 30,00,000) against Rs 40,00,000 for study abroad; the official scheme page states
+# only the single Rs 40.00 lakh figure, so that is what is recorded and the India/abroad
+# split is left as an open question rather than assumed.
+
+code: NSFDC_EDUCATION_LOAN
+official_name: "Educational Loan Scheme"
+family: EDUCATION_LOAN
+
+name_i18n:
+  en: "Educational Loan Scheme"
+  hi: "शैक्षिक ऋण योजना"
+
+provenance:
+  source: "NSFDC scheme page (the problem statement states no figures for this scheme)"
+  source_url: "https://nsfdc.nic.in/scheme"
+  circular_ref: null
+  effective_from: null
+  last_verified_on: "2026-08-29"
+  needs_verification: true
+  verification_note: >
+    Loan cap, funding percentage and interest verified from the NSFDC scheme page on
+    2026-08-29. Repayment tenure is stated there as two different figures depending on
+    disbursement status (12 years or 10 years), and the moratorium as "course period
+    plus one year"; neither reduces to a single number the engine can hold, so both are
+    left null rather than approximated.
+  open_questions:
+    - field: max_loan_amount
+      question: >-
+        Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for
+        study abroad. Confirm whether the cap varies and add a study-location field.
+    - field: tenure_months
+      question: "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+    - field: moratorium_months
+      question: "How should a course-length-dependent moratorium be modelled?"
+    - field: circular_ref
+      question: "Which NSFDC circular governs the current ELS terms?"
+
+limits:
+  # The course fee is the "project cost" here. NSFDC states no band on it, only a cap
+  # on the loan, so both band ends stay null rather than being invented.
+  min_project_cost: null
+  max_project_cost: null
+  # "Upto Rs 40.00 Lakh or 90% of course fee, whichever is less."
+  max_loan_amount: 4000000
+  max_funding_pct: 90
+  interest_rate_min: 6.5
+  interest_rate_max: 6.5
+  # See verification_note — not reducible to a single figure.
+  tenure_months: null
+  moratorium_months: null
+
+pending_translations: [mr, bn, ta, te]
+
+rules:
+  - id: EL_CATEGORY_SC
+    severity: HARD_BLOCK
+    when: "profile.category != 'SC'"
+    message_i18n:
+      en: "This scheme is for Scheduled Caste applicants."
+      hi: "यह योजना अनुसूचित जाति के आवेदकों के लिए है।"
+    satisfied_i18n:
+      en: "You are a Scheduled Caste applicant."
+      hi: "आप अनुसूचित जाति के आवेदक हैं।"
+
+  - id: EL_INCOME_CEILING
+    severity: HARD_BLOCK
+    when: "profile.annual_family_income > 500000"
+    message_i18n:
+      en: "Annual family income must not exceed Rs 5,00,000."
+      hi: "वार्षिक पारिवारिक आय Rs 5,00,000 से अधिक नहीं होनी चाहिए।"
+    satisfied_i18n:
+      en: "Your annual family income is within the Rs 5,00,000 ceiling."
+      hi: "आपकी वार्षिक पारिवारिक आय Rs 5,00,000 की सीमा के भीतर है।"
+
+  - id: EL_PURPOSE_IS_EDUCATION
+    severity: HARD_BLOCK
+    when: "profile.project_sector != 'EDUCATION'"
+    message_i18n:
+      en: "This scheme funds education costs only."
+      hi: "यह योजना केवल शिक्षा के खर्च के लिए है।"
+    satisfied_i18n:
+      en: "You need funding for education, which is what this scheme is for."
+      hi: "आपको शिक्षा के लिए वित्त चाहिए, यह योजना इसी के लिए है।"
+
+  - id: EL_ADMISSION_CONFIRMED
+    severity: HARD_BLOCK
+    when: "profile.admission_confirmed == false"
+    message_i18n:
+      en: "A confirmed admission is required before an education loan can be processed."
+      hi: "शैक्षिक ऋण के लिए पुष्ट प्रवेश आवश्यक है।"
+    satisfied_i18n:
+      en: "Your admission is confirmed."
+      hi: "आपका प्रवेश पुष्ट है।"
+
+  # Rs 40,00,000 / 0.90 = Rs 44,44,444.44, so from Rs 44,44,445 upward the loan cap
+  # bites before the 90% rule does.
+  - id: EL_LOAN_CAP_BINDS
+    severity: SOFT_WARN
+    when: "profile.project_cost >= 4444445"
+    message_i18n:
+      en: >-
+        This scheme lends at most Rs 40,00,000, which is less than 90% of your course
+        cost. You will need to arrange the difference yourself.
+      hi: >-
+        यह योजना अधिकतम Rs 40,00,000 का ऋण देती है, जो आपकी पाठ्यक्रम लागत के 90% से कम है।
+        शेष राशि आपको स्वयं जुटानी होगी।
+    satisfied_i18n:
+      en: "This scheme can fund the full 90% of your course cost."
+      hi: "यह योजना आपकी पाठ्यक्रम लागत का पूरा 90% वित्तपोषित कर सकती है।"

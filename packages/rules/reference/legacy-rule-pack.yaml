@@ -1,0 +1,24 @@
+# Versioned eligibility rule pack. Edited by domain officers, reviewed like code.
+version: "2025.1"
+common:
+  - id: caste_certificate
+    description: Applicant must hold a valid SC caste certificate
+    field: has_sc_certificate
+    op: is_true
+  - id: income_ceiling
+    description: Annual family income must not exceed Rs. 5.00 lakh
+    field: annual_family_income
+    op: lte
+    value: 500000
+
+schemes:
+  micro_finance:
+    - {id: mf_amount_cap, field: requested_amount, op: lte, value: 140000}
+    - {id: mf_purpose, field: purpose, op: in, value: [self_employment, micro_enterprise]}
+  term_loan:
+    - {id: tl_amount_cap, field: requested_amount, op: lte, value: 5000000}
+    - {id: tl_amount_floor, field: requested_amount, op: gt, value: 140000}
+    - {id: tl_purpose, field: purpose, op: in, value: [enterprise, expansion, equipment]}
+  education_loan:
+    - {id: el_purpose, field: purpose, op: eq, value: education}
+    - {id: el_admission, field: has_admission_proof, op: is_true}

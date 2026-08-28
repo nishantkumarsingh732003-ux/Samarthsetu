@@ -1,0 +1,2537 @@
+{
+  "anjali_student_6l": {
+    "engine_version": "2.0.0",
+    "input_snapshot": {
+      "admission_confirmed": true,
+      "annual_family_income": 260000,
+      "category": "SC",
+      "education_level": "Higher secondary",
+      "project_cost": 600000,
+      "project_sector": "EDUCATION"
+    },
+    "next_question": null,
+    "results": [
+      {
+        "blocked_because": [],
+        "confidence": 1.0,
+        "family": "EDUCATION_LOAN",
+        "indicative_amount": 540000.0,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "EL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "EL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "You need funding for education, which is what this scheme is for.",
+            "rule_id": "EL_PURPOSE_IS_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your admission is confirmed.",
+            "rule_id": "EL_ADMISSION_CONFIRMED",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your course cost.",
+            "rule_id": "EL_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Educational Loan Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "max_loan_amount",
+              "question": "Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for study abroad. Confirm whether the cap varies and add a study-location field."
+            },
+            {
+              "field": "tenure_months",
+              "question": "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should a course-length-dependent moratorium be modelled?"
+            },
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current ELS terms?"
+            }
+          ],
+          "source": "NSFDC scheme page (the problem statement states no figures for this scheme)",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
+        },
+        "rank": 1,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "verdict": "ELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "Education costs are funded under the Educational Loan Scheme, not this one.",
+            "rule_id": "TL_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "TERM_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "TL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "TL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project is large enough for this scheme.",
+            "rule_id": "TL_PROJECT_COST_FLOOR",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 50,00,000 band.",
+            "rule_id": "TL_PROJECT_COST_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 2,
+        "redirect_suggestion": "NSFDC_EDUCATION_LOAN",
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "Education costs are funded under the Educational Loan Scheme, not this one.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 3,
+        "redirect_suggestion": "NSFDC_EDUCATION_LOAN",
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "verdict": "INELIGIBLE",
+        "warnings": [
+          {
+            "message": "This scheme lends at most Rs 1,25,000, which is less than 90% of your project cost. You will need to arrange the difference yourself.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ]
+      }
+    ],
+    "rules_digest": "545b833da4e8f55d"
+  },
+  "category_only": {
+    "engine_version": "2.0.0",
+    "input_snapshot": {
+      "category": "SC"
+    },
+    "next_question": {
+      "choices": [
+        "AGRICULTURE",
+        "MANUFACTURING",
+        "SERVICES",
+        "TRADE",
+        "TRANSPORT",
+        "ARTISAN",
+        "EDUCATION",
+        "OTHER"
+      ],
+      "field": "project_sector",
+      "kind": "string",
+      "question_i18n": {
+        "en": "What do you need the money for?",
+        "hi": "आपको पैसे की ज़रूरत किस लिए है?"
+      },
+      "resolves_rules": [
+        "EL_PURPOSE_IS_EDUCATION",
+        "MF_NOT_FOR_EDUCATION",
+        "TL_NOT_FOR_EDUCATION"
+      ],
+      "resolves_schemes": [
+        "NSFDC_EDUCATION_LOAN",
+        "NSFDC_MICRO_FINANCE",
+        "NSFDC_TERM_LOAN"
+      ]
+    },
+    "results": [
+      {
+        "blocked_because": [],
+        "confidence": 0.25,
+        "family": "EDUCATION_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "EL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "admission_confirmed",
+          "annual_family_income",
+          "project_sector"
+        ],
+        "needs_verification": true,
+        "official_name": "Educational Loan Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "max_loan_amount",
+              "question": "Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for study abroad. Confirm whether the cap varies and add a study-location field."
+            },
+            {
+              "field": "tenure_months",
+              "question": "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should a course-length-dependent moratorium be modelled?"
+            },
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current ELS terms?"
+            }
+          ],
+          "source": "NSFDC scheme page (the problem statement states no figures for this scheme)",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
+        },
+        "rank": 1,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "verdict": "NEED_MORE_INFO",
+        "warnings": []
+      },
+      {
+        "blocked_because": [],
+        "confidence": 0.25,
+        "family": "MICRO_FINANCE",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "annual_family_income",
+          "project_cost",
+          "project_sector"
+        ],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 2,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "verdict": "NEED_MORE_INFO",
+        "warnings": []
+      },
+      {
+        "blocked_because": [],
+        "confidence": 0.2,
+        "family": "TERM_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "TL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "annual_family_income",
+          "project_cost",
+          "project_sector"
+        ],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 3,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "verdict": "NEED_MORE_INFO",
+        "warnings": []
+      }
+    ],
+    "rules_digest": "545b833da4e8f55d"
+  },
+  "empty_profile": {
+    "engine_version": "2.0.0",
+    "input_snapshot": {},
+    "next_question": {
+      "choices": [
+        "SC",
+        "ST",
+        "OBC",
+        "GENERAL"
+      ],
+      "field": "category",
+      "kind": "string",
+      "question_i18n": {
+        "en": "Which social category do you belong to?",
+        "hi": "आप किस सामाजिक श्रेणी से हैं?"
+      },
+      "resolves_rules": [
+        "EL_CATEGORY_SC",
+        "MF_CATEGORY_SC",
+        "TL_CATEGORY_SC"
+      ],
+      "resolves_schemes": [
+        "NSFDC_EDUCATION_LOAN",
+        "NSFDC_MICRO_FINANCE",
+        "NSFDC_TERM_LOAN"
+      ]
+    },
+    "results": [
+      {
+        "blocked_because": [],
+        "confidence": 0.0,
+        "family": "EDUCATION_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "admission_confirmed",
+          "annual_family_income",
+          "category",
+          "project_sector"
+        ],
+        "needs_verification": true,
+        "official_name": "Educational Loan Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "max_loan_amount",
+              "question": "Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for study abroad. Confirm whether the cap varies and add a study-location field."
+            },
+            {
+              "field": "tenure_months",
+              "question": "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should a course-length-dependent moratorium be modelled?"
+            },
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current ELS terms?"
+            }
+          ],
+          "source": "NSFDC scheme page (the problem statement states no figures for this scheme)",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
+        },
+        "rank": 1,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "verdict": "NEED_MORE_INFO",
+        "warnings": []
+      },
+      {
+        "blocked_because": [],
+        "confidence": 0.0,
+        "family": "MICRO_FINANCE",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "annual_family_income",
+          "category",
+          "project_cost",
+          "project_sector"
+        ],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 2,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "verdict": "NEED_MORE_INFO",
+        "warnings": []
+      },
+      {
+        "blocked_because": [],
+        "confidence": 0.0,
+        "family": "TERM_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "annual_family_income",
+          "category",
+          "project_cost",
+          "project_sector"
+        ],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 3,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "verdict": "NEED_MORE_INFO",
+        "warnings": []
+      }
+    ],
+    "rules_digest": "545b833da4e8f55d"
+  },
+  "income_exactly_at_ceiling": {
+    "engine_version": "2.0.0",
+    "input_snapshot": {
+      "annual_family_income": 500000,
+      "category": "SC",
+      "project_cost": 100000,
+      "project_sector": "SERVICES"
+    },
+    "next_question": null,
+    "results": [
+      {
+        "blocked_because": [],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "indicative_amount": 90000.0,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 1,40,000 band.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your project cost.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 1,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "verdict": "ELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "The Term Loan is for units costing more than Rs 1,40,000. Smaller projects are funded under the Micro Finance Scheme.",
+            "rule_id": "TL_PROJECT_COST_FLOOR",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "TERM_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "TL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "TL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "TL_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 50,00,000 band.",
+            "rule_id": "TL_PROJECT_COST_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 2,
+        "redirect_suggestion": "NSFDC_MICRO_FINANCE",
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "This scheme funds education costs only.",
+            "rule_id": "EL_PURPOSE_IS_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "EDUCATION_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "EL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "EL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your course cost.",
+            "rule_id": "EL_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "admission_confirmed"
+        ],
+        "needs_verification": true,
+        "official_name": "Educational Loan Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "max_loan_amount",
+              "question": "Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for study abroad. Confirm whether the cap varies and add a study-location field."
+            },
+            {
+              "field": "tenure_months",
+              "question": "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should a course-length-dependent moratorium be modelled?"
+            },
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current ELS terms?"
+            }
+          ],
+          "source": "NSFDC scheme page (the problem statement states no figures for this scheme)",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
+        },
+        "rank": 3,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      }
+    ],
+    "rules_digest": "545b833da4e8f55d"
+  },
+  "income_one_rupee_over": {
+    "engine_version": "2.0.0",
+    "input_snapshot": {
+      "annual_family_income": 500001,
+      "category": "SC",
+      "project_cost": 100000,
+      "project_sector": "SERVICES"
+    },
+    "next_question": null,
+    "results": [
+      {
+        "blocked_because": [
+          {
+            "message": "Annual family income must not exceed Rs 5,00,000.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 1,40,000 band.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your project cost.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 1,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "Annual family income must not exceed Rs 5,00,000.",
+            "rule_id": "TL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "The Term Loan is for units costing more than Rs 1,40,000. Smaller projects are funded under the Micro Finance Scheme.",
+            "rule_id": "TL_PROJECT_COST_FLOOR",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "TERM_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "TL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "TL_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 50,00,000 band.",
+            "rule_id": "TL_PROJECT_COST_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 2,
+        "redirect_suggestion": "NSFDC_MICRO_FINANCE",
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "Annual family income must not exceed Rs 5,00,000.",
+            "rule_id": "EL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme funds education costs only.",
+            "rule_id": "EL_PURPOSE_IS_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "EDUCATION_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "EL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your course cost.",
+            "rule_id": "EL_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "admission_confirmed"
+        ],
+        "needs_verification": true,
+        "official_name": "Educational Loan Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "max_loan_amount",
+              "question": "Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for study abroad. Confirm whether the cap varies and add a study-location field."
+            },
+            {
+              "field": "tenure_months",
+              "question": "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should a course-length-dependent moratorium be modelled?"
+            },
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current ELS terms?"
+            }
+          ],
+          "source": "NSFDC scheme page (the problem statement states no figures for this scheme)",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
+        },
+        "rank": 3,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      }
+    ],
+    "rules_digest": "545b833da4e8f55d"
+  },
+  "micro_finance_boundary_140000": {
+    "engine_version": "2.0.0",
+    "input_snapshot": {
+      "annual_family_income": 200000,
+      "category": "SC",
+      "project_cost": 140000,
+      "project_sector": "ARTISAN"
+    },
+    "next_question": null,
+    "results": [
+      {
+        "blocked_because": [],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "indicative_amount": 125000.0,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 1,40,000 band.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 1,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "verdict": "LIKELY_ELIGIBLE",
+        "warnings": [
+          {
+            "message": "This scheme lends at most Rs 1,25,000, which is less than 90% of your project cost. You will need to arrange the difference yourself.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ]
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "The Term Loan is for units costing more than Rs 1,40,000. Smaller projects are funded under the Micro Finance Scheme.",
+            "rule_id": "TL_PROJECT_COST_FLOOR",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "TERM_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "TL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "TL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "TL_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 50,00,000 band.",
+            "rule_id": "TL_PROJECT_COST_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 2,
+        "redirect_suggestion": "NSFDC_MICRO_FINANCE",
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "This scheme funds education costs only.",
+            "rule_id": "EL_PURPOSE_IS_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "EDUCATION_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "EL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "EL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your course cost.",
+            "rule_id": "EL_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "admission_confirmed"
+        ],
+        "needs_verification": true,
+        "official_name": "Educational Loan Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "max_loan_amount",
+              "question": "Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for study abroad. Confirm whether the cap varies and add a study-location field."
+            },
+            {
+              "field": "tenure_months",
+              "question": "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should a course-length-dependent moratorium be modelled?"
+            },
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current ELS terms?"
+            }
+          ],
+          "source": "NSFDC scheme page (the problem statement states no figures for this scheme)",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
+        },
+        "rank": 3,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      }
+    ],
+    "rules_digest": "545b833da4e8f55d"
+  },
+  "micro_finance_boundary_140001_redirects": {
+    "engine_version": "2.0.0",
+    "input_snapshot": {
+      "annual_family_income": 200000,
+      "category": "SC",
+      "project_cost": 140001,
+      "project_sector": "ARTISAN"
+    },
+    "next_question": null,
+    "results": [
+      {
+        "blocked_because": [],
+        "confidence": 1.0,
+        "family": "TERM_LOAN",
+        "indicative_amount": 126000.9,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "TL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "TL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "TL_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project is large enough for this scheme.",
+            "rule_id": "TL_PROJECT_COST_FLOOR",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 50,00,000 band.",
+            "rule_id": "TL_PROJECT_COST_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 1,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "verdict": "ELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "This scheme funds education costs only.",
+            "rule_id": "EL_PURPOSE_IS_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "EDUCATION_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "EL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "EL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your course cost.",
+            "rule_id": "EL_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "admission_confirmed"
+        ],
+        "needs_verification": true,
+        "official_name": "Educational Loan Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "max_loan_amount",
+              "question": "Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for study abroad. Confirm whether the cap varies and add a study-location field."
+            },
+            {
+              "field": "tenure_months",
+              "question": "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should a course-length-dependent moratorium be modelled?"
+            },
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current ELS terms?"
+            }
+          ],
+          "source": "NSFDC scheme page (the problem statement states no figures for this scheme)",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
+        },
+        "rank": 2,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 3,
+        "redirect_suggestion": "NSFDC_TERM_LOAN",
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "verdict": "INELIGIBLE",
+        "warnings": [
+          {
+            "message": "This scheme lends at most Rs 1,25,000, which is less than 90% of your project cost. You will need to arrange the difference yourself.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ]
+      }
+    ],
+    "rules_digest": "545b833da4e8f55d"
+  },
+  "non_sc_applicant": {
+    "engine_version": "2.0.0",
+    "input_snapshot": {
+      "annual_family_income": 180000,
+      "category": "OBC",
+      "project_cost": 80000,
+      "project_sector": "TRADE"
+    },
+    "next_question": null,
+    "results": [
+      {
+        "blocked_because": [
+          {
+            "message": "This scheme is for Scheduled Caste applicants.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 1,40,000 band.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your project cost.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 1,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "This scheme is for Scheduled Caste applicants.",
+            "rule_id": "TL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "The Term Loan is for units costing more than Rs 1,40,000. Smaller projects are funded under the Micro Finance Scheme.",
+            "rule_id": "TL_PROJECT_COST_FLOOR",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "TERM_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "TL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "TL_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 50,00,000 band.",
+            "rule_id": "TL_PROJECT_COST_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 2,
+        "redirect_suggestion": "NSFDC_MICRO_FINANCE",
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "This scheme is for Scheduled Caste applicants.",
+            "rule_id": "EL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme funds education costs only.",
+            "rule_id": "EL_PURPOSE_IS_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "EDUCATION_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "EL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your course cost.",
+            "rule_id": "EL_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "admission_confirmed"
+        ],
+        "needs_verification": true,
+        "official_name": "Educational Loan Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "max_loan_amount",
+              "question": "Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for study abroad. Confirm whether the cap varies and add a study-location field."
+            },
+            {
+              "field": "tenure_months",
+              "question": "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should a course-length-dependent moratorium be modelled?"
+            },
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current ELS terms?"
+            }
+          ],
+          "source": "NSFDC scheme page (the problem statement states no figures for this scheme)",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
+        },
+        "rank": 3,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      }
+    ],
+    "rules_digest": "545b833da4e8f55d"
+  },
+  "over_term_loan_ceiling": {
+    "engine_version": "2.0.0",
+    "input_snapshot": {
+      "annual_family_income": 300000,
+      "category": "SC",
+      "project_cost": 6000000,
+      "project_sector": "MANUFACTURING"
+    },
+    "next_question": null,
+    "results": [
+      {
+        "blocked_because": [
+          {
+            "message": "This scheme funds education costs only.",
+            "rule_id": "EL_PURPOSE_IS_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "EDUCATION_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "EL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "EL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "admission_confirmed"
+        ],
+        "needs_verification": true,
+        "official_name": "Educational Loan Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "max_loan_amount",
+              "question": "Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for study abroad. Confirm whether the cap varies and add a study-location field."
+            },
+            {
+              "field": "tenure_months",
+              "question": "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should a course-length-dependent moratorium be modelled?"
+            },
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current ELS terms?"
+            }
+          ],
+          "source": "NSFDC scheme page (the problem statement states no figures for this scheme)",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
+        },
+        "rank": 1,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": [
+          {
+            "message": "This scheme lends at most Rs 40,00,000, which is less than 90% of your course cost. You will need to arrange the difference yourself.",
+            "rule_id": "EL_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ]
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 2,
+        "redirect_suggestion": "NSFDC_TERM_LOAN",
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "verdict": "INELIGIBLE",
+        "warnings": [
+          {
+            "message": "This scheme lends at most Rs 1,25,000, which is less than 90% of your project cost. You will need to arrange the difference yourself.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ]
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "The Term Loan covers units costing up to Rs 50,00,000.",
+            "rule_id": "TL_PROJECT_COST_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "TERM_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "TL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "TL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "TL_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project is large enough for this scheme.",
+            "rule_id": "TL_PROJECT_COST_FLOOR",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 3,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      }
+    ],
+    "rules_digest": "545b833da4e8f55d"
+  },
+  "ramesh_workshop_12l": {
+    "engine_version": "2.0.0",
+    "input_snapshot": {
+      "annual_family_income": 420000,
+      "category": "SC",
+      "occupation_type": "Furniture workshop",
+      "project_cost": 1200000,
+      "project_sector": "MANUFACTURING"
+    },
+    "next_question": null,
+    "results": [
+      {
+        "blocked_because": [],
+        "confidence": 1.0,
+        "family": "TERM_LOAN",
+        "indicative_amount": 1080000.0,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "TL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "TL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "TL_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project is large enough for this scheme.",
+            "rule_id": "TL_PROJECT_COST_FLOOR",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 50,00,000 band.",
+            "rule_id": "TL_PROJECT_COST_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 1,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "verdict": "ELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "This scheme funds education costs only.",
+            "rule_id": "EL_PURPOSE_IS_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "EDUCATION_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "EL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "EL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your course cost.",
+            "rule_id": "EL_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "admission_confirmed"
+        ],
+        "needs_verification": true,
+        "official_name": "Educational Loan Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "max_loan_amount",
+              "question": "Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for study abroad. Confirm whether the cap varies and add a study-location field."
+            },
+            {
+              "field": "tenure_months",
+              "question": "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should a course-length-dependent moratorium be modelled?"
+            },
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current ELS terms?"
+            }
+          ],
+          "source": "NSFDC scheme page (the problem statement states no figures for this scheme)",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
+        },
+        "rank": 2,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 3,
+        "redirect_suggestion": "NSFDC_TERM_LOAN",
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "verdict": "INELIGIBLE",
+        "warnings": [
+          {
+            "message": "This scheme lends at most Rs 1,25,000, which is less than 90% of your project cost. You will need to arrange the difference yourself.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ]
+      }
+    ],
+    "rules_digest": "545b833da4e8f55d"
+  },
+  "student_without_confirmed_admission": {
+    "engine_version": "2.0.0",
+    "input_snapshot": {
+      "admission_confirmed": false,
+      "annual_family_income": 260000,
+      "category": "SC",
+      "project_cost": 600000,
+      "project_sector": "EDUCATION"
+    },
+    "next_question": null,
+    "results": [
+      {
+        "blocked_because": [
+          {
+            "message": "Education costs are funded under the Educational Loan Scheme, not this one.",
+            "rule_id": "TL_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "TERM_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "TL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "TL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project is large enough for this scheme.",
+            "rule_id": "TL_PROJECT_COST_FLOOR",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 50,00,000 band.",
+            "rule_id": "TL_PROJECT_COST_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 1,
+        "redirect_suggestion": "NSFDC_EDUCATION_LOAN",
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "A confirmed admission is required before an education loan can be processed.",
+            "rule_id": "EL_ADMISSION_CONFIRMED",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "EDUCATION_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "EL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "EL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "You need funding for education, which is what this scheme is for.",
+            "rule_id": "EL_PURPOSE_IS_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your course cost.",
+            "rule_id": "EL_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Educational Loan Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "max_loan_amount",
+              "question": "Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for study abroad. Confirm whether the cap varies and add a study-location field."
+            },
+            {
+              "field": "tenure_months",
+              "question": "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should a course-length-dependent moratorium be modelled?"
+            },
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current ELS terms?"
+            }
+          ],
+          "source": "NSFDC scheme page (the problem statement states no figures for this scheme)",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
+        },
+        "rank": 2,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "Education costs are funded under the Educational Loan Scheme, not this one.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 3,
+        "redirect_suggestion": "NSFDC_EDUCATION_LOAN",
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "verdict": "INELIGIBLE",
+        "warnings": [
+          {
+            "message": "This scheme lends at most Rs 1,25,000, which is less than 90% of your project cost. You will need to arrange the difference yourself.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ]
+      }
+    ],
+    "rules_digest": "545b833da4e8f55d"
+  },
+  "sunita_street_vendor_80k": {
+    "engine_version": "2.0.0",
+    "input_snapshot": {
+      "annual_family_income": 180000,
+      "category": "SC",
+      "occupation_type": "Vegetable vendor",
+      "project_cost": 80000,
+      "project_sector": "TRADE"
+    },
+    "next_question": null,
+    "results": [
+      {
+        "blocked_because": [],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "indicative_amount": 72000.0,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 1,40,000 band.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your project cost.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 1,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "verdict": "ELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "The Term Loan is for units costing more than Rs 1,40,000. Smaller projects are funded under the Micro Finance Scheme.",
+            "rule_id": "TL_PROJECT_COST_FLOOR",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "TERM_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "TL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "TL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "TL_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 50,00,000 band.",
+            "rule_id": "TL_PROJECT_COST_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 2,
+        "redirect_suggestion": "NSFDC_MICRO_FINANCE",
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "This scheme funds education costs only.",
+            "rule_id": "EL_PURPOSE_IS_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "EDUCATION_LOAN",
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "EL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "EL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "This scheme can fund the full 90% of your course cost.",
+            "rule_id": "EL_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [
+          "admission_confirmed"
+        ],
+        "needs_verification": true,
+        "official_name": "Educational Loan Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "max_loan_amount",
+              "question": "Secondary sources give Rs 30,00,000 for study in India and Rs 40,00,000 for study abroad. Confirm whether the cap varies and add a study-location field."
+            },
+            {
+              "field": "tenure_months",
+              "question": "Which of the 12-year / 10-year repayment terms applies to a new applicant?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should a course-length-dependent moratorium be modelled?"
+            },
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current ELS terms?"
+            }
+          ],
+          "source": "NSFDC scheme page (the problem statement states no figures for this scheme)",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
+        },
+        "rank": 3,
+        "redirect_suggestion": null,
+        "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      }
+    ],
+    "rules_digest": "545b833da4e8f55d"
+  }
+}

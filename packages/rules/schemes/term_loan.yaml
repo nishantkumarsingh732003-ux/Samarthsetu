@@ -1,0 +1,108 @@
+# Term Loan
+#
+# PROVENANCE: figures verified against nsfdc.nic.in/scheme on 2026-08-29.
+#
+# The band has a FLOOR as well as a ceiling: "units costing more than Rs 1.40 lakh and
+# up to Rs 50.00 lakh". The problem statement says only "larger projects", which agrees
+# but does not quantify. A project at or below Rs 1,40,000 belongs to the Micro Finance
+# Scheme, so the floor is a hard block with a redirect rather than a suggestion.
+
+code: NSFDC_TERM_LOAN
+official_name: "Term Loan"
+family: TERM_LOAN
+
+name_i18n:
+  en: "Term Loan"
+  hi: "टर्म लोन"
+
+provenance:
+  source: "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092"
+  source_url: "https://nsfdc.nic.in/scheme"
+  circular_ref: null
+  effective_from: null
+  last_verified_on: "2026-08-29"
+  needs_verification: true
+  verification_note: >
+    Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page
+    on 2026-08-29. That page notes a longer 12-month moratorium for plantation and
+    construction activities; the engine records the general 6-month figure because it
+    holds no field for activity type yet.
+  open_questions:
+    - field: circular_ref
+      question: "Which NSFDC circular governs the current Term Loan terms?"
+    - field: moratorium_months
+      question: "How should the 12-month plantation/construction moratorium be modelled?"
+
+limits:
+  # "units costing more than Rs 1.40 lakh and up to Rs 50.00 lakh" — the Rs 50,00,000
+  # ceiling matches the problem statement; the floor is additional to it.
+  min_project_cost: 140000
+  max_project_cost: 5000000
+  # "term loans up to Rs 45 lakh per unit." NOT stated in the problem statement.
+  max_loan_amount: 4500000
+  max_funding_pct: 90
+  # NSFDC charges the beneficiary 8% for this scheme — the top of the problem
+  # statement's "typically 6.5% - 8%" band.
+  interest_rate_min: 8.0
+  interest_rate_max: 8.0
+  tenure_months: 84
+  moratorium_months: 6
+
+pending_translations: [mr, bn, ta, te]
+
+rules:
+  - id: TL_CATEGORY_SC
+    severity: HARD_BLOCK
+    when: "profile.category != 'SC'"
+    message_i18n:
+      en: "This scheme is for Scheduled Caste applicants."
+      hi: "यह योजना अनुसूचित जाति के आवेदकों के लिए है।"
+    satisfied_i18n:
+      en: "You are a Scheduled Caste applicant."
+      hi: "आप अनुसूचित जाति के आवेदक हैं।"
+
+  - id: TL_INCOME_CEILING
+    severity: HARD_BLOCK
+    when: "profile.annual_family_income > 500000"
+    message_i18n:
+      en: "Annual family income must not exceed Rs 5,00,000."
+      hi: "वार्षिक पारिवारिक आय Rs 5,00,000 से अधिक नहीं होनी चाहिए।"
+    satisfied_i18n:
+      en: "Your annual family income is within the Rs 5,00,000 ceiling."
+      hi: "आपकी वार्षिक पारिवारिक आय Rs 5,00,000 की सीमा के भीतर है।"
+
+  - id: TL_NOT_FOR_EDUCATION
+    severity: HARD_BLOCK
+    when: "profile.project_sector == 'EDUCATION'"
+    message_i18n:
+      en: "Education costs are funded under the Educational Loan Scheme, not this one."
+      hi: "शिक्षा के खर्च के लिए शैक्षिक ऋण योजना है, यह योजना नहीं।"
+    satisfied_i18n:
+      en: "Your requirement is an enterprise project, which this scheme funds."
+      hi: "आपकी आवश्यकता एक उद्यम परियोजना है, जिसे यह योजना वित्तपोषित करती है।"
+    suggest_instead: NSFDC_EDUCATION_LOAN
+
+  - id: TL_PROJECT_COST_FLOOR
+    severity: HARD_BLOCK
+    when: "profile.project_cost <= 140000"
+    message_i18n:
+      en: >-
+        The Term Loan is for units costing more than Rs 1,40,000. Smaller projects are
+        funded under the Micro Finance Scheme.
+      hi: >-
+        टर्म लोन Rs 1,40,000 से अधिक लागत वाली इकाइयों के लिए है। छोटी परियोजनाओं के लिए
+        माइक्रो फाइनेंस स्कीम है।
+    satisfied_i18n:
+      en: "Your project is large enough for this scheme."
+      hi: "आपकी परियोजना इस योजना के लिए पर्याप्त बड़ी है।"
+    suggest_instead: NSFDC_MICRO_FINANCE
+
+  - id: TL_PROJECT_COST_CEILING
+    severity: HARD_BLOCK
+    when: "profile.project_cost > 5000000"
+    message_i18n:
+      en: "The Term Loan covers units costing up to Rs 50,00,000."
+      hi: "टर्म लोन Rs 50,00,000 तक की लागत वाली इकाइयों के लिए है।"
+    satisfied_i18n:
+      en: "Your project cost fits within the Rs 50,00,000 band."
+      hi: "आपकी परियोजना लागत Rs 50,00,000 की सीमा के भीतर है।"

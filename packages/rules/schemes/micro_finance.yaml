@@ -1,0 +1,119 @@
+# Micro Finance Scheme (MFS)
+#
+# PROVENANCE: figures verified against nsfdc.nic.in/scheme on 2026-08-29.
+# The governing circular number is still unknown, so needs_verification stays true and
+# circular_ref stays null. See open_questions.
+#
+# TWO CEILINGS, NOT ONE. NSFDC states an eligibility band on what the unit may cost
+# (Rs 1,40,000) and separately a cap on the loan it advances (Rs 1,25,000). The problem
+# statement quotes only the first. Conflating them overstates what a citizen can borrow:
+# 90% of a Rs 1,40,000 project is Rs 1,26,000, which is above the Rs 1,25,000 loan cap.
+
+code: NSFDC_MICRO_FINANCE
+official_name: "Micro Finance Scheme"
+family: MICRO_FINANCE
+
+name_i18n:
+  en: "Micro Finance Scheme"
+  hi: "माइक्रो फाइनेंस स्कीम"
+
+provenance:
+  source: "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092"
+  source_url: "https://nsfdc.nic.in/scheme"
+  circular_ref: null
+  effective_from: null
+  last_verified_on: "2026-08-29"
+  needs_verification: true
+  verification_note: >
+    Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on
+    2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements
+    and is stated there as effective 2026-01-07. No circular number has been located, so
+    effective_from for the scheme itself remains null.
+  open_questions:
+    - field: circular_ref
+      question: "Which NSFDC circular governs the current MFS terms?"
+    - field: effective_from
+      question: "From what date do the current MFS amounts apply?"
+
+limits:
+  # "NSFDC provides Micro Credit Finance for units costing up to Rs 1.40 lakh"
+  # — matches the problem statement's Rs 1,40,000.
+  min_project_cost: null
+  max_project_cost: 140000
+  # "...with loans up to Rs 1.25 lakh per unit." NOT stated in the problem statement.
+  max_loan_amount: 125000
+  max_funding_pct: 90
+  # NSFDC charges the beneficiary 6.5% for this scheme — the bottom of the problem
+  # statement's "typically 6.5% - 8%" band.
+  interest_rate_min: 6.5
+  interest_rate_max: 6.5
+  tenure_months: 36
+  moratorium_months: 3
+
+# Translations beyond en/hi are deliberately absent rather than machine-generated.
+# The loader falls back to en; tests/test_versioning.py enforces en+hi completeness.
+pending_translations: [mr, bn, ta, te]
+
+rules:
+  - id: MF_CATEGORY_SC
+    severity: HARD_BLOCK
+    when: "profile.category != 'SC'"
+    message_i18n:
+      en: "This scheme is for Scheduled Caste applicants."
+      hi: "यह योजना अनुसूचित जाति के आवेदकों के लिए है।"
+    satisfied_i18n:
+      en: "You are a Scheduled Caste applicant."
+      hi: "आप अनुसूचित जाति के आवेदक हैं।"
+
+  - id: MF_INCOME_CEILING
+    severity: HARD_BLOCK
+    when: "profile.annual_family_income > 500000"
+    message_i18n:
+      en: "Annual family income must not exceed Rs 5,00,000."
+      hi: "वार्षिक पारिवारिक आय Rs 5,00,000 से अधिक नहीं होनी चाहिए।"
+    satisfied_i18n:
+      en: "Your annual family income is within the Rs 5,00,000 ceiling."
+      hi: "आपकी वार्षिक पारिवारिक आय Rs 5,00,000 की सीमा के भीतर है।"
+
+  # Purpose is checked BEFORE the cost band. Rules evaluate in file order and the first
+  # blocking rule with a `suggest_instead` supplies the redirect, so a student asking
+  # for Rs 6,00,000 must be sent to the Educational Loan Scheme, not to a Term Loan
+  # they cannot use. Reordering these two rules changes where citizens are sent.
+  - id: MF_NOT_FOR_EDUCATION
+    severity: HARD_BLOCK
+    when: "profile.project_sector == 'EDUCATION'"
+    message_i18n:
+      en: "Education costs are funded under the Educational Loan Scheme, not this one."
+      hi: "शिक्षा के खर्च के लिए शैक्षिक ऋण योजना है, यह योजना नहीं।"
+    satisfied_i18n:
+      en: "Your requirement is an enterprise project, which this scheme funds."
+      hi: "आपकी आवश्यकता एक उद्यम परियोजना है, जिसे यह योजना वित्तपोषित करती है।"
+    suggest_instead: NSFDC_EDUCATION_LOAN
+
+  - id: MF_PROJECT_COST_BAND
+    severity: HARD_BLOCK
+    when: "profile.project_cost > 140000"
+    message_i18n:
+      en: "The Micro Finance Scheme covers units costing up to Rs 1,40,000."
+      hi: "माइक्रो फाइनेंस स्कीम Rs 1,40,000 तक की लागत वाली इकाइयों के लिए है।"
+    satisfied_i18n:
+      en: "Your project cost fits within the Rs 1,40,000 band."
+      hi: "आपकी परियोजना लागत Rs 1,40,000 की सीमा के भीतर है।"
+    suggest_instead: NSFDC_TERM_LOAN
+
+  # Rs 1,25,000 / 0.90 = Rs 1,38,888.89, so from Rs 1,38,889 upward the loan cap bites
+  # before the 90% rule does and the citizen must fund the difference themselves. This
+  # warns, it does not block — they are still eligible.
+  - id: MF_LOAN_CAP_BINDS
+    severity: SOFT_WARN
+    when: "profile.project_cost >= 138889"
+    message_i18n:
+      en: >-
+        This scheme lends at most Rs 1,25,000, which is less than 90% of your project
+        cost. You will need to arrange the difference yourself.
+      hi: >-
+        यह योजना अधिकतम Rs 1,25,000 का ऋण देती है, जो आपकी परियोजना लागत के 90% से कम है।
+        शेष राशि आपको स्वयं जुटानी होगी।
+    satisfied_i18n:
+      en: "This scheme can fund the full 90% of your project cost."
+      hi: "यह योजना आपकी परियोजना लागत का पूरा 90% वित्तपोषित कर सकती है।"
