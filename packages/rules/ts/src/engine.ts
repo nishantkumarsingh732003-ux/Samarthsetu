@@ -195,9 +195,18 @@ export function fieldImpact(
   return impact;
 }
 
-export function nextBestQuestion(profile: Profile): NextQuestion | null {
+/**
+ * `exclude` names fields already put to the citizen. Asking the same question every
+ * turn because they keep not answering it makes no progress and reads as broken.
+ */
+export function nextBestQuestion(
+  profile: Profile,
+  exclude?: Iterable<string>,
+): NextQuestion | null {
   const impact = fieldImpact(profile);
-  const names = Object.keys(impact);
+  const skip = new Set(exclude ?? []);
+  const remaining = Object.keys(impact).filter((f) => !skip.has(f));
+  const names = remaining.length > 0 ? remaining : Object.keys(impact);
   if (names.length === 0) return null;
 
   names.sort((a, b) => {

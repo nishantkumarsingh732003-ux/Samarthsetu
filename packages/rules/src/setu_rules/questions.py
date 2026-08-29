@@ -61,14 +61,27 @@ def field_impact(
 
 
 def next_best_question(
-    profile: dict[str, Any], schemes: tuple[Scheme, ...] | None = None
+    profile: dict[str, Any],
+    schemes: tuple[Scheme, ...] | None = None,
+    exclude: set[str] | None = None,
 ) -> NextQuestion | None:
-    """The single field that removes the most ambiguity, or None if nothing is left."""
+    """The single field that removes the most ambiguity, or None if nothing is left.
+
+    `exclude` names fields already put to the citizen. A caller that asks the same
+    question every turn because the citizen keeps not answering it makes no progress
+    and reads as broken, so the conversation layer passes what it has already asked and
+    gets the next most useful field instead. If every useful field has been asked, the
+    most useful one is returned again rather than nothing — the citizen may answer this
+    time.
+    """
     from setu_rules.profile import FIELDS  # local import avoids a cycle at module load
 
     impact = field_impact(profile, schemes)
     if not impact:
         return None
+
+    remaining = {k: v for k, v in impact.items() if k not in (exclude or set())}
+    impact = remaining or impact
 
     def sort_key(item: tuple[str, dict[str, Any]]) -> tuple:
         name, entry = item

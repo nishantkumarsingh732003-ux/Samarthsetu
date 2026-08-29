@@ -192,6 +192,56 @@ curl -s http://localhost:8000/api/v1/partners/<uuid>
 Returns the branch plus every scheme it is authorised for, with ticket bands, capacity,
 turnaround and service districts.
 
+### `POST /api/v1/conversation/turn` — the conversational front door
+
+Extracts facts from the citizen's own words, merges them into a Redis-backed session,
+and runs the deterministic engine. Omit `session_id` to start; the reply returns one.
+
+```bash
+curl -s -X POST http://localhost:8000/api/v1/conversation/turn   -H 'Content-Type: application/json'   --data-binary '{"utterance": "mujhe assi hazaar chahiye", "language": "hi"}'
+```
+
+A four-turn Hindi conversation, abridged:
+
+```
+turn 1  "नमस्ते, मैं सब्जी बेचती हूँ"     -> project_sector=TRADE (0.88)
+        ask: आपको कुल कितने पैसे की ज़रूरत है?
+turn 2  "मैं अनुसूचित जाति से हूँ"          -> category=SC (0.95)
+turn 3  "मेरी सालाना आय ढाई लाख है"        -> annual_family_income=250000 (0.95)
+turn 4  "मुझे अस्सी हजार चाहिए"            -> project_cost=80000 (0.95)
+        DECIDED (3 of at most 6 questions)
+          1. NSFDC_MICRO_FINANCE   ELIGIBLE     Rs 72,000
+          2. NSFDC_TERM_LOAN       INELIGIBLE
+          3. NSFDC_EDUCATION_LOAN  INELIGIBLE
+        explanation: आप Micro Finance Scheme के लिए पात्र हैं...
+        rule ids: MF_CATEGORY_SC, MF_INCOME_CEILING, MF_NOT_FOR_EDUCATION, ...
+```
+
+**Where the language model sits.** Extraction runs strictly *before* the engine and
+only proposes candidate facts. Explanation runs strictly *after* it and may only
+restate its reasons. Nothing a model emits reaches a verdict — proved by
+`test_hindi_conversation_matches_the_direct_engine_call`, which asserts that the
+profile reached by conversation and the same profile passed straight to the engine
+produce byte-identical results.
+
+**Amounts are never the model's job.** `app/services/numerals.py` parses `2,50,000`,
+`2.5 lakh`, `dhai lakh`, `ढाई लाख`, `२,५०,०००`, `২,৫০,০০০` and `do lakh chalees hazaar`
+to the same 250000, with 59 tests. The extraction tool schema does not even offer the
+model a money field.
+
+**Uncertainty becomes a question, not a guess.** A reading below 0.7 confidence is not
+written. A bare "ढाई लाख" with no context returns
+*"मैंने समझा कि आपकी सालाना पारिवारिक आय लगभग Rs 250,000 है — क्या यह सही है?"*
+
+**Works with the LLM entirely offline.** With no `ANTHROPIC_API_KEY` the model passes
+are skipped, deterministic extraction carries the conversation, and explanations come
+from templates. That is how it currently runs.
+
+**Sessions hold no PII.** Redis, 24h TTL, storing the eligibility profile and which
+fields each turn established — never the citizen's raw words, which routinely contain a
+name, a village or a number spoken aloud.
+
+
 ### Routing weights
 
 All in [apps/api/app/core/routing_config.py](apps/api/app/core/routing_config.py) —
@@ -209,14 +259,14 @@ deployed application.
 
 ## Status
 
-Phases 0 (foundation), 1 (eligibility engine) and 2 (partner registry and geo routing)
-are complete. See [CLAUDE.md](CLAUDE.md)
+Phases 0 (foundation), 1 (eligibility engine), 2 (partner registry and geo routing) and
+3 (conversational intake) are complete. See [CLAUDE.md](CLAUDE.md)
 for the engineering contract every phase must satisfy.
 
 ```bash
 pytest packages/rules -q          # 97 tests — the eligibility engine
 pnpm --filter @setu/rules test    # 19 tests — TypeScript conformance with Python
-cd apps/api && pytest -q          # 38 tests — schema, routing scorer, cache keys
+cd apps/api && pytest -q          # 113 tests — schema, routing, numerals, conversation
 ```
 
 Known gaps and blockers are tracked in [docs/OPEN_ITEMS.md](docs/OPEN_ITEMS.md).

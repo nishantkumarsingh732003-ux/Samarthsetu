@@ -38,7 +38,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import ChannelPartner, PartnerSchemeAuthorisation, Scheme
 from app.models.enums import PartnerType
-from scripts.seed.geo import DISTRICTS, DISTRICTS_BY_STATE, District, nearest_districts
+from app.core.geography import DISTRICTS, DISTRICTS_BY_STATE, District, nearest_districts
 
 SEED = 26092  # the problem statement number, so the seed itself is traceable
 TARGET_PARTNERS = 120

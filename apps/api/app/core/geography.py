@@ -1,9 +1,13 @@
-"""District reference data for the partner registry.
+"""District reference geography.
 
-District names, state names, and the coordinates are **real** — they are district
-headquarters locations, accurate to roughly the town centre. Everything the seeder
-builds *on top* of them (branch locations, capacity, turnaround, contact details) is
-synthetic. See partners.py.
+District names, state names and coordinates are **real** — district-headquarters
+locations, accurate to roughly the town centre. Everything the partner seeder builds on
+top of them (branch locations, capacity, contact details) is synthetic; see
+scripts/seed/partners.py.
+
+Lives in the API rather than the seeder because two callers need it: the seeder places
+partners, and the conversational extractor recognises a district or state named in a
+citizen's own words.
 """
 
 from __future__ import annotations
@@ -117,3 +121,8 @@ def nearest_districts(home: District, limit: int) -> list[District]:
     siblings = [d for d in DISTRICTS_BY_STATE[home.state] if d.name != home.name]
     siblings.sort(key=lambda d: haversine_km(home, d))
     return siblings[:limit]
+
+
+# Lowercased lookup for recognising a place named in free text.
+DISTRICT_LOOKUP: dict[str, District] = {d.name.casefold(): d for d in DISTRICTS}
+STATE_LOOKUP: dict[str, str] = {s.casefold(): s for s in DISTRICTS_BY_STATE}

@@ -7,7 +7,7 @@ Nothing here is a surprise on demo day if it is read first.
 
 **Legend** — 🔴 blocks the demo · 🟡 weakens the demo · 🟢 tracked, not urgent
 
-Last reviewed: 2026-08-29 (after Phase 2)
+Last reviewed: 2026-08-29 (after Phase 3)
 
 ---
 
@@ -140,6 +140,40 @@ rather than a path-hacked copy.
 
 ---
 
+## 🟡 OI-19 — the LLM path has never been executed
+
+**Status:** open · **Owner:** needs an API key · **Since:** Phase 3
+
+`ANTHROPIC_API_KEY` is empty, so extraction and explanation run their deterministic and
+template paths only. Those paths are fully tested and carry the demo.
+
+What is **not** exercised: the Anthropic tool-use call in `extraction.extract_with_llm`,
+the prose call in `explanation.explain`, and guardrail behaviour against a real model
+response. `_validate_llm_fields` is unit-tested against synthetic payloads, so the
+guardrail logic is covered even though the call is not.
+
+**To close:** set `ANTHROPIC_API_KEY` in `.env`, restart, and run a conversation using
+free text the keyword tables do not cover.
+
+**If it stays open:** the demo still works end to end, but "the LLM extracts facts" is
+an untested claim. Say "deterministic extraction with optional LLM enrichment", which is
+what is actually running.
+
+---
+
+## 🟢 OI-20 — extraction keyword tables are hand-built
+
+**Status:** open · **Owner:** Phase 4+ · **Since:** Phase 3
+
+Sector, category, gender and place detection use curated keyword lists covering English,
+romanised Hindi and Devanagari. Marathi, Bengali, Tamil and Telugu cue words are absent,
+so in those languages extraction currently leans on the numeral parser (which does cover
+their digits) plus the LLM path, itself unexercised (OI-19).
+
+Related to OI-4: the same four languages lack rule-message translations.
+
+---
+
 ## 🟢 OI-18 — routing weights are unvalidated judgement
 
 **Status:** open · **Owner:** needs field input · **Since:** Phase 2
@@ -179,5 +213,6 @@ per-phase trail. From Phase 2 onward, commits are made as work lands.
 | OI-14 | `scripts/seed/run.py` assumed the host layout (`<repo>/apps/api`) and could not import `app` inside the container, where the API is at `/app`. Now tries both. | 2026-08-29 |
 | OI-15 | `sentence-transformers` in `apps/api/requirements.txt` pulled ~2GB of torch into the API image while nothing imported it. Moved to `requirements-ml.txt` for Phase 2+. | 2026-08-29 |
 | OI-8 | Rule engine not wired into the API | 2026-08-29 |
+| OI-21 | The orchestrator asked the same question three turns running when a citizen did not answer it. `next_best_question` now takes an `exclude` set, in both the Python and TypeScript engines. | 2026-08-29 |
 | OI-16 | Partner service areas were random districts within a state, so a Mumbai branch "served" Nagpur 687km away and the router ranked it. Service areas are now the geographically nearest districts, and routing rejects anything beyond a 150km radius with a stated reason. | 2026-08-29 |
 | OI-17 | 120 partners spread uniformly over 53 districts left Nagpur with a single branch, making routing look empty. Seeding now guarantees one partner per district and weights the remainder towards large cities. | 2026-08-29 |
