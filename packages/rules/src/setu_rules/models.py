@@ -142,6 +142,10 @@ class MatchResult:
     needs_verification: bool = False
     provenance: Provenance | None = None
     rank: int | None = None
+    # "verified" | "draft" | "fallback" — whether the prose above has been read by a
+    # speaker of the requested language. A draft reason still tells a citizen why they
+    # were refused credit, so the UI must be able to say it is unreviewed.
+    translation_status: str = "verified"
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -163,6 +167,7 @@ class MatchResult:
             "needs_verification": self.needs_verification,
             "provenance": self.provenance.to_dict() if self.provenance else None,
             "rank": self.rank,
+            "translation_status": self.translation_status,
         }
 
 

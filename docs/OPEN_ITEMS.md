@@ -70,7 +70,27 @@ dated circular. Acceptable for a hackathon; not acceptable for a pilot.
 
 ## 🟡 OI-4 — four of six languages are untranslated
 
-**Status:** open · **Owner:** needs a human translator · **Since:** Phase 1
+**Status:** REDUCED 2026-08-29 · **Owner:** needs a human reviewer · **Since:** Phase 1
+
+All six languages now have complete copy: rule messages, question text, explanation
+templates, confirmation prompts, approval blocklists and extraction cues, in
+`packages/rules/translations/<lang>.yaml`, one file per language.
+
+**They are `status: draft` — written by a language model, not read by a native speaker.**
+That status is not a comment: it is carried on every `MatchResult` as
+`translation_status` and out through the API, so a UI can badge unreviewed copy and a
+deployment can tell verified from draft.
+
+**What remains is review, not authoring.** A fluent speaker reads one file per language
+and flips `status: verified`. See
+[packages/rules/translations/README.md](../packages/rules/translations/README.md) for
+the checklist.
+
+**If it stays open:** the demo works in six languages, but only English and Hindi copy
+has been checked by a person. Say "six languages, two reviewed" rather than "six
+languages".
+
+### Original entry
 
 `en` and `hi` are complete for every rule message. `mr`, `bn`, `ta`, and `te` are
 declared in each scheme file's `pending_translations` and **fall back to English at
@@ -207,7 +227,13 @@ what is actually running.
 
 ## 🟢 OI-20 — extraction keyword tables are hand-built
 
-**Status:** open · **Owner:** Phase 4+ · **Since:** Phase 3
+**Status:** REDUCED 2026-08-29 · **Owner:** Phase 4+ · **Since:** Phase 3
+
+Marathi, Bengali, Tamil and Telugu cue vocabulary now ships in each language bundle's
+`cues:` block, additive to the inline English and romanised-Hindi tables (a citizen may
+type either while asking for answers in Tamil). Still hand-built and still draft.
+
+### Original entry
 
 Sector, category, gender and place detection use curated keyword lists covering English,
 romanised Hindi and Devanagari. Marathi, Bengali, Tamil and Telugu cue words are absent,
@@ -260,6 +286,7 @@ per-phase trail. From Phase 2 onward, commits are made as work lands.
 | OI-19 | LLM path never executed — closed against Groq | 2026-08-29 |
 | OI-22 | An LLM returning a correct value in the wrong shape (`"female"` for `FEMALE`) failed the entire conversational turn with a 422. Values are now coerced to the profile contract or dropped. | 2026-08-29 |
 | OI-24 | The model was handed the rupee amount and phrased it as a disbursement. It is no longer given the figure at all; the amount sentence is rendered by us and appended. | 2026-08-29 |
+| OI-26 | The API response schema silently dropped `translation_status`, so a UI could not tell reviewed copy from machine-written copy. Added to `MatchResultOut`. | 2026-08-29 |
 | OI-25 | `redirect_suggestion` carried an internal scheme code, which the model printed to the citizen as "NSFDC_MICRO_FINANCE". Codes now resolve to official names before reaching the model or the template. | 2026-08-29 |
 | OI-23 | An LLM machine-translated the official scheme name into Hindi. Explanations that do not preserve the official name verbatim are now discarded. | 2026-08-29 |
 | OI-21 | The orchestrator asked the same question three turns running when a citizen did not answer it. `next_best_question` now takes an `exclude` set, in both the Python and TypeScript engines. | 2026-08-29 |

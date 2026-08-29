@@ -1,6 +1,6 @@
 {
   "anjali_student_6l": {
-    "engine_version": "2.1.0",
+    "engine_version": "2.2.0",
     "input_snapshot": {
       "admission_confirmed": true,
       "annual_family_income": 260000,
@@ -81,6 +81,7 @@
         "rank": 1,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
         "verdict": "ELIGIBLE",
         "warnings": []
       },
@@ -147,6 +148,7 @@
         "rank": 2,
         "redirect_suggestion": "NSFDC_EDUCATION_LOAN",
         "scheme_code": "NSFDC_TERM_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       },
@@ -208,6 +210,7 @@
         "rank": 3,
         "redirect_suggestion": "NSFDC_EDUCATION_LOAN",
         "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": [
           {
@@ -221,7 +224,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "category_only": {
-    "engine_version": "2.1.0",
+    "engine_version": "2.2.0",
     "input_snapshot": {
       "category": "SC"
     },
@@ -239,8 +242,12 @@
       "field": "project_sector",
       "kind": "string",
       "question_i18n": {
+        "bn": "আপনার কী কাজের জন্য টাকা দরকার?",
         "en": "What do you need the money for?",
-        "hi": "आपको पैसे की ज़रूरत किस लिए है?"
+        "hi": "आपको पैसे की ज़रूरत किस लिए है?",
+        "mr": "तुम्हाला पैशांची गरज कशासाठी आहे?",
+        "ta": "உங்களுக்கு எதற்காகப் பணம் தேவை?",
+        "te": "మీకు దేని కోసం డబ్బు కావాలి?"
       },
       "resolves_rules": [
         "EL_PURPOSE_IS_EDUCATION",
@@ -308,6 +315,7 @@
         "rank": 1,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
         "verdict": "NEED_MORE_INFO",
         "warnings": []
       },
@@ -357,6 +365,7 @@
         "rank": 2,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
         "verdict": "NEED_MORE_INFO",
         "warnings": []
       },
@@ -406,6 +415,7 @@
         "rank": 3,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_TERM_LOAN",
+        "translation_status": "verified",
         "verdict": "NEED_MORE_INFO",
         "warnings": []
       }
@@ -413,7 +423,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "empty_profile": {
-    "engine_version": "2.1.0",
+    "engine_version": "2.2.0",
     "input_snapshot": {},
     "next_question": {
       "choices": [
@@ -425,8 +435,12 @@
       "field": "category",
       "kind": "string",
       "question_i18n": {
+        "bn": "আপনি কোন সামাজিক শ্রেণীর অন্তর্গত?",
         "en": "Which social category do you belong to?",
-        "hi": "आप किस सामाजिक श्रेणी से हैं?"
+        "hi": "आप किस सामाजिक श्रेणी से हैं?",
+        "mr": "तुम्ही कोणत्या सामाजिक वर्गातील आहात?",
+        "ta": "நீங்கள் எந்தச் சமூகப் பிரிவைச் சேர்ந்தவர்?",
+        "te": "మీరు ఏ సామాజిక వర్గానికి చెందినవారు?"
       },
       "resolves_rules": [
         "EL_CATEGORY_SC",
@@ -489,6 +503,7 @@
         "rank": 1,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
         "verdict": "NEED_MORE_INFO",
         "warnings": []
       },
@@ -533,6 +548,7 @@
         "rank": 2,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
         "verdict": "NEED_MORE_INFO",
         "warnings": []
       },
@@ -577,6 +593,7 @@
         "rank": 3,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_TERM_LOAN",
+        "translation_status": "verified",
         "verdict": "NEED_MORE_INFO",
         "warnings": []
       }
@@ -584,7 +601,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "income_exactly_at_ceiling": {
-    "engine_version": "2.1.0",
+    "engine_version": "2.2.0",
     "input_snapshot": {
       "annual_family_income": 500000,
       "category": "SC",
@@ -655,6 +672,7 @@
         "rank": 1,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
         "verdict": "ELIGIBLE",
         "warnings": []
       },
@@ -721,6 +739,7 @@
         "rank": 2,
         "redirect_suggestion": "NSFDC_MICRO_FINANCE",
         "scheme_code": "NSFDC_TERM_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       },
@@ -792,6 +811,7 @@
         "rank": 3,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       }
@@ -799,7 +819,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "income_one_rupee_over": {
-    "engine_version": "2.1.0",
+    "engine_version": "2.2.0",
     "input_snapshot": {
       "annual_family_income": 500001,
       "category": "SC",
@@ -871,6 +891,7 @@
         "rank": 1,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       },
@@ -937,6 +958,7 @@
         "rank": 2,
         "redirect_suggestion": "NSFDC_MICRO_FINANCE",
         "scheme_code": "NSFDC_TERM_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       },
@@ -1008,6 +1030,7 @@
         "rank": 3,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       }
@@ -1015,7 +1038,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "micro_finance_boundary_140000": {
-    "engine_version": "2.1.0",
+    "engine_version": "2.2.0",
     "input_snapshot": {
       "annual_family_income": 200000,
       "category": "SC",
@@ -1081,6 +1104,7 @@
         "rank": 1,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
         "verdict": "LIKELY_ELIGIBLE",
         "warnings": [
           {
@@ -1153,6 +1177,7 @@
         "rank": 2,
         "redirect_suggestion": "NSFDC_MICRO_FINANCE",
         "scheme_code": "NSFDC_TERM_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       },
@@ -1224,6 +1249,7 @@
         "rank": 3,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       }
@@ -1231,7 +1257,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "micro_finance_boundary_140001_redirects": {
-    "engine_version": "2.1.0",
+    "engine_version": "2.2.0",
     "input_snapshot": {
       "annual_family_income": 200000,
       "category": "SC",
@@ -1302,6 +1328,7 @@
         "rank": 1,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_TERM_LOAN",
+        "translation_status": "verified",
         "verdict": "ELIGIBLE",
         "warnings": []
       },
@@ -1373,6 +1400,7 @@
         "rank": 2,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       },
@@ -1434,6 +1462,7 @@
         "rank": 3,
         "redirect_suggestion": "NSFDC_TERM_LOAN",
         "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": [
           {
@@ -1447,7 +1476,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "non_sc_applicant": {
-    "engine_version": "2.1.0",
+    "engine_version": "2.2.0",
     "input_snapshot": {
       "annual_family_income": 180000,
       "category": "OBC",
@@ -1519,6 +1548,7 @@
         "rank": 1,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       },
@@ -1585,6 +1615,7 @@
         "rank": 2,
         "redirect_suggestion": "NSFDC_MICRO_FINANCE",
         "scheme_code": "NSFDC_TERM_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       },
@@ -1656,6 +1687,7 @@
         "rank": 3,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       }
@@ -1663,7 +1695,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "over_term_loan_ceiling": {
-    "engine_version": "2.1.0",
+    "engine_version": "2.2.0",
     "input_snapshot": {
       "annual_family_income": 300000,
       "category": "SC",
@@ -1735,6 +1767,7 @@
         "rank": 1,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": [
           {
@@ -1802,6 +1835,7 @@
         "rank": 2,
         "redirect_suggestion": "NSFDC_TERM_LOAN",
         "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": [
           {
@@ -1874,6 +1908,7 @@
         "rank": 3,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_TERM_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       }
@@ -1881,7 +1916,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "ramesh_workshop_12l": {
-    "engine_version": "2.1.0",
+    "engine_version": "2.2.0",
     "input_snapshot": {
       "annual_family_income": 420000,
       "category": "SC",
@@ -1953,6 +1988,7 @@
         "rank": 1,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_TERM_LOAN",
+        "translation_status": "verified",
         "verdict": "ELIGIBLE",
         "warnings": []
       },
@@ -2024,6 +2060,7 @@
         "rank": 2,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       },
@@ -2085,6 +2122,7 @@
         "rank": 3,
         "redirect_suggestion": "NSFDC_TERM_LOAN",
         "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": [
           {
@@ -2098,7 +2136,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "student_without_confirmed_admission": {
-    "engine_version": "2.1.0",
+    "engine_version": "2.2.0",
     "input_snapshot": {
       "admission_confirmed": false,
       "annual_family_income": 260000,
@@ -2171,6 +2209,7 @@
         "rank": 1,
         "redirect_suggestion": "NSFDC_EDUCATION_LOAN",
         "scheme_code": "NSFDC_TERM_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       },
@@ -2245,6 +2284,7 @@
         "rank": 2,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       },
@@ -2306,6 +2346,7 @@
         "rank": 3,
         "redirect_suggestion": "NSFDC_EDUCATION_LOAN",
         "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": [
           {
@@ -2319,7 +2360,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "sunita_street_vendor_80k": {
-    "engine_version": "2.1.0",
+    "engine_version": "2.2.0",
     "input_snapshot": {
       "annual_family_income": 180000,
       "category": "SC",
@@ -2391,6 +2432,7 @@
         "rank": 1,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
         "verdict": "ELIGIBLE",
         "warnings": []
       },
@@ -2457,6 +2499,7 @@
         "rank": 2,
         "redirect_suggestion": "NSFDC_MICRO_FINANCE",
         "scheme_code": "NSFDC_TERM_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       },
@@ -2528,6 +2571,7 @@
         "rank": 3,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
       }

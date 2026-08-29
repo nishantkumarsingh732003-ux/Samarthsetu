@@ -61,6 +61,9 @@ class MatchResultOut(BaseModel):
     needs_verification: bool
     provenance: dict[str, Any] | None
     rank: int | None
+    # "verified" | "draft" | "fallback" — whether a speaker of the requested language
+    # has read this copy. A UI must be able to badge unreviewed eligibility reasons.
+    translation_status: str = "verified"
 
 
 class NextQuestionOut(BaseModel):

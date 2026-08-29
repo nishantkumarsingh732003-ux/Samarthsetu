@@ -22,6 +22,14 @@ from setu_rules.models import (
 from setu_rules.profile import FIELDS, PROJECT_SECTORS, SOCIAL_CATEGORIES, validate_profile
 from setu_rules.questions import field_impact, next_best_question
 from setu_rules.safe_eval import UNKNOWN, RuleSyntaxError, compile_expression, evaluate_node
+from setu_rules.translations import (
+    SUPPORTED_LANGUAGES,
+    Bundle,
+    bundle_for,
+    language_report,
+    load_bundles,
+    translation_status,
+)
 from setu_rules.version import ENGINE_VERSION
 
 __all__ = [
@@ -29,7 +37,9 @@ __all__ = [
     "FIELDS",
     "PROJECT_SECTORS",
     "SOCIAL_CATEGORIES",
+    "SUPPORTED_LANGUAGES",
     "UNKNOWN",
+    "Bundle",
     "Family",
     "MatchResult",
     "MatchRun",
@@ -44,13 +54,17 @@ __all__ = [
     "Verdict",
     "compile_expression",
     "evaluate",
+    "bundle_for",
     "evaluate_node",
     "evaluate_scheme",
     "field_impact",
     "indicative_amount",
+    "language_report",
+    "load_bundles",
     "load_schemes",
     "next_best_question",
     "rules_digest",
+    "translation_status",
     "run",
     "validate_profile",
 ]

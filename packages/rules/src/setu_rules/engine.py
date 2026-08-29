@@ -33,6 +33,7 @@ from setu_rules.models import (
 from setu_rules.profile import validate_profile
 from setu_rules.questions import next_best_question
 from setu_rules.safe_eval import UNKNOWN, evaluate_node
+from setu_rules.translations import translation_status
 from setu_rules.version import ENGINE_VERSION
 
 # Sentinel used when a scheme states no ceiling, so it sorts after any scheme that
@@ -127,6 +128,7 @@ def evaluate_scheme(scheme: Scheme, profile: dict[str, Any], language: str = "en
         redirect_suggestion=redirect,
         needs_verification=scheme.provenance.needs_verification,
         provenance=scheme.provenance,
+        translation_status=translation_status(language),
     )
 
 

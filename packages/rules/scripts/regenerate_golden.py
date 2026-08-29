@@ -20,6 +20,7 @@ from test_golden import build_snapshot  # noqa: E402
 
 from setu_rules import ENGINE_VERSION, load_schemes, rules_digest  # noqa: E402
 from setu_rules.profile import FIELDS  # noqa: E402
+from setu_rules.translations import SUPPORTED_LANGUAGES, translation_status  # noqa: E402
 
 
 def write_golden() -> Path:
@@ -90,6 +91,11 @@ def write_bundle() -> Path:
     bundle = {
         "engine_version": ENGINE_VERSION,
         "rules_digest": rules_digest(),
+        # Which languages have been read by a speaker, so the browser engine can badge
+        # unreviewed copy exactly as the API does.
+        "translation_status": {
+            lang: translation_status(lang) for lang in SUPPORTED_LANGUAGES
+        },
         "fields": fields,
         "schemes": schemes,
     }

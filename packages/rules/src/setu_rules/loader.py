@@ -16,6 +16,7 @@ import yaml
 
 from setu_rules.models import Family, Limits, OpenQuestion, Provenance, Rule, Scheme, Severity
 from setu_rules.safe_eval import compile_expression, referenced_fields
+from setu_rules.translations import load_bundles
 
 SCHEMES_DIR = Path(__file__).resolve().parents[2] / "schemes"
 
@@ -65,13 +66,26 @@ def _parse_rule(raw: dict[str, Any], where: str) -> Rule:
     if satisfied and "en" not in satisfied:
         raise RuleLoadError(f"{where}: satisfied_i18n must contain 'en' when present")
 
+    # Languages beyond en/hi live in translations/<lang>.yaml, merged in here so the
+    # rest of the engine sees one complete i18n map and knows nothing about bundles.
+    merged_messages = dict(messages)
+    merged_satisfied = dict(satisfied)
+    for language, bundle in load_bundles().items():
+        entry = bundle.rules.get(rule_id)
+        if not entry:
+            continue
+        if entry.get("message"):
+            merged_messages.setdefault(language, entry["message"])
+        if entry.get("satisfied"):
+            merged_satisfied.setdefault(language, entry["satisfied"])
+
     return Rule(
         id=rule_id,
         severity=severity,
         when_source=when_source,
         when=compiled,
-        message_i18n=dict(messages),
-        satisfied_i18n=dict(satisfied),
+        message_i18n=merged_messages,
+        satisfied_i18n=merged_satisfied,
         suggest_instead=raw.get("suggest_instead"),
         fields=frozenset(referenced_fields(compiled)),
     )

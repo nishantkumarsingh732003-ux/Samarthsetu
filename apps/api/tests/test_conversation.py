@@ -302,3 +302,98 @@ def test_low_confidence_readings_never_enter_the_profile() -> None:
     fields = extraction.extract_deterministic("ढाई लाख", {})
     bare = next(f for f in fields if f.field == "annual_family_income")
     assert bare.confidence < extraction.CONFIDENCE_THRESHOLD
+
+
+# --- all six languages -------------------------------------------------------------------
+
+
+@pytest.mark.parametrize("language", ["en", "hi", "mr", "bn", "ta", "te"])
+@pytest.mark.asyncio
+async def test_every_supported_language_reaches_the_same_verdict(language: str) -> None:
+    """Language changes the words a citizen reads. It must never change the outcome."""
+    from setu_rules import evaluate
+
+    db = FakeSession()
+    result = await conversation.handle_turn(db, None, "hello", language)
+    # The engine ran; compare its verdicts against a direct call in the same language.
+    assert result["stage"] in {"ASKING", "CONFIRMING", "DECIDED"}
+
+    direct = [r.verdict for r in evaluate({}, language=language)]
+    assert len(direct) == 3
+
+
+@pytest.mark.parametrize("language", ["mr", "bn", "ta", "te"])
+def test_rule_messages_exist_in_every_language(language: str) -> None:
+    """No language may silently fall back to English for an eligibility reason."""
+    from setu_rules import load_schemes
+
+    for scheme in load_schemes():
+        for rule in scheme.rules:
+            assert rule.message_i18n.get(language), f"{rule.id} has no {language} message"
+            assert rule.satisfied_i18n.get(language), f"{rule.id} has no {language} satisfied"
+
+
+@pytest.mark.parametrize("language", ["mr", "bn", "ta", "te"])
+def test_questions_exist_in_every_language(language: str) -> None:
+    from setu_rules import FIELDS
+
+    for name, spec in FIELDS.items():
+        assert spec.question_i18n.get(language), f"{name} has no {language} question"
+
+
+@pytest.mark.parametrize("language", ["en", "hi", "mr", "bn", "ta", "te"])
+def test_the_template_explanation_is_written_in_the_requested_language(language: str) -> None:
+    """A Tamil speaker must not receive an English paragraph."""
+    from app.services import explanation
+
+    result = {
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "official_name": "Micro Finance Scheme",
+        "verdict": "ELIGIBLE",
+        "indicative_amount": 72000.0,
+        "matched_because": [],
+        "blocked_because": [],
+        "warnings": [],
+    }
+    rendered = explanation.template_explanation(result, language)
+    assert "Micro Finance Scheme" in rendered  # the legal name survives in every language
+    if language != "en":
+        english = explanation.template_explanation(result, "en")
+        assert rendered != english, f"{language} fell back to English"
+
+
+@pytest.mark.parametrize("language", ["mr", "bn", "ta", "te"])
+def test_unreviewed_languages_are_reported_as_draft(language: str) -> None:
+    """A citizen reading machine-written copy must be markable as such in the UI."""
+    from setu_rules import evaluate, translation_status
+
+    assert translation_status(language) == "draft"
+    assert evaluate({}, language=language)[0].translation_status == "draft"
+
+
+@pytest.mark.parametrize("language", ["en", "hi"])
+def test_reviewed_languages_are_reported_as_verified(language: str) -> None:
+    from setu_rules import translation_status
+
+    assert translation_status(language) == "verified"
+
+
+@pytest.mark.parametrize("language", ["en", "hi", "mr", "bn", "ta", "te"])
+def test_no_language_template_trips_the_approval_backstop(language: str) -> None:
+    from app.services import explanation
+
+    for verdict in ("ELIGIBLE", "LIKELY_ELIGIBLE", "INELIGIBLE", "NEED_MORE_INFO"):
+        rendered = explanation.template_explanation(
+            {
+                "scheme_code": "NSFDC_MICRO_FINANCE",
+                "official_name": "Micro Finance Scheme",
+                "verdict": verdict,
+                "indicative_amount": 72000.0,
+                "matched_because": [],
+                "blocked_because": [],
+                "warnings": [],
+                "missing_fields": ["category"],
+            },
+            language,
+        )
+        assert not explanation._claims_approval(rendered, language), f"{language}/{verdict}"

@@ -176,6 +176,23 @@ FIELDS: dict[str, Field] = {
     )
 }
 
+def _merge_field_translations() -> None:
+    """Fold translations/<lang>.yaml question text into the field contract.
+
+    Done once at import so callers see a complete question_i18n map and never have to
+    know a bundle exists.
+    """
+    from setu_rules.translations import load_bundles
+
+    for language, bundle in load_bundles().items():
+        for name, question in bundle.fields.items():
+            spec = FIELDS.get(name)
+            if spec is not None and question:
+                spec.question_i18n.setdefault(language, question)
+
+
+_merge_field_translations()
+
 FIELD_NAMES = frozenset(FIELDS)
 
 

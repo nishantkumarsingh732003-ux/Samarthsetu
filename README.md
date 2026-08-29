@@ -266,6 +266,13 @@ docker compose exec api python /scripts/check_llm.py
 It reports the resolved provider and model, warns on a provider/model mismatch, then
 makes a real text call and a real tool call.
 
+**All six languages, honestly labelled.** English, Hindi, Marathi, Bengali, Tamil and
+Telugu have complete rule messages, question text, explanation templates and extraction
+cues. English and Hindi are **verified**; the other four are **draft** — machine-written
+and not yet read by a native speaker. Every `MatchResult` carries `translation_status`
+so a UI can badge unreviewed copy. Adding or promoting a language is one file: see
+[packages/rules/translations/](packages/rules/translations/README.md).
+
 **Sessions hold no PII.** Redis, 24h TTL, storing the eligibility profile and which
 fields each turn established — never the citizen's raw words, which routinely contain a
 name, a village or a number spoken aloud.

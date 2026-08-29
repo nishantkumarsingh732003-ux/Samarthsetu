@@ -94,9 +94,47 @@ def amount_sentence(result: dict[str, Any], language: str) -> str:
     amount = result.get("indicative_amount")
     if not amount or result.get("verdict") not in {"ELIGIBLE", "LIKELY_ELIGIBLE"}:
         return ""
-    if language == "hi":
-        return f"इस योजना के तहत अधिकतम लगभग Rs {amount:,.0f} तक का ऋण संभव है।"
-    return f"Under this scheme a loan of up to about Rs {amount:,.0f} may be possible."
+    return ui_string("amount", language).format(amount=f"{amount:,.0f}")
+
+
+# English and Hindi are maintained here because they are the reviewed languages; every
+# other language is served from packages/rules/translations/<lang>.yaml.
+UI_STRINGS: dict[str, dict[str, str]] = {
+    "en": {
+        "eligible": "You are eligible for the {scheme}.",
+        "need_more_info": (
+            "We need a little more information before we can tell you about the {scheme}."
+        ),
+        "ineligible": "You are not eligible for the {scheme} right now.",
+        "amount": "Under this scheme a loan of up to about Rs {amount} may be possible.",
+        "redirect": "You may want to ask about the {scheme} instead.",
+        "still_need": "We still need to know: {fields}.",
+    },
+    "hi": {
+        "eligible": "आप {scheme} के लिए पात्र हैं।",
+        "need_more_info": "{scheme} के बारे में बताने के लिए हमें कुछ और जानकारी चाहिए।",
+        "ineligible": "अभी आप {scheme} के लिए पात्र नहीं हैं।",
+        "amount": "इस योजना के तहत अधिकतम लगभग Rs {amount} तक का ऋण संभव है।",
+        "redirect": "आप {scheme} के बारे में पूछ सकते हैं।",
+        "still_need": "हमें यह जानना है: {fields}।",
+    },
+}
+
+
+def ui_string(key: str, language: str) -> str:
+    """One UI string: inline table first, then the language bundle, English last."""
+    inline = UI_STRINGS.get(language, {}).get(key)
+    if inline:
+        return inline
+    try:
+        from setu_rules import bundle_for
+
+        bundle = bundle_for(language)
+        if bundle and bundle.ui.get(key):
+            return bundle.ui[key]
+    except Exception:  # noqa: BLE001 - a missing bundle must never break an explanation
+        logger.warning("translation bundle unavailable for %r", language)
+    return UI_STRINGS["en"][key]
 
 
 # Words that assert a decision this service does not make. The structural fix above
@@ -110,27 +148,37 @@ APPROVAL_CLAIMS: tuple[str, ...] = (
 )
 
 
-def _claims_approval(text: str) -> bool:
+def approval_claims_for(language: str) -> tuple[str, ...]:
+    """English and Hindi terms always apply — model prose mixes scripts freely — plus
+    whatever the requested language's bundle declares."""
+    extra: tuple[str, ...] = ()
+    try:
+        from setu_rules import bundle_for
+
+        bundle = bundle_for(language)
+        if bundle:
+            extra = bundle.approval_claims
+    except Exception:  # noqa: BLE001
+        logger.warning("could not load approval claims for %r", language)
+    return APPROVAL_CLAIMS + extra
+
+
+def _claims_approval(text: str, language: str = "en") -> bool:
     lowered = text.lower()
-    return any(claim in lowered for claim in APPROVAL_CLAIMS)
+    return any(claim.lower() in lowered for claim in approval_claims_for(language))
 
 
 def _verdict_sentence(result: dict[str, Any], language: str) -> str:
     name = result.get("official_name", result.get("scheme_code", ""))
     verdict = result.get("verdict")
-
-    if language == "hi":
-        if verdict in {"ELIGIBLE", "LIKELY_ELIGIBLE"}:
-            return f"आप {name} के लिए पात्र हैं।"
-        if verdict == "NEED_MORE_INFO":
-            return f"{name} के बारे में बताने के लिए हमें कुछ और जानकारी चाहिए।"
-        return f"अभी आप {name} के लिए पात्र नहीं हैं।"
-
-    if verdict in {"ELIGIBLE", "LIKELY_ELIGIBLE"}:
-        return f"You are eligible for the {name}."
-    if verdict == "NEED_MORE_INFO":
-        return f"We need a little more information before we can tell you about the {name}."
-    return f"You are not eligible for the {name} right now."
+    key = (
+        "eligible"
+        if verdict in {"ELIGIBLE", "LIKELY_ELIGIBLE"}
+        else "need_more_info"
+        if verdict == "NEED_MORE_INFO"
+        else "ineligible"
+    )
+    return ui_string(key, language).format(scheme=name)
 
 
 def template_explanation(result: dict[str, Any], language: str = "en") -> str:
@@ -145,11 +193,7 @@ def template_explanation(result: dict[str, Any], language: str = "en") -> str:
         parts.append(" ".join(r["message"] for r in blocked))
         redirect = scheme_display_name(result.get("redirect_suggestion"))
         if redirect:
-            parts.append(
-                f"आप {redirect} के बारे में पूछ सकते हैं।"
-                if language == "hi"
-                else f"You may want to ask about the {redirect} instead."
-            )
+            parts.append(ui_string("redirect", language).format(scheme=redirect))
     elif matched:
         # Two reasons is enough for a paragraph; the full list stays in the response.
         parts.append(" ".join(r["message"] for r in matched[:2]))
@@ -161,11 +205,7 @@ def template_explanation(result: dict[str, Any], language: str = "en") -> str:
         missing = result.get("missing_fields") or []
         if missing:
             readable = ", ".join(m.replace("_", " ") for m in missing)
-            parts.append(
-                f"हमें यह जानना है: {readable}."
-                if language == "hi"
-                else f"We still need to know: {readable}."
-            )
+            parts.append(ui_string("still_need", language).format(fields=readable))
 
     parts.append(amount_sentence(result, language))
     return " ".join(p for p in parts if p).strip()
@@ -220,7 +260,7 @@ async def explain(result: dict[str, Any], language: str = "en") -> dict[str, Any
         )
         text = None
 
-    if text and _claims_approval(text):
+    if text and _claims_approval(text, language):
         logger.warning("explanation dropped: model implied an approval or disbursement")
         text = None
 

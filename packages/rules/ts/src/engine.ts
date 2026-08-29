@@ -16,6 +16,14 @@ export const bundle = bundleJson as unknown as RuleBundle;
 export const ENGINE_VERSION = bundle.engine_version;
 export const RULES_DIGEST = bundle.rules_digest;
 
+/**
+ * Whether a speaker of `language` has reviewed the copy. Compiled into the bundle by
+ * the Python side so the browser and the API cannot disagree about it.
+ */
+export function translationStatus(language: string): string {
+  return bundle.translation_status?.[language] ?? "fallback";
+}
+
 const NO_CEILING = Number.POSITIVE_INFINITY;
 
 const VERDICT_ORDER: Record<Verdict, number> = {
@@ -131,6 +139,7 @@ export function evaluateScheme(
     needs_verification: scheme.provenance.needs_verification,
     provenance: scheme.provenance,
     rank: null,
+    translation_status: translationStatus(language),
   };
 }
 

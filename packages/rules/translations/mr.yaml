@@ -1,0 +1,124 @@
+language: mr
+language_name_en: Marathi
+language_name_native: मराठी
+
+# draft | verified
+# DRAFT means: written by a language model, NOT reviewed by a native speaker. These
+# strings tell a citizen why they were refused government credit, so they must be read
+# by a Marathi speaker before this is called a supported language.
+status: draft
+reviewed_by: null
+reviewed_on: null
+
+rules:
+  MF_CATEGORY_SC:
+    message: "ही योजना अनुसूचित जातीच्या अर्जदारांसाठी आहे."
+    satisfied: "तुम्ही अनुसूचित जातीचे अर्जदार आहात."
+  MF_INCOME_CEILING:
+    message: "वार्षिक कौटुंबिक उत्पन्न Rs 5,00,000 पेक्षा जास्त नसावे."
+    satisfied: "तुमचे वार्षिक कौटुंबिक उत्पन्न Rs 5,00,000 च्या मर्यादेत आहे."
+  MF_NOT_FOR_EDUCATION:
+    message: "शिक्षणाचा खर्च शैक्षणिक कर्ज योजनेतून दिला जातो, या योजनेतून नाही."
+    satisfied: "तुमची गरज ही उद्योग प्रकल्पाची आहे, जिला ही योजना वित्तपुरवठा करते."
+  MF_PROJECT_COST_BAND:
+    message: "मायक्रो फायनान्स योजना Rs 1,40,000 पर्यंत खर्च असलेल्या युनिटसाठी आहे."
+    satisfied: "तुमचा प्रकल्प खर्च Rs 1,40,000 च्या मर्यादेत आहे."
+  MF_LOAN_CAP_BINDS:
+    message: >-
+      ही योजना जास्तीत जास्त Rs 1,25,000 चे कर्ज देते, जे तुमच्या प्रकल्प खर्चाच्या 90%
+      पेक्षा कमी आहे. उरलेली रक्कम तुम्हाला स्वतः उभी करावी लागेल.
+    satisfied: "ही योजना तुमच्या प्रकल्प खर्चाच्या पूर्ण 90% वित्तपुरवठा करू शकते."
+  TL_CATEGORY_SC:
+    message: "ही योजना अनुसूचित जातीच्या अर्जदारांसाठी आहे."
+    satisfied: "तुम्ही अनुसूचित जातीचे अर्जदार आहात."
+  TL_INCOME_CEILING:
+    message: "वार्षिक कौटुंबिक उत्पन्न Rs 5,00,000 पेक्षा जास्त नसावे."
+    satisfied: "तुमचे वार्षिक कौटुंबिक उत्पन्न Rs 5,00,000 च्या मर्यादेत आहे."
+  TL_NOT_FOR_EDUCATION:
+    message: "शिक्षणाचा खर्च शैक्षणिक कर्ज योजनेतून दिला जातो, या योजनेतून नाही."
+    satisfied: "तुमची गरज ही उद्योग प्रकल्पाची आहे, जिला ही योजना वित्तपुरवठा करते."
+  TL_PROJECT_COST_FLOOR:
+    message: >-
+      टर्म लोन Rs 1,40,000 पेक्षा जास्त खर्च असलेल्या युनिटसाठी आहे. लहान प्रकल्पांसाठी
+      मायक्रो फायनान्स योजना आहे.
+    satisfied: "तुमचा प्रकल्प या योजनेसाठी पुरेसा मोठा आहे."
+  TL_PROJECT_COST_CEILING:
+    message: "टर्म लोन Rs 50,00,000 पर्यंत खर्च असलेल्या युनिटसाठी आहे."
+    satisfied: "तुमचा प्रकल्प खर्च Rs 50,00,000 च्या मर्यादेत आहे."
+  EL_CATEGORY_SC:
+    message: "ही योजना अनुसूचित जातीच्या अर्जदारांसाठी आहे."
+    satisfied: "तुम्ही अनुसूचित जातीचे अर्जदार आहात."
+  EL_INCOME_CEILING:
+    message: "वार्षिक कौटुंबिक उत्पन्न Rs 5,00,000 पेक्षा जास्त नसावे."
+    satisfied: "तुमचे वार्षिक कौटुंबिक उत्पन्न Rs 5,00,000 च्या मर्यादेत आहे."
+  EL_PURPOSE_IS_EDUCATION:
+    message: "ही योजना फक्त शिक्षणाच्या खर्चासाठी आहे."
+    satisfied: "तुम्हाला शिक्षणासाठी वित्त हवे आहे, ही योजना त्यासाठीच आहे."
+  EL_ADMISSION_CONFIRMED:
+    message: "शैक्षणिक कर्जासाठी निश्चित प्रवेश आवश्यक आहे."
+    satisfied: "तुमचा प्रवेश निश्चित झाला आहे."
+  EL_LOAN_CAP_BINDS:
+    message: >-
+      ही योजना जास्तीत जास्त Rs 40,00,000 चे कर्ज देते, जे तुमच्या अभ्यासक्रम खर्चाच्या 90%
+      पेक्षा कमी आहे. उरलेली रक्कम तुम्हाला स्वतः उभी करावी लागेल.
+    satisfied: "ही योजना तुमच्या अभ्यासक्रम खर्चाच्या पूर्ण 90% वित्तपुरवठा करू शकते."
+
+fields:
+  category: "तुम्ही कोणत्या सामाजिक वर्गातील आहात?"
+  project_sector: "तुम्हाला पैशांची गरज कशासाठी आहे?"
+  annual_family_income: "तुमच्या कुटुंबाचे एकूण वार्षिक उत्पन्न किती आहे?"
+  project_cost: "तुम्हाला एकूण किती पैसे हवे आहेत?"
+  admission_confirmed: "तुमचा प्रवेश निश्चित झाला आहे का?"
+  age: "तुमचे वय किती आहे?"
+  gender: "तुमचे लिंग काय आहे?"
+  has_caste_certificate: "तुमच्याकडे जात प्रमाणपत्र आहे का?"
+  existing_loans: "इतर कर्जांवर तुमच्यावर किती रक्कम बाकी आहे?"
+  occupation_type: "तुम्ही कोणते काम करता?"
+  education_level: "तुमचे शिक्षण कुठपर्यंत झाले आहे?"
+  sub_category: "काही उप-वर्ग आहे का?"
+  is_pwd: "तुम्ही दिव्यांग आहात का?"
+  is_safai_karamchari: "तुम्ही सफाई कामगार आहात किंवा त्यांचे आश्रित आहात का?"
+
+ui:
+  eligible: "तुम्ही {scheme} साठी पात्र आहात."
+  need_more_info: "{scheme} बद्दल सांगण्यासाठी आम्हाला थोडी अधिक माहिती हवी आहे."
+  ineligible: "सध्या तुम्ही {scheme} साठी पात्र नाही."
+  amount: "या योजनेअंतर्गत जास्तीत जास्त सुमारे Rs {amount} पर्यंतचे कर्ज शक्य आहे."
+  redirect: "तुम्ही {scheme} बद्दल विचारू शकता."
+  still_need: "आम्हाला हे जाणून घ्यायचे आहे: {fields}."
+  confirm_income: "मला समजले की तुमचे वार्षिक कौटुंबिक उत्पन्न सुमारे {value} आहे — हे बरोबर आहे का?"
+  confirm_cost: "मला समजले की तुम्हाला सुमारे {value} हवे आहेत — हे बरोबर आहे का?"
+  confirm_loans: "मला समजले की इतर कर्जांवर तुमच्यावर सुमारे {value} बाकी आहे — हे बरोबर आहे का?"
+  confirm_generic: "मला समजले की {field} हे {value} आहे — हे बरोबर आहे का?"
+
+# Words asserting a decision this service never makes. Backstop for model prose.
+approval_claims:
+  - मंजूर
+  - मंजूरी
+  - मिळणार आहे
+  - मिळेल
+  - हमी
+  - वितरित
+
+# Cue words for deterministic extraction.
+cues:
+  income: [उत्पन्न, कमाई, वार्षिक, वर्षाचे, पगार]
+  cost: [हवे, हवेत, गरज, कर्ज, लागत, खर्च]
+  existing_loans: [बाकी, थकीत, आधीचे कर्ज]
+  category_SC: [अनुसूचित जाती, दलित]
+  category_ST: [अनुसूचित जमाती, आदिवासी]
+  category_OBC: [इतर मागास, ओबीसी]
+  sector_EDUCATION: [शिक्षण, अभ्यास, महाविद्यालय, प्रवेश, फी, पदवी]
+  sector_TRADE: [दुकान, भाजी, विक्री, व्यापार, ठेला]
+  sector_MANUFACTURING: [कारखाना, फर्निचर, यंत्र, उत्पादन]
+  sector_AGRICULTURE: [शेती, पीक, दुग्ध, जनावरे]
+  sector_TRANSPORT: [रिक्षा, टॅक्सी, वाहन, वाहतूक]
+  sector_ARTISAN: [हस्तकला, विणकाम, शिंपी, सुतार]
+  sector_SERVICES: [सलून, पार्लर, दुरुस्ती, सेवा]
+  gender_FEMALE: [महिला, स्त्री, बाई]
+  gender_MALE: [पुरुष, माणूस]
+  pwd: [दिव्यांग, अपंग]
+  caste_certificate: [जात प्रमाणपत्र]
+  admission: [प्रवेश मिळाला, प्रवेश निश्चित]
+  negation: [नाही, नका, नसेल]
+  affirmative: [हो, होय, बरोबर, ठीक]

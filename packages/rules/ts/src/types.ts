@@ -66,6 +66,7 @@ export interface Scheme {
 export interface RuleBundle {
   engine_version: string;
   rules_digest: string;
+  translation_status: Record<string, string>;
   schemes: Scheme[];
 }
 
@@ -92,6 +93,8 @@ export interface MatchResult {
   needs_verification: boolean;
   provenance: Provenance | null;
   rank: number | null;
+  /** "verified" | "draft" | "fallback" — has a speaker of this language read the prose? */
+  translation_status: string;
 }
 
 export interface NextQuestion {

@@ -177,6 +177,28 @@ AGE_RE = re.compile(
 )
 
 
+def _bundle_cues(language: str, key: str) -> tuple[str, ...]:
+    """Extra cue words for a language, from packages/rules/translations/<lang>.yaml.
+
+    The inline tables cover English, romanised Hindi and Devanagari. Marathi, Bengali,
+    Tamil and Telugu vocabulary lives in the bundles so a translator can extend
+    extraction without touching Python.
+    """
+    try:
+        from setu_rules import bundle_for
+
+        bundle = bundle_for(language)
+        return bundle.cues.get(key, ()) if bundle else ()
+    except Exception:  # noqa: BLE001 - extraction must never fail on a missing bundle
+        return ()
+
+
+def _cues(language: str, base: tuple[str, ...], key: str) -> tuple[str, ...]:
+    """Inline cues plus the language bundle's. Inline always applies: a citizen may
+    type romanised Hindi while asking for Tamil."""
+    return base + _bundle_cues(language, key)
+
+
 def _contains(haystack: str, needles: tuple[str, ...]) -> str | None:
     for needle in needles:
         if needle in haystack:
@@ -193,7 +215,9 @@ def _negated_near(text: str, cue: str) -> bool:
     return any(neg in window for neg in NEGATION_CUES)
 
 
-def extract_deterministic(utterance: str, profile: dict[str, Any]) -> list[ExtractedField]:
+def extract_deterministic(
+    utterance: str, profile: dict[str, Any], language: str = "en"
+) -> list[ExtractedField]:
     """Everything we can establish without a model."""
     text = normalise_digits(utterance).lower()
     found: list[ExtractedField] = []
@@ -204,9 +228,9 @@ def extract_deterministic(utterance: str, profile: dict[str, Any]) -> list[Extra
     # --- amounts -------------------------------------------------------------------
     amount = parse_amount(utterance)
     if amount is not None:
-        income_cue = _contains(text, INCOME_CUES)
-        cost_cue = _contains(text, COST_CUES)
-        loan_cue = _contains(text, EXISTING_LOAN_CUES)
+        income_cue = _contains(text, _cues(language, INCOME_CUES, "income"))
+        cost_cue = _contains(text, _cues(language, COST_CUES, "cost"))
+        loan_cue = _contains(text, _cues(language, EXISTING_LOAN_CUES, "existing_loans"))
 
         if loan_cue:
             add("existing_loans", amount.value, 0.90, amount.evidence)
@@ -228,19 +252,19 @@ def extract_deterministic(utterance: str, profile: dict[str, Any]) -> list[Extra
 
     # --- categorical fields --------------------------------------------------------
     for category, cues in CATEGORY_CUES.items():
-        cue = _contains(text, cues)
+        cue = _contains(text, _cues(language, cues, f"category_{category}"))
         if cue:
             add("category", category, 0.95, cue)
             break
 
     for sector, cues in SECTOR_CUES.items():
-        cue = _contains(text, cues)
+        cue = _contains(text, _cues(language, cues, f"sector_{sector}"))
         if cue:
             add("project_sector", sector, 0.88, cue)
             break
 
     for gender, cues in GENDER_CUES.items():
-        cue = _contains(text, cues)
+        cue = _contains(text, _cues(language, cues, f"gender_{gender}"))
         if cue:
             add("gender", gender, 0.85, cue)
             break
@@ -251,15 +275,15 @@ def extract_deterministic(utterance: str, profile: dict[str, Any]) -> list[Extra
         if 0 < age <= 120:
             add("age", age, 0.92, age_match.group(0))
 
-    pwd_cue = _contains(text, PWD_CUES)
+    pwd_cue = _contains(text, _cues(language, PWD_CUES, "pwd"))
     if pwd_cue:
         add("is_pwd", not _negated_near(text, pwd_cue), 0.85, pwd_cue)
 
-    cert_cue = _contains(text, CASTE_CERT_CUES)
+    cert_cue = _contains(text, _cues(language, CASTE_CERT_CUES, "caste_certificate"))
     if cert_cue:
         add("has_caste_certificate", not _negated_near(text, cert_cue), 0.85, cert_cue)
 
-    admission_cue = _contains(text, ADMISSION_CUES)
+    admission_cue = _contains(text, _cues(language, ADMISSION_CUES, "admission"))
     if admission_cue:
         add("admission_confirmed", not _negated_near(text, admission_cue), 0.88, admission_cue)
 
@@ -456,7 +480,7 @@ async def extract(
     profile = profile or {}
     result = ExtractionResult()
 
-    candidates = extract_deterministic(utterance, profile)
+    candidates = extract_deterministic(utterance, profile, language)
     seen = {c.field for c in candidates}
 
     missing = {f for f in EXTRACTABLE_FIELDS if f not in seen and profile.get(f) is None}
@@ -492,27 +516,42 @@ def confirmation_question(field_item: ExtractedField, language: str = "en") -> s
         "existing_loans",
     }:
         shown = f"Rs {value:,.0f}"
-        hindi_shown = f"Rs {value:,.0f}"
     else:
-        shown = hindi_shown = str(value)
+        shown = str(value)
 
-    templates = {
-        "annual_family_income": {
-            "en": f"I heard your yearly family income is about {shown} — is that right?",
-            "hi": f"मैंने समझा कि आपकी सालाना पारिवारिक आय लगभग {hindi_shown} है — क्या यह सही है?",
+    inline = {
+        "confirm_income": {
+            "en": "I heard your yearly family income is about {value} — is that right?",
+            "hi": "मैंने समझा कि आपकी सालाना पारिवारिक आय लगभग {value} है — क्या यह सही है?",
         },
-        "project_cost": {
-            "en": f"I heard you need about {shown} — is that right?",
-            "hi": f"मैंने समझा कि आपको लगभग {hindi_shown} चाहिए — क्या यह सही है?",
+        "confirm_cost": {
+            "en": "I heard you need about {value} — is that right?",
+            "hi": "मैंने समझा कि आपको लगभग {value} चाहिए — क्या यह सही है?",
         },
-        "existing_loans": {
-            "en": f"I heard you still owe about {shown} on other loans — is that right?",
-            "hi": f"मैंने समझा कि आप पर अन्य ऋणों का लगभग {hindi_shown} बकाया है — क्या यह सही है?",
+        "confirm_loans": {
+            "en": "I heard you still owe about {value} on other loans — is that right?",
+            "hi": "मैंने समझा कि आप पर अन्य ऋणों का लगभग {value} बकाया है — क्या यह सही है?",
+        },
+        "confirm_generic": {
+            "en": "I heard {field} is {value} — is that right?",
+            "hi": "मैंने समझा कि {field} {value} है — क्या यह सही है?",
         },
     }
-    default = {
-        "en": f"I heard {field_item.field.replace('_', ' ')} is {shown} — is that right?",
-        "hi": f"मैंने समझा कि {field_item.field.replace('_', ' ')} {shown} है — क्या यह सही है?",
-    }
-    entry = templates.get(field_item.field, default)
-    return entry.get(language) or entry["en"]
+    key = {
+        "annual_family_income": "confirm_income",
+        "project_cost": "confirm_cost",
+        "existing_loans": "confirm_loans",
+    }.get(field_item.field, "confirm_generic")
+
+    template = inline[key].get(language)
+    if not template:
+        try:
+            from setu_rules import bundle_for
+
+            bundle = bundle_for(language)
+            template = bundle.ui.get(key) if bundle else None
+        except Exception:  # noqa: BLE001
+            template = None
+    template = template or inline[key]["en"]
+
+    return template.format(value=shown, field=field_item.field.replace("_", " "))

@@ -8,7 +8,7 @@ hash of the rule files and fails until both the version and the pinned digest ar
 updated together — you cannot quietly change eligibility policy.
 """
 
-ENGINE_VERSION = "2.1.0"
+ENGINE_VERSION = "2.2.0"
 
 # sha256 of the schemes/ directory, truncated. Update alongside ENGINE_VERSION.
 PINNED_RULES_DIGEST = "545b833da4e8f55d"
