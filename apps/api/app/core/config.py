@@ -22,10 +22,14 @@ class Settings(BaseSettings):
     # The LLM never decides eligibility. It proposes facts before the rule engine and
     # restates its reasons afterwards, so the provider is swappable and "none" is a
     # fully supported configuration, not a degraded one.
-    LLM_PROVIDER: str = "auto"  # auto | anthropic | xai | none
+    LLM_PROVIDER: str = "auto"  # auto | anthropic | xai | groq | none
     ANTHROPIC_API_KEY: str = ""
+    # xAI (Grok models) and Groq (open models on custom hardware) are different
+    # companies with near-identical names. Both are OpenAI wire-compatible.
     XAI_API_KEY: str = ""
     XAI_BASE_URL: str = "https://api.x.ai/v1"
+    GROQ_API_KEY: str = ""
+    GROQ_BASE_URL: str = "https://api.groq.com/openai/v1"
     # Leave blank to use the provider default in app/services/llm.py.
     LLM_MODEL: str = ""
     LLM_TIMEOUT_SECONDS: float = 20.0

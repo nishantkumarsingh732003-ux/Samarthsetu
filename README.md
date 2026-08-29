@@ -234,11 +234,22 @@ written. A bare "ढाई लाख" with no context returns
 *"मैंने समझा कि आपकी सालाना पारिवारिक आय लगभग Rs 250,000 है — क्या यह सही है?"*
 
 **The model provider is pluggable, and "none" is a supported setting.** Set
-`LLM_PROVIDER=auto|anthropic|xai|none` in `.env`. `auto` uses whichever key is present;
-xAI is reached through its OpenAI-compatible endpoint, so one `ToolSpec` renders to both
-Anthropic tool-use and OpenAI function-calling shapes. With no key at all, the model
-passes are skipped, deterministic extraction carries the conversation and explanations
-come from templates.
+`LLM_PROVIDER=auto|anthropic|xai|groq|none` in `.env`; `auto` uses whichever key is
+present.
+
+| Provider | Key looks like | Serves | Endpoint |
+|---|---|---|---|
+| `anthropic` | `sk-ant-…` | Claude | Anthropic SDK |
+| `xai` | `xai-…` | **Grok** (xAI's own models) | `api.x.ai/v1` |
+| `groq` | `gsk_…` | **Groq** — open models (Llama, Qwen…) on custom inference hardware | `api.groq.com/openai/v1` |
+
+Grok and Groq are different companies with near-identical names; both are named
+explicitly so a key cannot be silently used against the wrong one. xAI and Groq are both
+OpenAI wire-compatible, so they share a client path and one neutral `ToolSpec` renders
+to both Anthropic tool-use and OpenAI function-calling shapes.
+
+With no key at all, the model passes are skipped, deterministic extraction carries the
+conversation and explanations come from templates.
 
 Because every LLM failure falls back silently by design, a broken key looks exactly like
 no key from outside. This tells them apart:

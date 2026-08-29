@@ -41,14 +41,17 @@ PROBE_TOOL = llm.ToolSpec(
 
 def _warn_on_model_mismatch(info: dict) -> None:
     provider, model = info["resolved_provider"], (info["model"] or "")
-    looks_anthropic = model.startswith("claude")
-    looks_xai = model.startswith("grok")
-    if provider == "xai" and looks_anthropic:
-        print(f"  ! LLM_MODEL={model!r} looks like an Anthropic model but the provider "
-              "is xai. Blank LLM_MODEL to use the provider default.")
-    if provider == "anthropic" and looks_xai:
-        print(f"  ! LLM_MODEL={model!r} looks like an xAI model but the provider is "
-              "anthropic. Blank LLM_MODEL to use the provider default.")
+    family = (
+        "anthropic" if model.startswith("claude")
+        else "xai" if model.startswith("grok")
+        else None
+    )
+    if family and family != provider:
+        print(f"  ! LLM_MODEL={model!r} looks like a {family} model but the resolved "
+              f"provider is {provider}. Blank LLM_MODEL to use the provider default.")
+    if provider == "groq" and family == "xai":
+        print("  ! Groq and Grok are different: Groq (gsk_ keys) serves open models "
+              "such as Llama; Grok is xAI's own model and needs XAI_API_KEY.")
 
 
 async def main() -> int:
@@ -63,6 +66,7 @@ async def main() -> int:
         ("timeout (s)", "timeout_seconds"),
         ("anthropic key present", "anthropic_key_present"),
         ("xai key present", "xai_key_present"),
+        ("groq key present", "groq_key_present"),
     ):
         print(f"  {label:24s}: {info[key]}")
     _warn_on_model_mismatch(info)
@@ -74,7 +78,8 @@ async def main() -> int:
         print("  - explanations use templates")
         print("  - eligibility is unaffected either way; the engine never used a model")
         print()
-        print("To enable one, set XAI_API_KEY or ANTHROPIC_API_KEY in .env and restart.")
+        print("To enable one, set GROQ_API_KEY, XAI_API_KEY or ANTHROPIC_API_KEY in")
+        print(".env, then restart: docker compose up -d api")
         return 0
 
     ok = True
@@ -88,7 +93,8 @@ async def main() -> int:
     if text:
         print(f"OK  -> {text[:60]!r}")
     else:
-        print("FAILED (see API logs for the provider error)")
+        print("FAILED")
+        print("     Most likely a wrong LLM_MODEL for this provider, or a bad key.")
         ok = False
 
     print("2. tool calling  ...", end=" ", flush=True)
@@ -101,7 +107,8 @@ async def main() -> int:
     if payload:
         print(f"OK  -> {payload}")
     else:
-        print("FAILED — extraction will fall back to the deterministic parser")
+        print("FAILED — extraction falls back to the deterministic parser.")
+        print("     Some models do not support tool calling; try a different model.")
         ok = False
 
     print()

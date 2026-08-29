@@ -147,8 +147,9 @@ rather than a path-hacked copy.
 No provider key is set, so extraction and explanation run their deterministic and
 template paths only. Those paths are fully tested and carry the demo.
 
-**Update 2026-08-29:** the provider is now pluggable (`LLM_PROVIDER=auto|anthropic|xai|
-none`) with xAI reached over its OpenAI-compatible endpoint, and `scripts/check_llm.py`
+**Update 2026-08-29:** the provider is now pluggable
+(`LLM_PROVIDER=auto|anthropic|xai|groq|none`) with xAI and Groq both reached over their
+OpenAI-compatible endpoints, and `scripts/check_llm.py`
 makes a real text and tool call so a broken key can be told apart from no key. Provider
 resolution and every failure-to-fallback path are unit-tested. The remaining gap is
 narrower than before: no live call to any vendor has yet been made.
@@ -158,7 +159,8 @@ the prose call in `explanation.explain`, and guardrail behaviour against a real 
 response. `_validate_llm_fields` is unit-tested against synthetic payloads, so the
 guardrail logic is covered even though the call is not.
 
-**To close:** put a key in `.env` (`XAI_API_KEY=` or `ANTHROPIC_API_KEY=`), restart the
+**To close:** put a key in `.env` (`GROQ_API_KEY=`, `XAI_API_KEY=` or
+`ANTHROPIC_API_KEY=`), restart the
 API, run `scripts/check_llm.py` until both probes pass, then run a conversation using
 free text the keyword tables do not cover.
 

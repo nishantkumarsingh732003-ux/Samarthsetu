@@ -31,13 +31,20 @@ class Provider(StrEnum):
     NONE = "none"
     ANTHROPIC = "anthropic"
     XAI = "xai"
+    GROQ = "groq"
 
 
-# Used when LLM_MODEL is blank. Model names change; `scripts/check_llm.py` reports what
-# the configured provider actually accepted.
+# Groq and xAI are different companies with confusingly similar names. Groq (gsk_ keys)
+# serves open models on its own inference hardware; xAI (xai- keys) serves its own Grok
+# models. Both speak the OpenAI wire format, so they share a client path here.
+OPENAI_COMPATIBLE: frozenset[Provider] = frozenset({Provider.XAI, Provider.GROQ})
+
+# Used when LLM_MODEL is blank. Model names change faster than this file does;
+# `scripts/check_llm.py` makes a real call so a stale default is caught immediately.
 DEFAULT_MODELS: dict[Provider, str] = {
     Provider.ANTHROPIC: "claude-sonnet-5",
     Provider.XAI: "grok-4",
+    Provider.GROQ: "llama-3.3-70b-versatile",
 }
 
 
@@ -77,8 +84,12 @@ def resolve_provider() -> Provider:
         return Provider.ANTHROPIC if settings.ANTHROPIC_API_KEY.strip() else Provider.NONE
     if configured == "xai":
         return Provider.XAI if settings.XAI_API_KEY.strip() else Provider.NONE
+    if configured == "groq":
+        return Provider.GROQ if settings.GROQ_API_KEY.strip() else Provider.NONE
 
-    # auto: whichever key is present.
+    # auto: whichever key is present, most-specific first.
+    if settings.GROQ_API_KEY.strip():
+        return Provider.GROQ
     if settings.XAI_API_KEY.strip():
         return Provider.XAI
     if settings.ANTHROPIC_API_KEY.strip():
@@ -107,6 +118,7 @@ def describe() -> dict[str, Any]:
         "timeout_seconds": settings.LLM_TIMEOUT_SECONDS,
         "anthropic_key_present": bool(settings.ANTHROPIC_API_KEY.strip()),
         "xai_key_present": bool(settings.XAI_API_KEY.strip()),
+        "groq_key_present": bool(settings.GROQ_API_KEY.strip()),
     }
 
 
@@ -121,14 +133,17 @@ def _anthropic_client() -> Any:
     )
 
 
-def _xai_client() -> Any:
-    """xAI speaks the OpenAI wire format, so the openai SDK is the client."""
+def _openai_compatible_client(provider: Provider) -> Any:
+    """Both xAI and Groq speak the OpenAI wire format; only the host and key differ."""
     from openai import AsyncOpenAI
 
+    if provider is Provider.GROQ:
+        api_key, base_url = settings.GROQ_API_KEY, settings.GROQ_BASE_URL
+    else:
+        api_key, base_url = settings.XAI_API_KEY, settings.XAI_BASE_URL
+
     return AsyncOpenAI(
-        api_key=settings.XAI_API_KEY,
-        base_url=settings.XAI_BASE_URL,
-        timeout=settings.LLM_TIMEOUT_SECONDS,
+        api_key=api_key, base_url=base_url, timeout=settings.LLM_TIMEOUT_SECONDS
     )
 
 
@@ -156,7 +171,7 @@ async def complete_text(system: str, user: str, max_tokens: int = 400) -> str | 
                 if getattr(block, "type", None) == "text"
             ).strip() or None
 
-        response = await _xai_client().chat.completions.create(
+        response = await _openai_compatible_client(provider).chat.completions.create(
             model=model,
             max_tokens=max_tokens,
             messages=[
@@ -195,7 +210,7 @@ async def complete_tool(
                     return dict(block.input)
             return None
 
-        response = await _xai_client().chat.completions.create(
+        response = await _openai_compatible_client(provider).chat.completions.create(
             model=model,
             max_tokens=max_tokens,
             tools=[tool.as_openai()],

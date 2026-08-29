@@ -17,10 +17,12 @@ from app.services import explanation, extraction, llm
 def env(monkeypatch: pytest.MonkeyPatch):
     """Set provider settings for one test."""
 
-    def _set(provider: str = "auto", anthropic: str = "", xai: str = "", model: str = ""):
+    def _set(provider: str = "auto", anthropic: str = "", xai: str = "",
+             groq: str = "", model: str = ""):
         monkeypatch.setattr(settings, "LLM_PROVIDER", provider)
         monkeypatch.setattr(settings, "ANTHROPIC_API_KEY", anthropic)
         monkeypatch.setattr(settings, "XAI_API_KEY", xai)
+        monkeypatch.setattr(settings, "GROQ_API_KEY", groq)
         monkeypatch.setattr(settings, "LLM_MODEL", model)
 
     return _set
@@ -46,6 +48,27 @@ def test_auto_picks_the_provider_whose_key_is_set(env) -> None:
 def test_auto_prefers_xai_when_both_keys_are_present(env) -> None:
     env(anthropic="ant-key", xai="xai-key")
     assert llm.resolve_provider() is llm.Provider.XAI
+
+
+def test_groq_is_recognised_and_distinct_from_xai(env) -> None:
+    """Groq (gsk_ keys, open models) is not xAI (Grok). Confusing them is the whole
+    reason both are named explicitly."""
+    env(groq="gsk-key")
+    assert llm.resolve_provider() is llm.Provider.GROQ
+    assert llm.resolve_model() == llm.DEFAULT_MODELS[llm.Provider.GROQ]
+    assert "groq.com" in settings.GROQ_BASE_URL
+
+
+def test_asking_for_xai_with_only_a_groq_key_is_none(env) -> None:
+    """A Groq key must never be silently used as if it were an xAI key."""
+    env(provider="xai", groq="gsk-key")
+    assert llm.resolve_provider() is llm.Provider.NONE
+
+
+def test_groq_and_xai_share_the_openai_wire_format(env) -> None:
+    assert llm.Provider.GROQ in llm.OPENAI_COMPATIBLE
+    assert llm.Provider.XAI in llm.OPENAI_COMPATIBLE
+    assert llm.Provider.ANTHROPIC not in llm.OPENAI_COMPATIBLE
 
 
 def test_explicit_provider_overrides_auto_detection(env) -> None:
@@ -78,7 +101,8 @@ def test_explicit_model_wins(env) -> None:
 
 
 def test_describe_never_leaks_a_key(env) -> None:
-    env(xai="xai-super-secret-key", anthropic="ant-super-secret-key")
+    env(xai="xai-super-secret-key", anthropic="ant-super-secret-key",
+        groq="gsk-super-secret-key")
     rendered = repr(llm.describe())
     assert "super-secret" not in rendered
     assert llm.describe()["xai_key_present"] is True
@@ -123,10 +147,10 @@ async def test_a_provider_error_degrades_instead_of_raising(env, monkeypatch) ->
     """A bad key or wrong model id must not surface to the citizen."""
     env(xai="bad-key")
 
-    def explode() -> None:
+    def explode(_provider) -> None:
         raise RuntimeError("401 unauthorized")
 
-    monkeypatch.setattr(llm, "_xai_client", explode)
+    monkeypatch.setattr(llm, "_openai_compatible_client", explode)
     assert await llm.complete_text("s", "u") is None
 
 
