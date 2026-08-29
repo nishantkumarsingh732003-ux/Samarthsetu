@@ -161,7 +161,7 @@ per-phase trail. From Phase 2 onward, commits are made as work lands.
 | OI-10 | `packages/rules/dist/rules.json` was gitignored, so CI would fail on a fresh clone — the TypeScript conformance test imports it. `.gitignore` now re-includes it. | 2026-08-29 |
 | OI-11 | `max_amount` conflated the project-cost band with the loan cap, overstating what a citizen could borrow (Rs 1,26,000 shown against a Rs 1,25,000 real cap). Split into `max_project_cost` and `max_loan_amount` in engine v2.0.0. | 2026-08-29 |
 | OI-1 | `docker compose up` never run — Docker not installed | 2026-08-29 |
-| OI-12 | Shell scripts and Dockerfiles were checked out CRLF on Windows, so `#!/usr/bin/env bash` would have failed in-container as `bad interpreter`. Added `.gitattributes` forcing LF. | 2026-08-29 |
+| OI-12 | Shell scripts and Dockerfiles were checked out CRLF on Windows, so `#!/usr/bin/env bash\r` would have failed in-container as `bad interpreter`. Added `.gitattributes` forcing LF. | 2026-08-29 |
 | OI-13 | `apps/web` had no `.dockerignore`, so `COPY . .` copied the host pnpm workspace `node_modules` whose symlinks point at Windows absolute paths, clobbering the Linux install. The web container died with `Cannot find module '/app/node_modules/next/dist/bin/next'`. | 2026-08-29 |
 | OI-14 | `scripts/seed/run.py` assumed the host layout (`<repo>/apps/api`) and could not import `app` inside the container, where the API is at `/app`. Now tries both. | 2026-08-29 |
 | OI-15 | `sentence-transformers` in `apps/api/requirements.txt` pulled ~2GB of torch into the API image while nothing imported it. Moved to `requirements-ml.txt` for Phase 2+. | 2026-08-29 |
