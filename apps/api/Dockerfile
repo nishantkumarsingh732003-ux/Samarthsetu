@@ -6,10 +6,15 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential libpq-dev curl && rm -rf /var/lib/apt/lists/*
 
-COPY requirements.txt .
+COPY apps/api/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# The eligibility engine is a shared package, not API code. Installing it here means the
+# container runs the exact same rules the tests run, rather than a path-hacked copy.
+COPY packages/rules /packages/rules
+RUN pip install --no-cache-dir -e /packages/rules
+
+COPY apps/api/ .
 RUN chmod +x entrypoint.sh
 
 EXPOSE 8000

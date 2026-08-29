@@ -24,6 +24,13 @@ from pathlib import Path
 # The API package sits at <repo>/apps/api on a developer machine and at /app inside the
 # container, where this file is mounted at /scripts. Try both rather than assuming one.
 REPO_ROOT = Path(__file__).resolve().parents[2]
+# `scripts` is imported as a package (scripts.seed.partners), so its parent must be on
+# the path. In the container scripts/ is mounted at /scripts, so that parent is /.
+for parent in (REPO_ROOT, Path("/")):
+    if (parent / "scripts" / "seed" / "run.py").is_file():
+        sys.path.insert(0, str(parent))
+        break
+
 for candidate in (REPO_ROOT / "apps" / "api", Path("/app")):
     if (candidate / "app" / "db" / "session.py").is_file():
         sys.path.insert(0, str(candidate))
@@ -39,13 +46,19 @@ from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
 
 from app.db.session import SessionLocal, engine  # noqa: E402
 
+from scripts.seed.partners import seed_partners  # noqa: E402
+from scripts.seed.schemes import seed_schemes  # noqa: E402
+
 Seeder = Callable[[AsyncSession], Awaitable[str]]
 
 REQUIRED_EXTENSIONS = ("postgis", "vector")
 
-# Phase 1 registers the scheme + rule seeder here; Phase 2 registers partners;
-# Phase 8 registers the demo personas and applications.
-SEEDERS: dict[str, Seeder] = {}
+# Order matters: partner authorisations reference scheme rows.
+# Phase 8 appends the demo personas and applications.
+SEEDERS: dict[str, Seeder] = {
+    "schemes": seed_schemes,
+    "partners": seed_partners,
+}
 
 
 async def verify_extensions(session: AsyncSession) -> None:

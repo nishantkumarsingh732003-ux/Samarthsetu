@@ -1,0 +1,19 @@
+# Root build context. Keep it small: without this the 30MB vendored skill library and
+# every node_modules tree is sent to the daemon on each build.
+.git
+.claude
+node_modules
+**/node_modules
+**/.next
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+**/.mypy_cache
+.venv
+docs
+infra
+mobile
+*.md
+.env
+.env.*
+!.env.example

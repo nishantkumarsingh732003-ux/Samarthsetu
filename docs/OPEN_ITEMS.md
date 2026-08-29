@@ -7,7 +7,7 @@ Nothing here is a surprise on demo day if it is read first.
 
 **Legend** — 🔴 blocks the demo · 🟡 weakens the demo · 🟢 tracked, not urgent
 
-Last reviewed: 2026-08-29 (after Phase 1)
+Last reviewed: 2026-08-29 (after Phase 2)
 
 ---
 
@@ -131,15 +131,28 @@ approximated.
 
 ## 🟢 OI-8 — the rule engine is not yet wired into the API
 
-**Status:** open · **Owner:** Phase 2 · **Since:** Phase 1
+**Status:** CLOSED 2026-08-29 · **Owner:** Phase 2 · **Since:** Phase 1
 
-`packages/rules` is installable (`pip install -e packages/rules`) and importable, but
-no API endpoint calls it and no `match_runs` row is written yet. Phase 2 adds
-`POST /api/v1/match`.
+`POST /api/v1/match` calls the engine and writes a `match_runs` row plus an `audit_log`
+entry on every call. The Docker build context moved to the repo root so the image can
+`pip install -e /packages/rules` — the container runs the same rule pack the tests do,
+rather than a path-hacked copy.
 
-The Docker path also needs attention: `apps/api/Dockerfile` only copies `apps/api`, so
-the rules package must be installed into the image or added to `PYTHONPATH` via the
-existing `./packages/rules:/packages/rules` mount.
+---
+
+## 🟢 OI-18 — routing weights are unvalidated judgement
+
+**Status:** open · **Owner:** needs field input · **Since:** Phase 2
+
+Distance 0.40, turnaround 0.25, type affinity 0.20, load 0.15. These are a reasonable
+first guess, not a measured optimum, and the type-affinity table encodes how the
+Channel Finance System is *described* rather than observed throughput.
+
+They are deliberately in one config file and returned in every routing response so a
+ministry reviewer can argue with them without reading code.
+
+**To close:** validate against real disbursement outcomes — which routings actually led
+to a sanction — once any real application data exists.
 
 ---
 
@@ -165,3 +178,6 @@ per-phase trail. From Phase 2 onward, commits are made as work lands.
 | OI-13 | `apps/web` had no `.dockerignore`, so `COPY . .` copied the host pnpm workspace `node_modules` whose symlinks point at Windows absolute paths, clobbering the Linux install. The web container died with `Cannot find module '/app/node_modules/next/dist/bin/next'`. | 2026-08-29 |
 | OI-14 | `scripts/seed/run.py` assumed the host layout (`<repo>/apps/api`) and could not import `app` inside the container, where the API is at `/app`. Now tries both. | 2026-08-29 |
 | OI-15 | `sentence-transformers` in `apps/api/requirements.txt` pulled ~2GB of torch into the API image while nothing imported it. Moved to `requirements-ml.txt` for Phase 2+. | 2026-08-29 |
+| OI-8 | Rule engine not wired into the API | 2026-08-29 |
+| OI-16 | Partner service areas were random districts within a state, so a Mumbai branch "served" Nagpur 687km away and the router ranked it. Service areas are now the geographically nearest districts, and routing rejects anything beyond a 150km radius with a stated reason. | 2026-08-29 |
+| OI-17 | 120 partners spread uniformly over 53 districts left Nagpur with a single branch, making routing look empty. Seeding now guarantees one partner per district and weights the remainder towards large cities. | 2026-08-29 |

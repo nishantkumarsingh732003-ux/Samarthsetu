@@ -97,6 +97,108 @@ the routing engine depends on, the four-digit CHECK constraints that make a full
 Aadhaar number unstorable, the provenance columns on `schemes`, and that Alembic has a
 single head.
 
+## API
+
+Three endpoints as of Phase 2. Interactive docs at http://localhost:8000/docs.
+
+### `POST /api/v1/match` — which schemes fit
+
+Runs the deterministic rule engine. Writes a `match_runs` row and an `audit_log` entry
+before returning, so the verdict can be replayed later.
+
+```bash
+curl -s -X POST http://localhost:8000/api/v1/match   -H 'Content-Type: application/json'   -d '{
+    "profile": {
+      "category": "SC",
+      "project_sector": "TRADE",
+      "annual_family_income": 180000,
+      "project_cost": 80000
+    },
+    "language": "en"
+  }'
+```
+
+A partial profile is not a refusal — it returns `NEED_MORE_INFO` plus the single next
+question worth asking:
+
+```bash
+curl -s -X POST http://localhost:8000/api/v1/match   -H 'Content-Type: application/json' -d '{"profile": {}}'
+# -> every scheme NEED_MORE_INFO, next_question.field = "category"
+```
+
+An unknown profile field is rejected with `422` naming the field, rather than silently
+ignored.
+
+### `POST /api/v1/partners/route` — who can actually process it
+
+```bash
+curl -s -X POST http://localhost:8000/api/v1/partners/route   -H 'Content-Type: application/json'   -d '{
+    "scheme_code": "NSFDC_MICRO_FINANCE",
+    "amount": 90000,
+    "lat": 21.1458,
+    "lng": 79.0882,
+    "district": "Nagpur"
+  }'
+```
+
+`lat`/`lng` may be omitted if `district` is given; the origin is then derived from the
+partners already on record there. Results are cached in Redis for 10 minutes on
+`(scheme, amount band, geohash-5 cell)`, and the response carries `"cached": true` when
+served from it.
+
+Abridged output for that request — 60 nearest partners considered, 5 eligible:
+
+```
+#1  Fusion Micro Finance — Nagpur Service Centre
+    NBFC_MFI | 9.51 km | 31d turnaround | 14% load | SCORE 0.745
+    distance=0.3239  turnaround=0.0921  type_affinity=0.2  load=0.129
+#2  Vidharbha Konkan Gramin Bank, Nagpur Branch
+    RRB | 4.85 km | 38d turnaround | 13% load | SCORE 0.7078
+#3  Mahatma Phule Backward Class Development Corporation — Nagpur District Office
+    SCA | 3.91 km | 30d turnaround | 90% load | SCORE 0.6224
+
+WHY NOT:
+  [NOT_ACCEPTING]  Maharashtra Gramin Bank, Nagpur Branch is 8.32 km away but has
+                   paused new Micro Finance Scheme applications because its capacity
+                   is exhausted.
+  [NOT_AUTHORISED] UCO Bank, Jabalpur Main Branch is 242.27 km away but is not
+                   authorised for the Micro Finance Scheme.
+  [TOO_FAR]        CreditAccess Grameen — Jabalpur Service Centre is authorised for
+                   the Micro Finance Scheme but is 248.83 km away, beyond the 150 km
+                   service radius.
+```
+
+The nearest branch is not the answer. Note that #1 sits 9.5km away and outranks a
+branch at 3.9km, because that closer branch is 90% loaded — and every component of
+that judgement is returned separately in `score_breakdown` rather than hidden inside
+one number.
+
+`why_not` is the anti-misrouting feature. Rejection reason codes:
+
+| Code | Meaning |
+|---|---|
+| `NOT_AUTHORISED` | No authorisation row for this scheme — the branch cannot take it at all |
+| `NOT_ACCEPTING` | Authorised, but capacity is exhausted right now |
+| `BELOW_MIN_TICKET` / `ABOVE_MAX_TICKET` | Amount outside the branch's ticket band |
+| `TOO_FAR` | Authorised but beyond the 150km service radius |
+| `DISTRICT_NOT_SERVED` | Does not serve the citizen's district for this scheme |
+
+### `GET /api/v1/partners/{id}` — one partner and its full authorisation matrix
+
+```bash
+curl -s http://localhost:8000/api/v1/partners/<uuid>
+```
+
+Returns the branch plus every scheme it is authorised for, with ticket bands, capacity,
+turnaround and service districts.
+
+### Routing weights
+
+All in [apps/api/app/core/routing_config.py](apps/api/app/core/routing_config.py) —
+distance 0.40, turnaround 0.25, type affinity 0.20, load 0.15. They are returned in
+every routing response so the ranking can be argued with rather than reverse-engineered.
+
+
 ## Vendored skills
 
 `.claude/skills/` contains 376 skills vendored from
@@ -107,13 +209,14 @@ deployed application.
 
 ## Status
 
-Phases 0 (foundation) and 1 (eligibility engine) are complete. See [CLAUDE.md](CLAUDE.md)
+Phases 0 (foundation), 1 (eligibility engine) and 2 (partner registry and geo routing)
+are complete. See [CLAUDE.md](CLAUDE.md)
 for the engineering contract every phase must satisfy.
 
 ```bash
 pytest packages/rules -q          # 97 tests — the eligibility engine
 pnpm --filter @setu/rules test    # 19 tests — TypeScript conformance with Python
-cd apps/api && pytest -q          # 10 tests — schema guarantees
+cd apps/api && pytest -q          # 38 tests — schema, routing scorer, cache keys
 ```
 
 Known gaps and blockers are tracked in [docs/OPEN_ITEMS.md](docs/OPEN_ITEMS.md).

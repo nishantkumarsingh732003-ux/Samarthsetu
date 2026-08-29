@@ -19,7 +19,10 @@ services:
     ports: ["6379:6379"]
 
   api:
-    build: ./apps/api
+    # Repo-root context so the image can install packages/rules, the shared engine.
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
     env_file: .env
     environment:
       # .env targets localhost for running the API outside Docker; inside the network
