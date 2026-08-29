@@ -259,7 +259,7 @@ async def test_the_same_facts_in_english_reach_the_same_verdict() -> None:
 
 def test_extraction_schema_excludes_money_fields_from_the_llm() -> None:
     """Amounts are parsed deterministically; the model is not offered the choice."""
-    enum = extraction.EXTRACTION_TOOL["input_schema"]["properties"]["fields"]["items"][
+    enum = extraction.EXTRACTION_TOOL.parameters["properties"]["fields"]["items"][
         "properties"
     ]["field"]["enum"]
     assert "annual_family_income" not in enum

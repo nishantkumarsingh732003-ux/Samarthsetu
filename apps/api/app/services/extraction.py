@@ -25,8 +25,8 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from app.core.config import settings
 from app.core.geography import DISTRICT_LOOKUP, STATE_LOOKUP
+from app.services import llm
 from app.services.numerals import normalise_digits, parse_amount
 
 logger = logging.getLogger(__name__)
@@ -296,10 +296,10 @@ Rules:
 any money field.
 - Output valid JSON only, with no commentary."""
 
-EXTRACTION_TOOL = {
-    "name": "record_extracted_fields",
-    "description": "Record fields explicitly stated by the applicant.",
-    "input_schema": {
+EXTRACTION_TOOL = llm.ToolSpec(
+    name="record_extracted_fields",
+    description="Record fields explicitly stated by the applicant.",
+    parameters={
         "type": "object",
         "properties": {
             "fields": {
@@ -323,11 +323,11 @@ EXTRACTION_TOOL = {
         },
         "required": ["fields"],
     },
-}
+)
 
 
 def llm_available() -> bool:
-    return bool(settings.ANTHROPIC_API_KEY.strip())
+    return llm.is_available()
 
 
 async def extract_with_llm(
@@ -337,35 +337,18 @@ async def extract_with_llm(
     if not llm_available() or not missing:
         return [], []
 
-    try:
-        from anthropic import AsyncAnthropic
-
-        client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
-        response = await client.messages.create(
-            model=settings.LLM_MODEL,
-            max_tokens=1024,
-            system=EXTRACTION_SYSTEM_PROMPT,
-            tools=[EXTRACTION_TOOL],
-            tool_choice={"type": "tool", "name": "record_extracted_fields"},
-            messages=[
-                {
-                    "role": "user",
-                    "content": (
-                        f"Applicant message (language: {language}):\n{utterance}\n\n"
-                        f"Fields still unknown: {', '.join(sorted(missing))}"
-                    ),
-                }
-            ],
-        )
-    except Exception as exc:  # noqa: BLE001 - extraction must degrade, not fail
-        logger.warning("LLM extraction unavailable, using deterministic only: %s", exc)
+    payload = await llm.complete_tool(
+        system=EXTRACTION_SYSTEM_PROMPT,
+        user=(
+            f"Applicant message (language: {language}):\n{utterance}\n\n"
+            f"Fields still unknown: {', '.join(sorted(missing))}"
+        ),
+        tool=EXTRACTION_TOOL,
+    )
+    if payload is None:
+        # No model, a timeout, a bad model id — all the same to us: keep going with
+        # what the deterministic pass found.
         return [], []
-
-    payload: dict[str, Any] = {}
-    for block in response.content:
-        if getattr(block, "type", None) == "tool_use":
-            payload = block.input
-            break
 
     return _validate_llm_fields(payload)
 

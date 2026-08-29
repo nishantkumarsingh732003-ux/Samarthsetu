@@ -144,15 +144,22 @@ rather than a path-hacked copy.
 
 **Status:** open · **Owner:** needs an API key · **Since:** Phase 3
 
-`ANTHROPIC_API_KEY` is empty, so extraction and explanation run their deterministic and
+No provider key is set, so extraction and explanation run their deterministic and
 template paths only. Those paths are fully tested and carry the demo.
+
+**Update 2026-08-29:** the provider is now pluggable (`LLM_PROVIDER=auto|anthropic|xai|
+none`) with xAI reached over its OpenAI-compatible endpoint, and `scripts/check_llm.py`
+makes a real text and tool call so a broken key can be told apart from no key. Provider
+resolution and every failure-to-fallback path are unit-tested. The remaining gap is
+narrower than before: no live call to any vendor has yet been made.
 
 What is **not** exercised: the Anthropic tool-use call in `extraction.extract_with_llm`,
 the prose call in `explanation.explain`, and guardrail behaviour against a real model
 response. `_validate_llm_fields` is unit-tested against synthetic payloads, so the
 guardrail logic is covered even though the call is not.
 
-**To close:** set `ANTHROPIC_API_KEY` in `.env`, restart, and run a conversation using
+**To close:** put a key in `.env` (`XAI_API_KEY=` or `ANTHROPIC_API_KEY=`), restart the
+API, run `scripts/check_llm.py` until both probes pass, then run a conversation using
 free text the keyword tables do not cover.
 
 **If it stays open:** the demo still works end to end, but "the LLM extracts facts" is

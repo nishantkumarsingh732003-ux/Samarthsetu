@@ -18,7 +18,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from app.core.config import settings
+from app.services import llm
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +101,7 @@ def template_explanation(result: dict[str, Any], language: str = "en") -> str:
 
 
 def llm_available() -> bool:
-    return bool(settings.ANTHROPIC_API_KEY.strip())
+    return llm.is_available()
 
 
 async def explain(result: dict[str, Any], language: str = "en") -> dict[str, Any]:
@@ -123,40 +123,28 @@ async def explain(result: dict[str, Any], language: str = "en") -> dict[str, Any
         return {**payload, "explanation": template_explanation(result, language),
                 "source": "template"}
 
-    try:
-        from anthropic import AsyncAnthropic
+    # The model is handed the engine's own reasons and nothing else. It has no access
+    # to the profile, the rules, or any way to reach a different conclusion.
+    reasons = {
+        "scheme": result.get("official_name"),
+        "verdict": result.get("verdict"),
+        "indicative_amount": result.get("indicative_amount"),
+        "matched_because": [r["message"] for r in result.get("matched_because") or []],
+        "blocked_because": [r["message"] for r in result.get("blocked_because") or []],
+        "warnings": [r["message"] for r in result.get("warnings") or []],
+        "redirect_suggestion": result.get("redirect_suggestion"),
+    }
 
-        reasons = {
-            "scheme": result.get("official_name"),
-            "verdict": result.get("verdict"),
-            "indicative_amount": result.get("indicative_amount"),
-            "matched_because": [r["message"] for r in result.get("matched_because") or []],
-            "blocked_because": [r["message"] for r in result.get("blocked_because") or []],
-            "warnings": [r["message"] for r in result.get("warnings") or []],
-            "redirect_suggestion": result.get("redirect_suggestion"),
-        }
-        client = AsyncAnthropic(api_key=settings.ANTHROPIC_API_KEY)
-        response = await client.messages.create(
-            model=settings.LLM_MODEL,
-            max_tokens=400,
-            system=EXPLANATION_SYSTEM_PROMPT,
-            messages=[
-                {
-                    "role": "user",
-                    "content": (
-                        f"Language: {language}\n"
-                        f"Decision to restate:\n{reasons}"
-                    ),
-                }
-            ],
-        )
-        text = "".join(
-            block.text for block in response.content if getattr(block, "type", None) == "text"
-        ).strip()
-        if text:
-            return {**payload, "explanation": text, "source": "llm"}
-    except Exception as exc:  # noqa: BLE001 - never let the explainer break the verdict
-        logger.warning("explanation LLM unavailable, using template: %s", exc)
+    text = await llm.complete_text(
+        system=EXPLANATION_SYSTEM_PROMPT,
+        user=f"Language: {language}\nDecision to restate:\n{reasons}",
+        max_tokens=400,
+    )
+    if text:
+        return {**payload, "explanation": text, "source": "llm"}
 
-    return {**payload, "explanation": template_explanation(result, language),
-            "source": "template"}
+    return {
+        **payload,
+        "explanation": template_explanation(result, language),
+        "source": "template",
+    }

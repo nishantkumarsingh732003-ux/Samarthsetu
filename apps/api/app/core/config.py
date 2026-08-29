@@ -18,8 +18,17 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://saarthi:saarthi@localhost:5432/saarthi"
     REDIS_URL: str = "redis://localhost:6379/0"
 
+    # --- language model (optional) ---
+    # The LLM never decides eligibility. It proposes facts before the rule engine and
+    # restates its reasons afterwards, so the provider is swappable and "none" is a
+    # fully supported configuration, not a degraded one.
+    LLM_PROVIDER: str = "auto"  # auto | anthropic | xai | none
     ANTHROPIC_API_KEY: str = ""
-    LLM_MODEL: str = "claude-sonnet-5"
+    XAI_API_KEY: str = ""
+    XAI_BASE_URL: str = "https://api.x.ai/v1"
+    # Leave blank to use the provider default in app/services/llm.py.
+    LLM_MODEL: str = ""
+    LLM_TIMEOUT_SECONDS: float = 20.0
     EMBEDDING_MODEL: str = "intfloat/multilingual-e5-base"
 
     @property

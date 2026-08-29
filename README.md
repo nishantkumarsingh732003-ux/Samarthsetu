@@ -233,9 +233,22 @@ model a money field.
 written. A bare "ढाई लाख" with no context returns
 *"मैंने समझा कि आपकी सालाना पारिवारिक आय लगभग Rs 250,000 है — क्या यह सही है?"*
 
-**Works with the LLM entirely offline.** With no `ANTHROPIC_API_KEY` the model passes
-are skipped, deterministic extraction carries the conversation, and explanations come
-from templates. That is how it currently runs.
+**The model provider is pluggable, and "none" is a supported setting.** Set
+`LLM_PROVIDER=auto|anthropic|xai|none` in `.env`. `auto` uses whichever key is present;
+xAI is reached through its OpenAI-compatible endpoint, so one `ToolSpec` renders to both
+Anthropic tool-use and OpenAI function-calling shapes. With no key at all, the model
+passes are skipped, deterministic extraction carries the conversation and explanations
+come from templates.
+
+Because every LLM failure falls back silently by design, a broken key looks exactly like
+no key from outside. This tells them apart:
+
+```bash
+docker compose exec api python /scripts/check_llm.py
+```
+
+It reports the resolved provider and model, warns on a provider/model mismatch, then
+makes a real text call and a real tool call.
 
 **Sessions hold no PII.** Redis, 24h TTL, storing the eligibility profile and which
 fields each turn established — never the citizen's raw words, which routinely contain a

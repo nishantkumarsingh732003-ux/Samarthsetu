@@ -17,3 +17,4 @@ anthropic>=0.40
 pyyaml>=6.0
 rapidfuzz>=3.10
 numpy>=2.1
+openai>=1.60
