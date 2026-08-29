@@ -117,6 +117,8 @@ class RoutedPartnerOut(BaseModel):
     state: str
     pincode: str | None
     contact: dict[str, Any]
+    lat: float | None
+    lng: float | None
     distance_km: float | None
     avg_turnaround_days: int | None
     active_load: int | None

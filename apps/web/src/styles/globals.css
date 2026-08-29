@@ -1,3 +1,58 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+
+  html {
+    /* Never below 100% — a citizen who has set a larger system font keeps it. */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-canvas text-ink font-sans;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Visible focus everywhere. Keyboard and switch-control users need to see where
+     they are, and a government service cannot ship focus:none. */
+  :focus-visible {
+    @apply outline-none ring-4 ring-accent-600/40 ring-offset-2 ring-offset-canvas;
+  }
+
+  /* Respect a reduced-motion preference rather than animating regardless. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  /* Every interactive control is at least 48px tall. */
+  .btn {
+    @apply inline-flex min-h-touch items-center justify-center gap-2 rounded-card
+           px-5 text-lg font-medium transition-colors;
+  }
+  .btn-primary {
+    @apply btn bg-accent-700 text-white hover:bg-accent-800 active:bg-accent-800;
+  }
+  .btn-secondary {
+    @apply btn border-2 border-line bg-surface text-ink hover:border-accent-600;
+  }
+  .card {
+    @apply rounded-card border border-line bg-surface shadow-card;
+  }
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50
+           focus:rounded-card focus:bg-accent-700 focus:px-4 focus:py-3 focus:text-white;
+  }
+}

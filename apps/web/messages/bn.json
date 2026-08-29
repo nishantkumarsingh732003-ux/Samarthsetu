@@ -1,9 +1,115 @@
 {
-  "app": {
-    "title": "",
-    "tagline": ""
+  "_meta": {
+    "status": "draft",
+    "note": "Machine-drafted, not reviewed by a native speaker. See packages/rules/translations/README.md for the review checklist."
   },
-  "onboarding": {},
-  "match": {},
-  "partners": {}
+  "app": {
+    "title": "সেতু",
+    "tagline": "আপনার জন্য উপযুক্ত প্রকল্প এবং যে অফিস তা প্রক্রিয়া করতে পারে তা খুঁজুন",
+    "ministry": "সামাজিক ন্যায়বিচার ও ক্ষমতায়ন মন্ত্রক"
+  },
+  "home": {
+    "chooseLanguage": "আপনার ভাষা বেছে নিন",
+    "continue": "এগিয়ে যান",
+    "start": "আমার প্রকল্প খুঁজুন",
+    "startAria": "শুরু করুন: কয়েকটি প্রশ্নের উত্তর দিন এবং আপনার উপযুক্ত প্রকল্প খুঁজুন"
+  },
+  "assist": {
+    "heading": "আপনার সম্পর্কে বলুন",
+    "speak": "বলতে চাপুন",
+    "listening": "শুনছি…",
+    "stop": "থামুন",
+    "typeInstead": "টাইপ করুন",
+    "placeholder": "আপনার উত্তর লিখুন",
+    "send": "পাঠান",
+    "progress": "প্রশ্ন {current}, সর্বোচ্চ {max} এর মধ্যে",
+    "yourAnswers": "আপনার উত্তর",
+    "tapToChange": "পরিবর্তন করতে যেকোনো উত্তরে চাপুন",
+    "clear": "মুছুন",
+    "thinking": "এক মুহূর্ত…",
+    "micUnavailable": "এই ডিভাইসে ভয়েস ইনপুট নেই। আপনি টাইপ করতে পারেন।",
+    "seeResults": "আমার ফলাফল দেখুন"
+  },
+  "results": {
+    "heading": "আপনি কীসের জন্য যোগ্য হতে পারেন",
+    "eligible": "আপনি যোগ্য হতে পারেন",
+    "likelyEligible": "আপনি যোগ্য হতে পারেন, একটি নোট সহ",
+    "ineligible": "আপনার জন্য উপলব্ধ নয়",
+    "needMoreInfo": "আমাদের আরও তথ্য দরকার",
+    "amount": "প্রায় এই পর্যন্ত",
+    "interest": "সুদ",
+    "funding": "খরচের {pct}% পর্যন্ত",
+    "whyThis": "এই প্রকল্প কেন?",
+    "whyNotThis": "এই প্রকল্প কেন নয়?",
+    "hideWhy": "লুকান",
+    "seeExactRule": "সঠিক নিয়ম দেখুন",
+    "ruleIds": "নিয়ম আইডি",
+    "findPartners": "আমার কাছের অফিস খুঁজুন",
+    "readAloud": "পড়ে শোনান",
+    "stopReading": "পড়া বন্ধ করুন",
+    "considerInstead": "পরিবর্তে দেখুন: {scheme}",
+    "unreviewedTranslation": "এই লেখাটি এখনও {language} ভাষাভাষী কেউ যাচাই করেননি।",
+    "indicativeOnly": "পরিমাণ শুধুমাত্র নির্দেশক। আপনার ঋণ চ্যানেল পার্টনার নির্ধারণ করে।",
+    "noResults": "এখনও দেখানোর মতো প্রকল্প নেই। আগে কয়েকটি প্রশ্নের উত্তর দিন।",
+    "empty": "আপনার সম্পর্কে বলে শুরু করুন।"
+  },
+  "partners": {
+    "heading": "যে অফিসগুলি এটি প্রক্রিয়া করতে পারে",
+    "forScheme": "{scheme} এর জন্য",
+    "distance": "{km} কিমি দূরে",
+    "turnaround": "সাধারণত {days} দিন",
+    "load": "{pct}% ব্যস্ত",
+    "whyRankedHere": "এই ক্রম কেন?",
+    "scoreDistance": "দূরত্ব",
+    "scoreTurnaround": "গতি",
+    "scoreAffinity": "এই প্রকল্পের জন্য উপযুক্ত",
+    "scoreLoad": "ক্ষমতা",
+    "nearbyNotAuthorised": "কাছে আছে, কিন্তু সাহায্য করতে পারে না",
+    "nearbyExplainer": "এই অফিসগুলি আপনার কাছে কিন্তু এই প্রকল্প প্রক্রিয়া করতে পারে না।",
+    "showMap": "মানচিত্র দেখান",
+    "showList": "তালিকা দেখান",
+    "noPartners": "এই মুহূর্তে সীমার মধ্যে কোনো অফিস এই প্রকল্প প্রক্রিয়া করতে পারে না।",
+    "syntheticData": "অফিসের বিবরণ ডেমো ডেটা, সরকারি তালিকা আসা বাকি।",
+    "types": {
+      "SCA": "রাজ্য সংস্থা",
+      "PSB": "রাষ্ট্রায়ত্ত ব্যাংক",
+      "RRB": "আঞ্চলিক গ্রামীণ ব্যাংক",
+      "NBFC_MFI": "ক্ষুদ্রঋণ প্রতিষ্ঠান"
+    }
+  },
+  "track": {
+    "heading": "আপনার আবেদন",
+    "reference": "রেফারেন্স নম্বর",
+    "notFound": "আমরা সেই রেফারেন্স নম্বর খুঁজে পাইনি।",
+    "status": {
+      "DRAFT": "খসড়া",
+      "SUBMITTED": "জমা দেওয়া হয়েছে",
+      "PARTNER_ACKNOWLEDGED": "অফিসের কাছে আপনার আবেদন আছে",
+      "DOCS_REQUESTED": "নথি চাওয়া হয়েছে",
+      "UNDER_APPRAISAL": "পর্যালোচনাধীন",
+      "SANCTIONED": "অনুমোদিত",
+      "DISBURSED": "টাকা ছাড়া হয়েছে",
+      "REJECTED": "অনুমোদিত নয়",
+      "WITHDRAWN": "প্রত্যাহার করা হয়েছে"
+    }
+  },
+  "common": {
+    "back": "পিছনে",
+    "retry": "আবার চেষ্টা করুন",
+    "loading": "লোড হচ্ছে…",
+    "error": "কিছু ভুল হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।",
+    "offline": "অফলাইন — সংরক্ষিত ফলাফল দেখাচ্ছে",
+    "offlineQueued": "সংরক্ষিত। অনলাইনে এলে আমরা এটি পাঠাব।",
+    "language": "ভাষা",
+    "changeLanguage": "ভাষা পরিবর্তন করুন",
+    "rupees": "Rs {amount}"
+  },
+  "a11y": {
+    "skipToContent": "মূল বিষয়বস্তুতে যান",
+    "conversation": "কথোপকথন",
+    "micButton": "ভয়েস ইনপুট শুরু করুন",
+    "micButtonStop": "ভয়েস ইনপুট বন্ধ করুন",
+    "schemeCard": "প্রকল্প: {name}, {verdict}",
+    "partnerCard": "অফিস: {name}, {distance} কিলোমিটার দূরে"
+  }
 }

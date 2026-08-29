@@ -43,5 +43,12 @@ jobs:
       - uses: actions/setup-node@v4
         with: {node-version: "22", cache: pnpm}
       - run: pnpm install --frozen-lockfile=false
+      # Translation completeness, no hardcoded copy, and WCAG AA contrast across the
+      # whole palette — not just the colours that happen to be on one audited page.
+      - run: pnpm --filter @setu/web check:i18n
+      - run: pnpm --filter @setu/web check:contrast
       - run: pnpm --filter @setu/web lint
       - run: pnpm --filter @setu/web build
+      # The citizen JS budget (CLAUDE.md: 2G, a Rs 6,000 phone) fails the build rather
+      # than being a number nobody looks at.
+      - run: pnpm --filter @setu/web check:bundle

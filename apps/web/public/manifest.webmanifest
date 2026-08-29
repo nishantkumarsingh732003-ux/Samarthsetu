@@ -1,0 +1,14 @@
+{
+  "name": "SETU — Scheme Eligibility & Transparent Uptake",
+  "short_name": "SETU",
+  "description": "Find the government credit scheme that fits you, and the office that can process it.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F7F5F1",
+  "theme_color": "#0E4266",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/icons/icon-192.svg", "sizes": "192x192", "type": "image/svg+xml", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.svg", "sizes": "512x512", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

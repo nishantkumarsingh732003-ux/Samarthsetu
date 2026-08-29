@@ -85,6 +85,9 @@ class RoutedPartner:
     state: str
     pincode: str | None
     contact: dict[str, Any]
+    # The citizen-facing map needs to place this branch, not just say how far it is.
+    lat: float | None
+    lng: float | None
     distance_km: float | None
     avg_turnaround_days: int | None
     active_load: int | None
@@ -106,6 +109,8 @@ class RoutedPartner:
             "state": self.state,
             "pincode": self.pincode,
             "contact": self.contact,
+            "lat": self.lat,
+            "lng": self.lng,
             "distance_km": self.distance_km,
             "avg_turnaround_days": self.avg_turnaround_days,
             "active_load": self.active_load,
@@ -205,7 +210,9 @@ async def find_partners(
         else None
     )
 
-    columns = [ChannelPartner, auth]
+    # geom is GEOGRAPHY; ST_X/ST_Y need GEOMETRY.
+    as_geometry = cast(ChannelPartner.geom, Geometry)
+    columns = [ChannelPartner, auth, func.ST_Y(as_geometry), func.ST_X(as_geometry)]
     if distance_expr is not None:
         columns.append(distance_expr.label("distance_m"))
 
@@ -230,14 +237,16 @@ async def find_partners(
     for row in rows:
         partner: ChannelPartner = row[0]
         authorisation: PartnerSchemeAuthorisation | None = row[1]
-        distance_km = round(row[2] / 1000.0, 2) if distance_expr is not None else None
+        lat = float(row[2]) if row[2] is not None else None
+        lng = float(row[3]) if row[3] is not None else None
+        distance_km = round(row[4] / 1000.0, 2) if distance_expr is not None else None
 
         rejection = _reject_reason(partner, authorisation, scheme, amount, district, distance_km)
         if rejection is not None:
             rejected.append(rejection)
             continue
 
-        accepted.append(_score(partner, authorisation, scheme, distance_km))
+        accepted.append(_score(partner, authorisation, scheme, distance_km, lat, lng))
 
     accepted.sort(key=lambda p: (-p.score, p.distance_km or 0.0, p.name))
     top = accepted[:TOP_N_RESULTS]
@@ -340,6 +349,8 @@ def _score(
     auth: PartnerSchemeAuthorisation,
     scheme: Scheme,
     distance_km: float | None,
+    lat: float | None = None,
+    lng: float | None = None,
 ) -> RoutedPartner:
     components = {
         "distance": {
@@ -382,6 +393,8 @@ def _score(
         state=partner.state,
         pincode=partner.pincode,
         contact=dict(partner.contact or {}),
+        lat=lat,
+        lng=lng,
         distance_km=distance_km,
         avg_turnaround_days=auth.avg_turnaround_days,
         active_load=auth.active_load,

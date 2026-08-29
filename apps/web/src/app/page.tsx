@@ -1,43 +1,63 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1";
-const API_ORIGIN = API_BASE.replace(/\/api\/v1\/?$/, "");
+import Link from "next/link";
 
-export default function Home() {
+import { LOCALES, LOCALE_NAMES, isReviewed } from "@/i18n/config";
+
+/**
+ * The language picker.
+ *
+ * Deliberately outside the locale segment: we do not know the citizen's language yet,
+ * so this page is almost entirely native-script names and needs no translation. One
+ * decision, six large targets, no wall of text.
+ */
+export default function LanguagePicker() {
   return (
-    <main className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center gap-8 px-6 py-16">
-      <header className="space-y-3">
-        <p className="text-sm font-medium uppercase tracking-widest text-slate-500">
-          Ministry of Social Justice &amp; Empowerment
-        </p>
-        <h1 className="text-4xl font-semibold tracking-tight text-slate-900">SETU</h1>
-        <p className="text-lg text-slate-700">Scheme Eligibility &amp; Transparent Uptake</p>
-      </header>
+    <html lang="en">
+      <body className="min-h-screen bg-canvas text-ink antialiased">
+        <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-5 py-10">
+          <header className="mb-8">
+            <p className="text-sm font-medium uppercase tracking-widest text-ink-faint">
+              भारत सरकार · Government of India
+            </p>
+            <h1 className="mt-2 text-3xl font-semibold tracking-tight">SETU</h1>
+            <p className="mt-1 text-lg text-ink-muted">सेतु</p>
+          </header>
 
-      <p className="text-base leading-relaxed text-slate-700">
-        Find the government credit scheme that fits you, and the nearest Channel Partner
-        authorised to process it. Eligibility is decided by a versioned, auditable rule
-        engine — never by a language model.
-      </p>
+          <h2 className="mb-4 text-xl font-medium">
+            अपनी भाषा चुनें
+            <span className="block text-base font-normal text-ink-muted">
+              Choose your language
+            </span>
+          </h2>
 
-      <section className="rounded-lg border border-slate-200 bg-white p-5">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-500">
-          Build status
-        </h2>
-        <p className="mt-2 text-slate-700">
-          Phase 0 — foundation and data model. The citizen journey lands in Phase 4.
-        </p>
-        <ul className="mt-4 space-y-1 text-sm">
-          <li>
-            <a className="text-sky-800 underline underline-offset-4" href={`${API_ORIGIN}/docs`}>
-              API documentation
-            </a>
-          </li>
-          <li>
-            <a className="text-sky-800 underline underline-offset-4" href={`${API_ORIGIN}/health`}>
-              API health check
-            </a>
-          </li>
-        </ul>
-      </section>
-    </main>
+          <nav aria-label="Choose your language">
+            <ul className="space-y-3">
+              {LOCALES.map((locale) => (
+                <li key={locale}>
+                  <Link
+                    href={`/${locale}`}
+                    lang={locale}
+                    className="btn-secondary w-full justify-between text-xl"
+                  >
+                    <span>{LOCALE_NAMES[locale]}</span>
+                    {!isReviewed(locale) && (
+                      // Honest labelling: this copy has not been read by a speaker of
+                      // the language. See packages/rules/translations/README.md.
+                      <span className="rounded bg-warn-bg px-2 py-1 text-xs font-medium text-warn-fg">
+                        draft
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
+
+          <p className="mt-8 text-sm text-ink-faint">
+            Marked <span className="font-medium">draft</span> means the wording has not
+            yet been checked by a speaker of that language.
+          </p>
+        </main>
+      </body>
+    </html>
   );
 }

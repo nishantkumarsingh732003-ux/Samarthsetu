@@ -7,7 +7,7 @@ Nothing here is a surprise on demo day if it is read first.
 
 **Legend** — 🔴 blocks the demo · 🟡 weakens the demo · 🟢 tracked, not urgent
 
-Last reviewed: 2026-08-29 (after Phase 3)
+Last reviewed: 2026-08-29 (after Phase 4)
 
 ---
 
@@ -160,6 +160,45 @@ rather than a path-hacked copy.
 
 ---
 
+## 🟡 OI-27 — the citizen app has only been tested in a browser engine
+
+**Status:** open · **Owner:** needs a real device · **Since:** Phase 4
+
+Lighthouse scores 100 across performance, accessibility, best practices and SEO on the
+production build under mobile emulation with throttling, and the JS budget is enforced
+in CI at 113.9 KB of 200 KB gzipped.
+
+What has **not** been tested is the thing CLAUDE.md actually names: a Rs 6,000 phone on
+a 2G connection, one-handed, in sunlight. Emulated throttling is not the same as a
+cheap Android device with a slow CPU and a weak radio, and no emulator tells you whether
+a 48px target is reachable with a thumb or whether the palette survives direct sun.
+
+Specifically unexercised: Web Speech API recognition on a low-end Android browser (it is
+feature-detected and falls back to typing, but the fallback is what has been tested, not
+the speech path), and the service worker's offline behaviour on a real flaky connection
+rather than DevTools' offline toggle.
+
+**To close:** run the full flow on the cheapest Android phone available, outdoors, on a
+throttled connection.
+
+---
+
+## 🟡 OI-28 — five of six web catalogues are unreviewed
+
+**Status:** open · **Owner:** needs a human reviewer · **Since:** Phase 4
+
+`apps/web/messages/*.json` mirrors the rule-engine translation discipline: 88 keys per
+language, `_meta.status` on every catalogue, and `check:i18n` failing the build if a key
+is missing or a status is undeclared. English and Hindi are `verified`; Marathi, Bengali,
+Tamil and Telugu are `draft`.
+
+The language picker badges draft languages, and the results page carries a banner
+saying the wording has not been checked. That is honest, not a substitute for review.
+
+Same fix as OI-4: a fluent speaker reads one file and flips the status.
+
+---
+
 ## 🟡 OI-19 — the LLM path has never been executed
 
 **Status:** CLOSED 2026-08-29 · **Owner:** needs an API key · **Since:** Phase 3
@@ -286,6 +325,8 @@ per-phase trail. From Phase 2 onward, commits are made as work lands.
 | OI-19 | LLM path never executed — closed against Groq | 2026-08-29 |
 | OI-22 | An LLM returning a correct value in the wrong shape (`"female"` for `FEMALE`) failed the entire conversational turn with a 422. Values are now coerced to the profile contract or dropped. | 2026-08-29 |
 | OI-24 | The model was handed the rupee amount and phrased it as a disbursement. It is no longer given the figure at all; the amount sentence is rendered by us and appended. | 2026-08-29 |
+| OI-29 | The API test suite made live model calls on any machine with a provider key exported — four failures and a seven-minute run instead of one second. A `conftest.py` autouse fixture now forces the provider off for every test. | 2026-08-29 |
+| OI-30 | `ink-faint` on the page ground was 4.34:1, under WCAG AA. Darkened to 5.33:1, and `check:contrast` now tests every palette pair rather than only colours Lighthouse happens to see. | 2026-08-29 |
 | OI-26 | The API response schema silently dropped `translation_status`, so a UI could not tell reviewed copy from machine-written copy. Added to `MatchResultOut`. | 2026-08-29 |
 | OI-25 | `redirect_suggestion` carried an internal scheme code, which the model printed to the citizen as "NSFDC_MICRO_FINANCE". Codes now resolve to official names before reaching the model or the template. | 2026-08-29 |
 | OI-23 | An LLM machine-translated the official scheme name into Hindi. Explanations that do not preserve the official name verbatim are now discarded. | 2026-08-29 |

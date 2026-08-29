@@ -1,9 +1,115 @@
 {
-  "app": {
-    "title": "",
-    "tagline": ""
+  "_meta": {
+    "status": "draft",
+    "note": "Machine-drafted, not reviewed by a native speaker. See packages/rules/translations/README.md for the review checklist."
   },
-  "onboarding": {},
-  "match": {},
-  "partners": {}
+  "app": {
+    "title": "सेतू",
+    "tagline": "तुमच्यासाठी योग्य असलेली योजना आणि ती हाताळू शकणारे कार्यालय शोधा",
+    "ministry": "सामाजिक न्याय आणि अधिकारिता मंत्रालय"
+  },
+  "home": {
+    "chooseLanguage": "तुमची भाषा निवडा",
+    "continue": "पुढे जा",
+    "start": "माझी योजना शोधा",
+    "startAria": "सुरू करा: काही प्रश्नांची उत्तरे द्या आणि तुमच्यासाठी योग्य योजना शोधा"
+  },
+  "assist": {
+    "heading": "तुमच्याबद्दल सांगा",
+    "speak": "बोलण्यासाठी दाबा",
+    "listening": "ऐकत आहोत…",
+    "stop": "थांबा",
+    "typeInstead": "टाइप करा",
+    "placeholder": "तुमचे उत्तर लिहा",
+    "send": "पाठवा",
+    "progress": "प्रश्न {current}, जास्तीत जास्त {max} पैकी",
+    "yourAnswers": "तुमची उत्तरे",
+    "tapToChange": "बदलण्यासाठी कोणत्याही उत्तरावर दाबा",
+    "clear": "पुसा",
+    "thinking": "एक क्षण…",
+    "micUnavailable": "या उपकरणावर आवाजाने इनपुट उपलब्ध नाही. तुम्ही टाइप करू शकता.",
+    "seeResults": "माझे निकाल पहा"
+  },
+  "results": {
+    "heading": "तुम्ही कशासाठी पात्र असू शकता",
+    "eligible": "तुम्ही पात्र असू शकता",
+    "likelyEligible": "तुम्ही पात्र असू शकता, एका सूचनेसह",
+    "ineligible": "तुमच्यासाठी उपलब्ध नाही",
+    "needMoreInfo": "आम्हाला अधिक माहिती हवी",
+    "amount": "अंदाजे इतक्यापर्यंत",
+    "interest": "व्याज",
+    "funding": "खर्चाच्या {pct}% पर्यंत",
+    "whyThis": "ही योजना का?",
+    "whyNotThis": "ही योजना का नाही?",
+    "hideWhy": "लपवा",
+    "seeExactRule": "नेमका नियम पहा",
+    "ruleIds": "नियम आयडी",
+    "findPartners": "माझ्याजवळचे कार्यालय शोधा",
+    "readAloud": "वाचून दाखवा",
+    "stopReading": "वाचणे थांबवा",
+    "considerInstead": "त्याऐवजी पहा: {scheme}",
+    "unreviewedTranslation": "हा मजकूर अद्याप {language} बोलणाऱ्याने तपासलेला नाही.",
+    "indicativeOnly": "रक्कम केवळ सूचक आहे. तुमचे कर्ज चॅनेल पार्टनर ठरवतो.",
+    "noResults": "अजून दाखवण्यासाठी योजना नाही. आधी काही प्रश्नांची उत्तरे द्या.",
+    "empty": "तुमच्याबद्दल सांगून सुरुवात करा."
+  },
+  "partners": {
+    "heading": "जी कार्यालये हे हाताळू शकतात",
+    "forScheme": "{scheme} साठी",
+    "distance": "{km} किमी दूर",
+    "turnaround": "सामान्यतः {days} दिवस",
+    "load": "{pct}% व्यस्त",
+    "whyRankedHere": "हा क्रम का?",
+    "scoreDistance": "अंतर",
+    "scoreTurnaround": "वेग",
+    "scoreAffinity": "या योजनेसाठी योग्य",
+    "scoreLoad": "क्षमता",
+    "nearbyNotAuthorised": "जवळ आहेत, पण मदत करू शकत नाहीत",
+    "nearbyExplainer": "ही कार्यालये तुमच्याजवळ आहेत पण ही योजना हाताळू शकत नाहीत.",
+    "showMap": "नकाशा दाखवा",
+    "showList": "यादी दाखवा",
+    "noPartners": "सध्या मर्यादेत कोणतेही कार्यालय ही योजना हाताळू शकत नाही.",
+    "syntheticData": "कार्यालयाची माहिती डेमो आहे, अधिकृत यादी येणे बाकी आहे.",
+    "types": {
+      "SCA": "राज्य संस्था",
+      "PSB": "सार्वजनिक क्षेत्रातील बँक",
+      "RRB": "प्रादेशिक ग्रामीण बँक",
+      "NBFC_MFI": "मायक्रोफायनान्स संस्था"
+    }
+  },
+  "track": {
+    "heading": "तुमचा अर्ज",
+    "reference": "संदर्भ क्रमांक",
+    "notFound": "तो संदर्भ क्रमांक आम्हाला सापडला नाही.",
+    "status": {
+      "DRAFT": "मसुदा",
+      "SUBMITTED": "सादर केले",
+      "PARTNER_ACKNOWLEDGED": "कार्यालयाकडे तुमचा अर्ज आहे",
+      "DOCS_REQUESTED": "कागदपत्रे मागितली",
+      "UNDER_APPRAISAL": "पुनरावलोकनाधीन",
+      "SANCTIONED": "मंजूर",
+      "DISBURSED": "रक्कम वितरित",
+      "REJECTED": "मंजूर नाही",
+      "WITHDRAWN": "मागे घेतले"
+    }
+  },
+  "common": {
+    "back": "मागे",
+    "retry": "पुन्हा प्रयत्न करा",
+    "loading": "लोड होत आहे…",
+    "error": "काहीतरी चूक झाली. कृपया पुन्हा प्रयत्न करा.",
+    "offline": "ऑफलाइन — जतन केलेले निकाल दिसत आहेत",
+    "offlineQueued": "जतन केले. ऑनलाइन आल्यावर आम्ही हे पाठवू.",
+    "language": "भाषा",
+    "changeLanguage": "भाषा बदला",
+    "rupees": "Rs {amount}"
+  },
+  "a11y": {
+    "skipToContent": "मुख्य मजकुरावर जा",
+    "conversation": "संवाद",
+    "micButton": "आवाजाने इनपुट सुरू करा",
+    "micButtonStop": "आवाजाने इनपुट थांबवा",
+    "schemeCard": "योजना: {name}, {verdict}",
+    "partnerCard": "कार्यालय: {name}, {distance} किलोमीटर दूर"
+  }
 }

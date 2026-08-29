@@ -1,9 +1,115 @@
 {
-  "app": {
-    "title": "",
-    "tagline": ""
+  "_meta": {
+    "status": "draft",
+    "note": "Machine-drafted, not reviewed by a native speaker. See packages/rules/translations/README.md for the review checklist."
   },
-  "onboarding": {},
-  "match": {},
-  "partners": {}
+  "app": {
+    "title": "సేతు",
+    "tagline": "మీకు సరిపోయే పథకాన్ని, దాన్ని ప్రాసెస్ చేయగల కార్యాలయాన్ని కనుగొనండి",
+    "ministry": "సామాజిక న్యాయం మరియు సాధికారత మంత్రిత్వ శాఖ"
+  },
+  "home": {
+    "chooseLanguage": "మీ భాషను ఎంచుకోండి",
+    "continue": "కొనసాగించు",
+    "start": "నా పథకాన్ని కనుగొను",
+    "startAria": "ప్రారంభించు: కొన్ని ప్రశ్నలకు సమాధానం ఇచ్చి మీకు సరిపోయే పథకాన్ని కనుగొనండి"
+  },
+  "assist": {
+    "heading": "మీ గురించి చెప్పండి",
+    "speak": "మాట్లాడటానికి నొక్కండి",
+    "listening": "వింటున్నాము…",
+    "stop": "ఆపు",
+    "typeInstead": "టైప్ చేయండి",
+    "placeholder": "మీ సమాధానం రాయండి",
+    "send": "పంపు",
+    "progress": "ప్రశ్న {current}, గరిష్ఠంగా {max} లో",
+    "yourAnswers": "మీ సమాధానాలు",
+    "tapToChange": "మార్చడానికి ఏదైనా సమాధానంపై నొక్కండి",
+    "clear": "తుడిచివేయి",
+    "thinking": "ఒక క్షణం…",
+    "micUnavailable": "ఈ పరికరంలో వాయిస్ ఇన్‌పుట్ లేదు. మీరు టైప్ చేయవచ్చు.",
+    "seeResults": "నా ఫలితాలు చూడు"
+  },
+  "results": {
+    "heading": "మీరు దేనికి అర్హులు కావచ్చు",
+    "eligible": "మీరు అర్హులు కావచ్చు",
+    "likelyEligible": "మీరు అర్హులు కావచ్చు, ఒక గమనికతో",
+    "ineligible": "మీకు అందుబాటులో లేదు",
+    "needMoreInfo": "మాకు మరింత సమాచారం కావాలి",
+    "amount": "సుమారు ఇంత వరకు",
+    "interest": "వడ్డీ",
+    "funding": "ఖర్చులో {pct}% వరకు",
+    "whyThis": "ఈ పథకం ఎందుకు?",
+    "whyNotThis": "ఈ పథకం ఎందుకు కాదు?",
+    "hideWhy": "దాచు",
+    "seeExactRule": "ఖచ్చితమైన నియమం చూడు",
+    "ruleIds": "నియమ ఐడీ",
+    "findPartners": "నా దగ్గర కార్యాలయం వెతుకు",
+    "readAloud": "చదివి వినిపించు",
+    "stopReading": "చదవడం ఆపు",
+    "considerInstead": "బదులుగా చూడండి: {scheme}",
+    "unreviewedTranslation": "ఈ వచనాన్ని ఇంకా {language} మాట్లాడేవారు తనిఖీ చేయలేదు.",
+    "indicativeOnly": "మొత్తాలు సూచనప్రాయమే. మీ రుణాన్ని ఛానల్ పార్టనర్ నిర్ణయిస్తారు.",
+    "noResults": "ఇంకా చూపించడానికి పథకాలు లేవు. ముందుగా కొన్ని ప్రశ్నలకు సమాధానం ఇవ్వండి.",
+    "empty": "మీ గురించి చెప్పడం ద్వారా ప్రారంభించండి."
+  },
+  "partners": {
+    "heading": "దీన్ని ప్రాసెస్ చేయగల కార్యాలయాలు",
+    "forScheme": "{scheme} కోసం",
+    "distance": "{km} కిమీ దూరంలో",
+    "turnaround": "సాధారణంగా {days} రోజులు",
+    "load": "{pct}% బిజీ",
+    "whyRankedHere": "ఈ క్రమం ఎందుకు?",
+    "scoreDistance": "దూరం",
+    "scoreTurnaround": "వేగం",
+    "scoreAffinity": "ఈ పథకానికి సరిపోతుంది",
+    "scoreLoad": "సామర్థ్యం",
+    "nearbyNotAuthorised": "దగ్గరలో ఉన్నాయి, కానీ సహాయం చేయలేవు",
+    "nearbyExplainer": "ఈ కార్యాలయాలు మీ దగ్గర ఉన్నాయి కానీ ఈ పథకాన్ని ప్రాసెస్ చేయలేవు.",
+    "showMap": "మ్యాప్ చూపించు",
+    "showList": "జాబితా చూపించు",
+    "noPartners": "ప్రస్తుతం పరిధిలో ఏ కార్యాలయం ఈ పథకాన్ని ప్రాసెస్ చేయలేదు.",
+    "syntheticData": "కార్యాలయ వివరాలు డెమో డేటా, అధికారిక జాబితా రావాల్సి ఉంది.",
+    "types": {
+      "SCA": "రాష్ట్ర సంస్థ",
+      "PSB": "ప్రభుత్వ రంగ బ్యాంకు",
+      "RRB": "ప్రాంతీయ గ్రామీణ బ్యాంకు",
+      "NBFC_MFI": "సూక్ష్మ రుణ సంస్థ"
+    }
+  },
+  "track": {
+    "heading": "మీ దరఖాస్తు",
+    "reference": "సూచన సంఖ్య",
+    "notFound": "ఆ సూచన సంఖ్యను మేము కనుగొనలేకపోయాము.",
+    "status": {
+      "DRAFT": "ముసాయిదా",
+      "SUBMITTED": "సమర్పించబడింది",
+      "PARTNER_ACKNOWLEDGED": "కార్యాలయం వద్ద మీ దరఖాస్తు ఉంది",
+      "DOCS_REQUESTED": "పత్రాలు అడిగారు",
+      "UNDER_APPRAISAL": "సమీక్షలో",
+      "SANCTIONED": "ఆమోదించబడింది",
+      "DISBURSED": "డబ్బు విడుదల",
+      "REJECTED": "ఆమోదించలేదు",
+      "WITHDRAWN": "ఉపసంహరించుకున్నారు"
+    }
+  },
+  "common": {
+    "back": "వెనుకకు",
+    "retry": "మళ్ళీ ప్రయత్నించండి",
+    "loading": "లోడ్ అవుతోంది…",
+    "error": "ఏదో తప్పు జరిగింది. దయచేసి మళ్ళీ ప్రయత్నించండి.",
+    "offline": "ఆఫ్‌లైన్ — సేవ్ చేసిన ఫలితాలు చూపిస్తోంది",
+    "offlineQueued": "సేవ్ అయ్యింది. మీరు ఆన్‌లైన్‌లోకి వచ్చినప్పుడు పంపుతాము.",
+    "language": "భాష",
+    "changeLanguage": "భాష మార్చు",
+    "rupees": "Rs {amount}"
+  },
+  "a11y": {
+    "skipToContent": "ప్రధాన విషయానికి వెళ్ళు",
+    "conversation": "సంభాషణ",
+    "micButton": "వాయిస్ ఇన్‌పుట్ ప్రారంభించు",
+    "micButtonStop": "వాయిస్ ఇన్‌పుట్ ఆపు",
+    "schemeCard": "పథకం: {name}, {verdict}",
+    "partnerCard": "కార్యాలయం: {name}, {distance} కిలోమీటర్ల దూరంలో"
+  }
 }

@@ -295,15 +295,43 @@ deployed application.
 
 ## Status
 
-Phases 0 (foundation), 1 (eligibility engine), 2 (partner registry and geo routing) and
-3 (conversational intake) are complete. See [CLAUDE.md](CLAUDE.md)
+Phases 0 (foundation), 1 (eligibility engine), 2 (partner registry and geo routing),
+3 (conversational intake) and 4 (citizen frontend) are complete. See [CLAUDE.md](CLAUDE.md)
 for the engineering contract every phase must satisfy.
 
 ```bash
 pytest packages/rules -q          # 97 tests — the eligibility engine
 pnpm --filter @setu/rules test    # 19 tests — TypeScript conformance with Python
-cd apps/api && pytest -q          # 113 tests — schema, routing, numerals, conversation
+cd apps/api && pytest -q          # 184 tests — schema, routing, numerals, conversation
+pnpm --filter @setu/web check     # i18n parity, WCAG AA contrast, build, JS budget
 ```
+
+### The citizen app
+
+Five routes: a language picker at `/`, then `/[locale]` and `/[locale]/assist`,
+`/[locale]/results`, `/[locale]/results/[scheme]/partners`, `/[locale]/track/[ref]`.
+
+Lighthouse on the production build, mobile emulation with throttling:
+
+| Route | Performance | Accessibility | Best Practices | SEO |
+|---|---|---|---|---|
+| `/en` | 100 | 100 | 100 | 100 |
+| `/hi` | 100 | 100 | 100 | 100 |
+| `/ta` | 100 | 100 | 100 | 100 |
+
+FCP 0.8s · LCP 1.8s · TBT 0ms · CLS 0.
+
+**JS budget: 113.9 KB gzipped of 200 KB** on the worst citizen route. Leaflet is ~150 KB
+and is dynamically imported, so a citizen who never opens the map never downloads it.
+`check:bundle` fails the build if a route crosses the line.
+
+Three checks guard the things that are easy to regress silently:
+
+- `check:i18n` — key parity across all six catalogues, every catalogue declaring whether
+  it was reviewed, and no hardcoded English in a component
+- `check:contrast` — every foreground/background pair in the palette against WCAG AA,
+  whether or not a page currently uses it
+- `check:bundle` — gzipped First Load JS per citizen route
 
 Known gaps and blockers are tracked in [docs/OPEN_ITEMS.md](docs/OPEN_ITEMS.md).
 

@@ -1,24 +1,115 @@
 {
+  "_meta": {
+    "status": "verified",
+    "note": "English is the fallback locale and the source of truth for keys."
+  },
   "app": {
-    "title": "Scheme Saarthi",
-    "tagline": "Find the right loan scheme and the nearest partner who can process it"
+    "title": "SETU",
+    "tagline": "Find the scheme that fits you, and the office that can process it",
+    "ministry": "Ministry of Social Justice & Empowerment"
   },
-  "onboarding": {
-    "start": "Get started",
-    "speakInstead": "Speak instead of typing",
-    "income": "Annual family income",
-    "purpose": "What do you need the money for?",
-    "amount": "How much do you need?"
+  "home": {
+    "chooseLanguage": "Choose your language",
+    "continue": "Continue",
+    "start": "Find my scheme",
+    "startAria": "Start: answer a few questions and find the scheme that fits you"
   },
-  "match": {
-    "eligible": "You are eligible for",
-    "notEligible": "Not available to you",
-    "whyThis": "Why this scheme",
-    "documents": "Documents you will need"
+  "assist": {
+    "heading": "Tell us about yourself",
+    "speak": "Tap to speak",
+    "listening": "Listening…",
+    "stop": "Stop",
+    "typeInstead": "Type instead",
+    "placeholder": "Type your answer",
+    "send": "Send",
+    "progress": "Question {current} of at most {max}",
+    "yourAnswers": "Your answers",
+    "tapToChange": "Tap any answer to change it",
+    "clear": "Clear",
+    "thinking": "One moment…",
+    "micUnavailable": "Voice input is not available on this device. You can type instead.",
+    "seeResults": "See my results"
+  },
+  "results": {
+    "heading": "What you may be eligible for",
+    "eligible": "You may be eligible",
+    "likelyEligible": "You may be eligible, with a note",
+    "ineligible": "Not available to you",
+    "needMoreInfo": "We need more information",
+    "amount": "Up to about",
+    "interest": "Interest",
+    "funding": "Covers up to {pct}% of cost",
+    "whyThis": "Why this scheme?",
+    "whyNotThis": "Why not this scheme?",
+    "hideWhy": "Hide",
+    "seeExactRule": "See the exact rule",
+    "ruleIds": "Rule IDs",
+    "findPartners": "Find an office near me",
+    "readAloud": "Read aloud",
+    "stopReading": "Stop reading",
+    "considerInstead": "Consider instead: {scheme}",
+    "unreviewedTranslation": "This text has not yet been checked by a {language} speaker.",
+    "indicativeOnly": "Amounts are indicative. A Channel Partner decides your loan.",
+    "noResults": "No schemes to show yet. Answer a few questions first.",
+    "empty": "Start by telling us about yourself."
   },
   "partners": {
-    "nearest": "Nearest authorized partner",
+    "heading": "Offices that can process this",
+    "forScheme": "For {scheme}",
     "distance": "{km} km away",
-    "handles": "Handles: {categories}"
+    "turnaround": "{days} days typical",
+    "load": "{pct}% busy",
+    "whyRankedHere": "Why this order?",
+    "scoreDistance": "Distance",
+    "scoreTurnaround": "Speed",
+    "scoreAffinity": "Suited to this scheme",
+    "scoreLoad": "Capacity",
+    "nearbyNotAuthorised": "Nearby, but cannot help",
+    "nearbyExplainer": "These offices are close to you but cannot process this scheme.",
+    "showMap": "Show map",
+    "showList": "Show list",
+    "noPartners": "No office within range can process this scheme right now.",
+    "syntheticData": "Office details are demo data pending the official partner list.",
+    "types": {
+      "SCA": "State agency",
+      "PSB": "Public sector bank",
+      "RRB": "Regional rural bank",
+      "NBFC_MFI": "Microfinance institution"
+    }
+  },
+  "track": {
+    "heading": "Your application",
+    "reference": "Reference",
+    "notFound": "We could not find that reference number.",
+    "status": {
+      "DRAFT": "Draft",
+      "SUBMITTED": "Submitted",
+      "PARTNER_ACKNOWLEDGED": "Office has your application",
+      "DOCS_REQUESTED": "Documents requested",
+      "UNDER_APPRAISAL": "Under review",
+      "SANCTIONED": "Approved",
+      "DISBURSED": "Money released",
+      "REJECTED": "Not approved",
+      "WITHDRAWN": "Withdrawn"
+    }
+  },
+  "common": {
+    "back": "Back",
+    "retry": "Try again",
+    "loading": "Loading…",
+    "error": "Something went wrong. Please try again.",
+    "offline": "Offline — showing saved results",
+    "offlineQueued": "Saved. We will send this when you are back online.",
+    "language": "Language",
+    "changeLanguage": "Change language",
+    "rupees": "Rs {amount}"
+  },
+  "a11y": {
+    "skipToContent": "Skip to main content",
+    "conversation": "Conversation",
+    "micButton": "Start voice input",
+    "micButtonStop": "Stop voice input",
+    "schemeCard": "Scheme: {name}, {verdict}",
+    "partnerCard": "Office: {name}, {distance} kilometres away"
   }
 }
