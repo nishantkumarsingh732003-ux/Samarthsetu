@@ -1,0 +1,8 @@
+# Embedding and analytics stack. NOT installed into the API image: sentence-transformers
+# pulls ~2GB of torch and nothing imports it yet. Phase 2+ adds pgvector semantic
+# search; install this then, or in a separate worker image.
+#   pip install -r requirements-ml.txt
+-r requirements.txt
+pandas>=2.2
+scikit-learn>=1.5
+sentence-transformers>=3.3

@@ -21,8 +21,18 @@ import sys
 from collections.abc import Awaitable, Callable
 from pathlib import Path
 
+# The API package sits at <repo>/apps/api on a developer machine and at /app inside the
+# container, where this file is mounted at /scripts. Try both rather than assuming one.
 REPO_ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(REPO_ROOT / "apps" / "api"))
+for candidate in (REPO_ROOT / "apps" / "api", Path("/app")):
+    if (candidate / "app" / "db" / "session.py").is_file():
+        sys.path.insert(0, str(candidate))
+        break
+else:  # pragma: no cover - only reachable from an unexpected layout
+    raise SystemExit(
+        "Cannot locate the API package (looked for app/db/session.py under "
+        f"{REPO_ROOT / 'apps' / 'api'} and /app)."
+    )
 
 from sqlalchemy import text  # noqa: E402
 from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402

@@ -57,7 +57,8 @@ cp .env.example .env
 docker compose up
 ```
 
-That is the whole setup. It builds a Postgres 16 image with **PostGIS and pgvector**,
+That is the whole setup — verified at 39 seconds from destroyed volumes to a healthy
+stack. It builds a Postgres 16 image with **PostGIS and pgvector**,
 creates both extensions on first start (`scripts/seed/00_extensions.sql`), waits for the
 database, applies `alembic upgrade head`, and serves the API and web app.
 

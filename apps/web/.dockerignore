@@ -1,0 +1,11 @@
+# The host node_modules is a pnpm workspace tree whose symlinks point at Windows
+# absolute paths (C:/Users/.../node_modules/.pnpm/...). Copying it into the image
+# overwrites the Linux install done by `pnpm install` and leaves `next` unresolvable.
+node_modules
+.next
+.turbo
+*.tsbuildinfo
+npm-debug.log*
+.env
+.env.*
+!.env.example

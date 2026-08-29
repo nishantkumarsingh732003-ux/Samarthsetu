@@ -13,30 +13,23 @@ Last reviewed: 2026-08-29 (after Phase 1)
 
 ## 🔴 OI-1 — `docker compose up` has never been run
 
-**Status:** open · **Owner:** repo owner · **Since:** Phase 0
+**Status:** CLOSED 2026-08-29 · **Owner:** repo owner · **Since:** Phase 0
 
-Docker is not installed on the development machine (`docker.exe` not on PATH, no
-`C:\Program Files\Docker`). Phase 0's headline acceptance criterion — *"`docker compose
-up` from a clean clone gives a healthy API at /health and a Next.js page at /"* — is
-therefore **unverified**.
+Docker Desktop was installed and the full stack verified end to end:
+**39 seconds from `docker compose down -v` to a healthy stack.**
 
-What *is* verified without Docker: the migration renders correct PostgreSQL DDL
-(`alembic upgrade head --sql`), the schema tests run with no database, the API serves
-`/health` under uvicorn, and the web app builds.
+| Verified against the running system | |
+|---|---|
+| PostGIS + pgvector in one image | `postgis 3.4.3`, `vector 0.8.6` |
+| `alembic upgrade head` on a real database | applied cleanly, 11 tables + `alembic_version` |
+| GIST indexes | `ix_channel_partners_geom`, `ix_citizens_geom` |
+| GIN index | `ix_partner_scheme_authorisations_service_districts` |
+| `GET /health` | `200 {"status":"ok"}` |
+| `GET /docs` · `GET /` | `200` · `200` |
+| Seed runner in-container | extensions verified, 0 seeders registered (correct for this phase) |
 
-What is **not** verified: the compose file itself, the custom PostGIS + pgvector image
-(`infra/docker/postgres/Dockerfile`), the entrypoint's wait-then-migrate sequence, and
-whether `postgresql-16-pgvector` is actually installable on the `postgis/postgis:16-3.4`
-base.
-
-**To close:**
-```powershell
-winget install Docker.DockerDesktop     # needs WSL2 and a reboot
-docker compose up                        # then confirm /health and http://localhost:3000
-```
-
-**If it stays open:** the demo cannot be run from a clean clone, which is the single
-thing the acceptance criteria are built around.
+Four bugs were found and fixed only because the stack was actually run — see the Closed
+table (OI-12 through OI-15).
 
 ---
 
@@ -167,3 +160,8 @@ per-phase trail. From Phase 2 onward, commits are made as work lands.
 | OI-2 | No git repository in the project directory | 2026-08-29 |
 | OI-10 | `packages/rules/dist/rules.json` was gitignored, so CI would fail on a fresh clone — the TypeScript conformance test imports it. `.gitignore` now re-includes it. | 2026-08-29 |
 | OI-11 | `max_amount` conflated the project-cost band with the loan cap, overstating what a citizen could borrow (Rs 1,26,000 shown against a Rs 1,25,000 real cap). Split into `max_project_cost` and `max_loan_amount` in engine v2.0.0. | 2026-08-29 |
+| OI-1 | `docker compose up` never run — Docker not installed | 2026-08-29 |
+| OI-12 | Shell scripts and Dockerfiles were checked out CRLF on Windows, so `#!/usr/bin/env bash` would have failed in-container as `bad interpreter`. Added `.gitattributes` forcing LF. | 2026-08-29 |
+| OI-13 | `apps/web` had no `.dockerignore`, so `COPY . .` copied the host pnpm workspace `node_modules` whose symlinks point at Windows absolute paths, clobbering the Linux install. The web container died with `Cannot find module '/app/node_modules/next/dist/bin/next'`. | 2026-08-29 |
+| OI-14 | `scripts/seed/run.py` assumed the host layout (`<repo>/apps/api`) and could not import `app` inside the container, where the API is at `/app`. Now tries both. | 2026-08-29 |
+| OI-15 | `sentence-transformers` in `apps/api/requirements.txt` pulled ~2GB of torch into the API image while nothing imported it. Moved to `requirements-ml.txt` for Phase 2+. | 2026-08-29 |
