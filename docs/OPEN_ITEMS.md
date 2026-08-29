@@ -162,9 +162,20 @@ regression-tested:
    matches and routes; a Channel Partner decides. The prompt now forbids approval
    language explicitly.
 
-**Residual risk:** (2) is enforced deterministically, but (3) is prompt-level only —
-approval-flavoured phrasing is hard to detect across six languages. Read the explanation
-copy before demoing.
+**Update 2026-08-29 (later):** (3) is no longer prompt-level. The model is no longer
+given the rupee figure at all — `amount_sentence()` renders it in wording this service
+controls and appends it after the model's prose — so "the amount will be released" is
+unreachable rather than discouraged. A narrow multilingual blocklist backstops prose
+that claims an approval without quoting a figure, and a test asserts our own template
+never trips it.
+
+A fourth defect surfaced in the same live run: `redirect_suggestion` is an internal code,
+and the model faithfully printed **"NSFDC_MICRO_FINANCE"** to the citizen. Codes are now
+resolved to official names before they reach either the model or the template.
+
+**Residual risk:** the approval blocklist covers English and Hindi. Marathi, Bengali,
+Tamil and Telugu prose is unguarded against approval phrasing, which is the same gap as
+OI-4 and OI-20 — those languages have no reviewed copy anywhere in the system yet.
 
 ### Original entry
 
@@ -248,6 +259,8 @@ per-phase trail. From Phase 2 onward, commits are made as work lands.
 | OI-8 | Rule engine not wired into the API | 2026-08-29 |
 | OI-19 | LLM path never executed — closed against Groq | 2026-08-29 |
 | OI-22 | An LLM returning a correct value in the wrong shape (`"female"` for `FEMALE`) failed the entire conversational turn with a 422. Values are now coerced to the profile contract or dropped. | 2026-08-29 |
+| OI-24 | The model was handed the rupee amount and phrased it as a disbursement. It is no longer given the figure at all; the amount sentence is rendered by us and appended. | 2026-08-29 |
+| OI-25 | `redirect_suggestion` carried an internal scheme code, which the model printed to the citizen as "NSFDC_MICRO_FINANCE". Codes now resolve to official names before reaching the model or the template. | 2026-08-29 |
 | OI-23 | An LLM machine-translated the official scheme name into Hindi. Explanations that do not preserve the official name verbatim are now discarded. | 2026-08-29 |
 | OI-21 | The orchestrator asked the same question three turns running when a citizen did not answer it. `next_best_question` now takes an `exclude` set, in both the Python and TypeScript engines. | 2026-08-29 |
 | OI-16 | Partner service areas were random districts within a state, so a Mumbai branch "served" Nagpur 687km away and the router ranked it. Service areas are now the geographically nearest districts, and routing rejects anything beyond a 150km radius with a stated reason. | 2026-08-29 |

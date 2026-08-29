@@ -39,13 +39,36 @@ given, without suggesting the decision might change.
 
 CRITICAL: this service does not approve, sanction, or disburse anything. It only tells
 the applicant which scheme fits and which Channel Partner can process it; a Channel
-Partner decides the loan. Never write that money will be given, released, sanctioned or
-approved. Amounts are indicative only — say "may be available" or "up to", never "will
-receive" or "is now released".
+Partner decides the loan. Never write that anything is approved, sanctioned, granted,
+released or guaranteed, and never say the applicant will receive money.
+
+CRITICAL: do not mention any rupee amount. You are not given one. The amount is added
+separately, in wording this service controls.
 
 CRITICAL: the scheme name is a legal name. Reproduce it EXACTLY as given, in the Latin \
 script, even when writing in another language. Never translate it, transliterate it, \
 shorten it, or substitute a similar-sounding name."""
+
+
+def scheme_display_name(code: str | None) -> str | None:
+    """Resolve an internal scheme code to the official name a citizen should read.
+
+    `redirect_suggestion` carries a code like NSFDC_MICRO_FINANCE. Passed through
+    unresolved it reaches the citizen verbatim — a live run rendered "आपको
+    NSFDC_MICRO_FINANCE योजना के लिए ... विचार करना चाहिए" — which is both unreadable and
+    not the scheme's legal name.
+    """
+    if not code:
+        return None
+    try:
+        from setu_rules import load_schemes
+
+        for scheme in load_schemes():
+            if scheme.code == code:
+                return scheme.official_name
+    except Exception:  # noqa: BLE001 - a display nicety must never break an explanation
+        logger.warning("could not resolve scheme code %r to a name", code)
+    return code
 
 
 def _preserves_scheme_name(text: str, result: dict[str, Any]) -> bool:
@@ -60,26 +83,51 @@ def _preserves_scheme_name(text: str, result: dict[str, Any]) -> bool:
     return not official or official in text
 
 
+def amount_sentence(result: dict[str, Any], language: str) -> str:
+    """The money sentence, always written by us and never by a model.
+
+    A language model handed a rupee figure will eventually phrase it as a promise —
+    a live run produced "the amount can now be released", which claims a sanction this
+    service never makes. Removing the number from what the model sees makes that class
+    of error unreachable rather than merely discouraged.
+    """
+    amount = result.get("indicative_amount")
+    if not amount or result.get("verdict") not in {"ELIGIBLE", "LIKELY_ELIGIBLE"}:
+        return ""
+    if language == "hi":
+        return f"इस योजना के तहत अधिकतम लगभग Rs {amount:,.0f} तक का ऋण संभव है।"
+    return f"Under this scheme a loan of up to about Rs {amount:,.0f} may be possible."
+
+
+# Words that assert a decision this service does not make. The structural fix above
+# (withholding the amount) removes the common case; this is a backstop for prose that
+# claims an approval without quoting a figure. Deliberately narrow: a false positive
+# only costs a fall back to the template, which is always correct.
+APPROVAL_CLAIMS: tuple[str, ...] = (
+    "approved", "sanctioned", "disbursed", "has been granted", "is released",
+    "will receive", "will get", "guaranteed",
+    "स्वीकृत", "मंजूर", "मंज़ूर", "जारी कर", "मिल जाएगा", "मिलेगा", "गारंटी",
+)
+
+
+def _claims_approval(text: str) -> bool:
+    lowered = text.lower()
+    return any(claim in lowered for claim in APPROVAL_CLAIMS)
+
+
 def _verdict_sentence(result: dict[str, Any], language: str) -> str:
     name = result.get("official_name", result.get("scheme_code", ""))
     verdict = result.get("verdict")
-    amount = result.get("indicative_amount")
 
     if language == "hi":
         if verdict in {"ELIGIBLE", "LIKELY_ELIGIBLE"}:
-            base = f"आप {name} के लिए पात्र हैं।"
-            if amount:
-                base += f" इसके तहत लगभग Rs {amount:,.0f} तक का ऋण मिल सकता है।"
-            return base
+            return f"आप {name} के लिए पात्र हैं।"
         if verdict == "NEED_MORE_INFO":
             return f"{name} के बारे में बताने के लिए हमें कुछ और जानकारी चाहिए।"
         return f"अभी आप {name} के लिए पात्र नहीं हैं।"
 
     if verdict in {"ELIGIBLE", "LIKELY_ELIGIBLE"}:
-        base = f"You are eligible for the {name}."
-        if amount:
-            base += f" It could provide about Rs {amount:,.0f}."
-        return base
+        return f"You are eligible for the {name}."
     if verdict == "NEED_MORE_INFO":
         return f"We need a little more information before we can tell you about the {name}."
     return f"You are not eligible for the {name} right now."
@@ -95,7 +143,7 @@ def template_explanation(result: dict[str, Any], language: str = "en") -> str:
 
     if blocked:
         parts.append(" ".join(r["message"] for r in blocked))
-        redirect = result.get("redirect_suggestion")
+        redirect = scheme_display_name(result.get("redirect_suggestion"))
         if redirect:
             parts.append(
                 f"आप {redirect} के बारे में पूछ सकते हैं।"
@@ -119,6 +167,7 @@ def template_explanation(result: dict[str, Any], language: str = "en") -> str:
                 else f"We still need to know: {readable}."
             )
 
+    parts.append(amount_sentence(result, language))
     return " ".join(p for p in parts if p).strip()
 
 
@@ -150,11 +199,13 @@ async def explain(result: dict[str, Any], language: str = "en") -> dict[str, Any
     reasons = {
         "scheme": result.get("official_name"),
         "verdict": result.get("verdict"),
-        "indicative_amount": result.get("indicative_amount"),
+        # indicative_amount is deliberately absent — see amount_sentence().
         "matched_because": [r["message"] for r in result.get("matched_because") or []],
         "blocked_because": [r["message"] for r in result.get("blocked_because") or []],
         "warnings": [r["message"] for r in result.get("warnings") or []],
-        "redirect_suggestion": result.get("redirect_suggestion"),
+        # Resolved to the official name: the model must never be handed an internal
+        # code, because it will faithfully print it to the citizen.
+        "redirect_suggestion": scheme_display_name(result.get("redirect_suggestion")),
     }
 
     text = await llm.complete_text(
@@ -169,8 +220,14 @@ async def explain(result: dict[str, Any], language: str = "en") -> dict[str, Any
         )
         text = None
 
+    if text and _claims_approval(text):
+        logger.warning("explanation dropped: model implied an approval or disbursement")
+        text = None
+
     if text:
-        return {**payload, "explanation": text, "source": "llm"}
+        # The money sentence is appended by us, in wording we control.
+        combined = " ".join(p for p in (text, amount_sentence(result, language)) if p)
+        return {**payload, "explanation": combined, "source": "llm"}
 
     return {
         **payload,

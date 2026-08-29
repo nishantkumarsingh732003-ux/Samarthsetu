@@ -305,3 +305,142 @@ async def test_prose_that_keeps_the_official_name_is_accepted(env, monkeypatch) 
         "hi",
     )
     assert rendered["source"] == "llm"
+
+
+# --- the amount is never the model's to phrase -------------------------------------------
+
+ELIGIBLE_RESULT = {
+    "scheme_code": "NSFDC_MICRO_FINANCE",
+    "official_name": "Micro Finance Scheme",
+    "verdict": "ELIGIBLE",
+    "indicative_amount": 72000.0,
+    "matched_because": [{"rule_id": "MF_CATEGORY_SC", "message": "You are SC."}],
+    "blocked_because": [],
+    "warnings": [],
+}
+
+
+@pytest.mark.asyncio
+async def test_the_model_is_never_shown_the_amount(env, monkeypatch) -> None:
+    """The structural fix: a model that never receives the figure cannot promise it.
+
+    Asserted against what is actually sent, not against the source text.
+    """
+    env(groq="gsk-key")
+    captured: dict[str, str] = {}
+
+    async def capture(system: str, user: str, **__):
+        captured["system"] = system
+        captured["user"] = user
+        return "You qualify for the Micro Finance Scheme."
+
+    monkeypatch.setattr(llm, "complete_text", capture)
+    await explanation.explain(ELIGIBLE_RESULT, "en")
+
+    assert "72000" not in captured["user"]
+    assert "72,000" not in captured["user"]
+    assert "indicative_amount" not in captured["user"]
+
+
+@pytest.mark.asyncio
+async def test_the_amount_sentence_is_appended_by_us_not_the_model(env, monkeypatch) -> None:
+    env(groq="gsk-key")
+
+    async def prose(*_, **__):
+        return "You qualify for the Micro Finance Scheme because you are SC."
+
+    monkeypatch.setattr(llm, "complete_text", prose)
+    rendered = await explanation.explain(ELIGIBLE_RESULT, "en")
+    assert rendered["source"] == "llm"
+    assert "72,000" in rendered["explanation"]
+    assert "may be possible" in rendered["explanation"]
+
+
+@pytest.mark.asyncio
+async def test_prose_claiming_an_approval_is_discarded(env, monkeypatch) -> None:
+    """"The loan has been sanctioned" is a decision only a Channel Partner makes."""
+    env(groq="gsk-key")
+
+    async def overclaims(*_, **__):
+        return "Your Micro Finance Scheme loan has been sanctioned."
+
+    monkeypatch.setattr(llm, "complete_text", overclaims)
+    rendered = await explanation.explain(ELIGIBLE_RESULT, "en")
+    assert rendered["source"] == "template"
+
+
+@pytest.mark.asyncio
+async def test_hindi_prose_claiming_disbursement_is_discarded(env, monkeypatch) -> None:
+    env(groq="gsk-key")
+
+    async def overclaims(*_, **__):
+        return "आपको Micro Finance Scheme से पैसा मिल जाएगा।"
+
+    monkeypatch.setattr(llm, "complete_text", overclaims)
+    rendered = await explanation.explain(ELIGIBLE_RESULT, "hi")
+    assert rendered["source"] == "template"
+
+
+@pytest.mark.parametrize("language", ["en", "hi"])
+def test_our_own_template_never_trips_the_approval_backstop(language: str) -> None:
+    """A fallback that its own guard rejects would be an infinite embarrassment."""
+    for verdict in ("ELIGIBLE", "LIKELY_ELIGIBLE", "INELIGIBLE", "NEED_MORE_INFO"):
+        rendered = explanation.template_explanation(
+            {**ELIGIBLE_RESULT, "verdict": verdict}, language
+        )
+        assert not explanation._claims_approval(rendered), rendered
+
+
+@pytest.mark.parametrize("language", ["en", "hi"])
+def test_no_amount_is_shown_for_an_ineligible_scheme(language: str) -> None:
+    assert explanation.amount_sentence({**ELIGIBLE_RESULT, "verdict": "INELIGIBLE"}, language) == ""
+
+
+# --- internal codes must never reach a citizen -------------------------------------------
+
+
+def test_a_scheme_code_resolves_to_its_official_name() -> None:
+    assert explanation.scheme_display_name("NSFDC_MICRO_FINANCE") == "Micro Finance Scheme"
+    assert explanation.scheme_display_name("NSFDC_TERM_LOAN") == "Term Loan"
+    assert explanation.scheme_display_name(None) is None
+
+
+@pytest.mark.parametrize("language", ["en", "hi"])
+def test_the_template_redirect_names_the_scheme_not_its_code(language: str) -> None:
+    blocked = {
+        "scheme_code": "NSFDC_TERM_LOAN",
+        "official_name": "Term Loan",
+        "verdict": "INELIGIBLE",
+        "matched_because": [],
+        "blocked_because": [{"rule_id": "TL_PROJECT_COST_FLOOR", "message": "Too small."}],
+        "warnings": [],
+        "redirect_suggestion": "NSFDC_MICRO_FINANCE",
+    }
+    rendered = explanation.template_explanation(blocked, language)
+    assert "NSFDC_" not in rendered
+    assert "Micro Finance Scheme" in rendered
+
+
+@pytest.mark.asyncio
+async def test_the_model_is_never_handed_a_raw_scheme_code(env, monkeypatch) -> None:
+    env(groq="gsk-key")
+    captured: dict[str, str] = {}
+
+    async def capture(system: str, user: str, **__):
+        captured["user"] = user
+        return "You could ask about the Micro Finance Scheme."
+
+    monkeypatch.setattr(llm, "complete_text", capture)
+    await explanation.explain(
+        {
+            "scheme_code": "NSFDC_TERM_LOAN",
+            "official_name": "Term Loan",
+            "verdict": "INELIGIBLE",
+            "matched_because": [],
+            "blocked_because": [],
+            "warnings": [],
+            "redirect_suggestion": "NSFDC_MICRO_FINANCE",
+        },
+        "en",
+    )
+    assert "NSFDC_" not in captured["user"]
