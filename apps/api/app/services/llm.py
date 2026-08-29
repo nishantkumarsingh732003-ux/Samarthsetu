@@ -44,7 +44,7 @@ OPENAI_COMPATIBLE: frozenset[Provider] = frozenset({Provider.XAI, Provider.GROQ}
 DEFAULT_MODELS: dict[Provider, str] = {
     Provider.ANTHROPIC: "claude-sonnet-5",
     Provider.XAI: "grok-4",
-    Provider.GROQ: "llama-3.3-70b-versatile",
+    Provider.GROQ: "qwen/qwen3.8-27b",
 }
 
 
@@ -179,7 +179,21 @@ async def complete_text(system: str, user: str, max_tokens: int = 400) -> str | 
                 {"role": "user", "content": user},
             ],
         )
-        return (response.choices[0].message.content or "").strip() or None
+        choice = response.choices[0]
+        content = (choice.message.content or "").strip()
+
+        # Reasoning models (Groq's gpt-oss-*, among others) spend the token budget on
+        # a hidden reasoning field and return empty content when it runs out. Without
+        # this branch that is indistinguishable from an outage, and the caller silently
+        # falls back to a template while the model is in fact fine.
+        if not content and choice.finish_reason == "length":
+            logger.warning(
+                "LLM returned no content within max_tokens=%s (%s/%s) — likely a "
+                "reasoning model that exhausted the budget before answering. Raise "
+                "max_tokens or choose a non-reasoning model.",
+                max_tokens, provider, model,
+            )
+        return content or None
 
     except Exception as exc:  # noqa: BLE001 - the model is optional, never fatal
         logger.warning("LLM text completion failed (%s/%s): %s", provider, model, exc)

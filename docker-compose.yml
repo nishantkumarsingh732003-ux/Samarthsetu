@@ -29,6 +29,13 @@ services:
       # the services are reachable by name.
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-saarthi}:${POSTGRES_PASSWORD:-saarthi}@postgres:5432/${POSTGRES_DB:-saarthi}
       REDIS_URL: redis://redis:6379/0
+      # Let the shell environment override .env for the model settings, so a key can be
+      # supplied by CI or a deploy secret store without being written to a file.
+      LLM_PROVIDER: ${LLM_PROVIDER:-auto}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      XAI_API_KEY: ${XAI_API_KEY:-}
+      GROQ_API_KEY: ${GROQ_API_KEY:-}
+      LLM_MODEL: ${LLM_MODEL:-}
     ports: ["8000:8000"]
     depends_on:
       postgres: {condition: service_healthy}

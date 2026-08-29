@@ -241,7 +241,12 @@ present.
 |---|---|---|---|
 | `anthropic` | `sk-ant-…` | Claude | Anthropic SDK |
 | `xai` | `xai-…` | **Grok** (xAI's own models) | `api.x.ai/v1` |
-| `groq` | `gsk_…` | **Groq** — open models (Llama, Qwen…) on custom inference hardware | `api.groq.com/openai/v1` |
+| `groq` | `gsk_…` | **Groq** — open models (Qwen, gpt-oss…) on custom inference hardware | `api.groq.com/openai/v1` |
+
+Verified live on Groq with `qwen/qwen3.8-27b` (2026-08-29): a Hindi conversation with
+the model in the loop produced **byte-identical verdicts** to calling the engine
+directly. Note that `groq/compound-mini` has no tool calling and `openai/gpt-oss-*` are
+reasoning models that need generous `max_tokens` before they emit any content.
 
 Grok and Groq are different companies with near-identical names; both are named
 explicitly so a key cannot be silently used against the wrong one. xAI and Groq are both

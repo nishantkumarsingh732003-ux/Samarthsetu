@@ -207,3 +207,101 @@ async def test_explanation_uses_the_model_when_one_answers(env, monkeypatch) -> 
     )
     assert rendered["source"] == "llm"
     assert rendered["explanation"] == "You can get this loan."
+
+
+# --- value-level guardrail (a model quirk must never break a turn) ----------------------
+
+
+def test_lowercase_enum_from_a_model_is_normalised_not_rejected() -> None:
+    """A live Groq run returned gender="female"; the contract wants FEMALE. Left alone
+    that raised in validate_profile and failed the whole conversational turn."""
+    accepted, rejected = extraction._validate_llm_fields(
+        {"fields": [{"field": "gender", "value": "female", "confidence": 0.9,
+                     "evidence_span": "she"}]}
+    )
+    assert rejected == []
+    assert accepted[0].value == "FEMALE"
+
+
+def test_a_value_outside_the_vocabulary_is_dropped_not_coerced() -> None:
+    accepted, rejected = extraction._validate_llm_fields(
+        {"fields": [{"field": "category", "value": "brahmin", "confidence": 0.9,
+                     "evidence_span": "x"}]}
+    )
+    assert accepted == []
+    assert rejected == ["category"]
+
+
+def test_string_booleans_and_numbers_are_coerced() -> None:
+    accepted, _ = extraction._validate_llm_fields(
+        {"fields": [
+            {"field": "is_pwd", "value": "yes", "confidence": 0.9, "evidence_span": "x"},
+            {"field": "age", "value": "34", "confidence": 0.9, "evidence_span": "x"},
+        ]}
+    )
+    values = {f.field: f.value for f in accepted}
+    assert values["is_pwd"] is True
+    assert values["age"] == 34.0
+
+
+def test_a_district_name_in_any_casing_resolves_to_the_canonical_one() -> None:
+    accepted, _ = extraction._validate_llm_fields(
+        {"fields": [{"field": "district", "value": "nagpur", "confidence": 0.9,
+                     "evidence_span": "x"}]}
+    )
+    assert accepted[0].value == "Nagpur"
+
+
+def test_an_unknown_district_is_dropped() -> None:
+    accepted, rejected = extraction._validate_llm_fields(
+        {"fields": [{"field": "district", "value": "Atlantis", "confidence": 0.9,
+                     "evidence_span": "x"}]}
+    )
+    assert accepted == []
+    assert rejected == ["district"]
+
+
+# --- official scheme names are never machine-translated (CLAUDE.md) --------------------
+
+
+@pytest.mark.asyncio
+async def test_prose_that_renames_the_scheme_is_rejected(env, monkeypatch) -> None:
+    """A live Groq run wrote "मिनी फाइनेंस स्कीम" for the Micro Finance Scheme. A legal
+    scheme name presented wrong to a citizen is worse than plainer prose."""
+    env(groq="gsk-key")
+
+    async def renames(*_, **__):
+        return "आप मिनी फाइनेंस स्कीम के लिए पात्र हैं।"
+
+    monkeypatch.setattr(llm, "complete_text", renames)
+    rendered = await explanation.explain(
+        {
+            "scheme_code": "NSFDC_MICRO_FINANCE",
+            "official_name": "Micro Finance Scheme",
+            "verdict": "ELIGIBLE",
+            "matched_because": [],
+        },
+        "hi",
+    )
+    assert rendered["source"] == "template"
+    assert "Micro Finance Scheme" in rendered["explanation"]
+
+
+@pytest.mark.asyncio
+async def test_prose_that_keeps_the_official_name_is_accepted(env, monkeypatch) -> None:
+    env(groq="gsk-key")
+
+    async def keeps(*_, **__):
+        return "आप Micro Finance Scheme के लिए पात्र हैं।"
+
+    monkeypatch.setattr(llm, "complete_text", keeps)
+    rendered = await explanation.explain(
+        {
+            "scheme_code": "NSFDC_MICRO_FINANCE",
+            "official_name": "Micro Finance Scheme",
+            "verdict": "ELIGIBLE",
+            "matched_because": [],
+        },
+        "hi",
+    )
+    assert rendered["source"] == "llm"

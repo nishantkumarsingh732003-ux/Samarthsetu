@@ -35,7 +35,29 @@ do not mention rules, engines, or systems — speak plainly about the person's o
 situation.
 
 If the applicant is not eligible for something, say so kindly and state the reason \
-given, without suggesting the decision might change."""
+given, without suggesting the decision might change.
+
+CRITICAL: this service does not approve, sanction, or disburse anything. It only tells
+the applicant which scheme fits and which Channel Partner can process it; a Channel
+Partner decides the loan. Never write that money will be given, released, sanctioned or
+approved. Amounts are indicative only — say "may be available" or "up to", never "will
+receive" or "is now released".
+
+CRITICAL: the scheme name is a legal name. Reproduce it EXACTLY as given, in the Latin \
+script, even when writing in another language. Never translate it, transliterate it, \
+shorten it, or substitute a similar-sounding name."""
+
+
+def _preserves_scheme_name(text: str, result: dict[str, Any]) -> bool:
+    """Reject prose that renamed the scheme.
+
+    CLAUDE.md forbids machine-translating official scheme names. A live Groq run
+    returned "मिनी फाइनेंस स्कीम" for the Micro Finance Scheme — a different scheme name,
+    stated to a citizen as fact. Instructing the model is not enough, so the output is
+    checked and dropped to the template if the name did not survive.
+    """
+    official = (result.get("official_name") or "").strip()
+    return not official or official in text
 
 
 def _verdict_sentence(result: dict[str, Any], language: str) -> str:
@@ -140,6 +162,13 @@ async def explain(result: dict[str, Any], language: str = "en") -> dict[str, Any
         user=f"Language: {language}\nDecision to restate:\n{reasons}",
         max_tokens=400,
     )
+    if text and not _preserves_scheme_name(text, result):
+        logger.warning(
+            "explanation dropped: model altered the official scheme name %r",
+            result.get("official_name"),
+        )
+        text = None
+
     if text:
         return {**payload, "explanation": text, "source": "llm"}
 

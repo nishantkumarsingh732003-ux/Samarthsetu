@@ -142,7 +142,31 @@ rather than a path-hacked copy.
 
 ## 🟡 OI-19 — the LLM path has never been executed
 
-**Status:** open · **Owner:** needs an API key · **Since:** Phase 3
+**Status:** CLOSED 2026-08-29 · **Owner:** needs an API key · **Since:** Phase 3
+
+Exercised live against **Groq** (`qwen/qwen3.8-27b`), both operations passing. Running a
+Hindi conversation with the model live produced **byte-identical verdicts** to calling
+the engine directly — the equivalence claim now holds against a real model, not only a
+stub.
+
+Three defects surfaced that only a live model could reveal; all three are fixed and
+regression-tested:
+
+1. The model returned `gender: "female"` where the contract requires `FEMALE`. That
+   raised in `validate_profile` and failed the whole turn with a 422. Values are now
+   coerced to the contract, or dropped — a model quirk cannot break a conversation.
+2. It wrote **"मिनी फाइनेंस स्कीम"** for the Micro Finance Scheme, machine-translating a
+   legal scheme name, which CLAUDE.md forbids. Explanations whose official name did not
+   survive are now discarded in favour of the template.
+3. It wrote that the amount "can now be released", implying sanction. The service
+   matches and routes; a Channel Partner decides. The prompt now forbids approval
+   language explicitly.
+
+**Residual risk:** (2) is enforced deterministically, but (3) is prompt-level only —
+approval-flavoured phrasing is hard to detect across six languages. Read the explanation
+copy before demoing.
+
+### Original entry
 
 No provider key is set, so extraction and explanation run their deterministic and
 template paths only. Those paths are fully tested and carry the demo.
@@ -222,6 +246,9 @@ per-phase trail. From Phase 2 onward, commits are made as work lands.
 | OI-14 | `scripts/seed/run.py` assumed the host layout (`<repo>/apps/api`) and could not import `app` inside the container, where the API is at `/app`. Now tries both. | 2026-08-29 |
 | OI-15 | `sentence-transformers` in `apps/api/requirements.txt` pulled ~2GB of torch into the API image while nothing imported it. Moved to `requirements-ml.txt` for Phase 2+. | 2026-08-29 |
 | OI-8 | Rule engine not wired into the API | 2026-08-29 |
+| OI-19 | LLM path never executed — closed against Groq | 2026-08-29 |
+| OI-22 | An LLM returning a correct value in the wrong shape (`"female"` for `FEMALE`) failed the entire conversational turn with a 422. Values are now coerced to the profile contract or dropped. | 2026-08-29 |
+| OI-23 | An LLM machine-translated the official scheme name into Hindi. Explanations that do not preserve the official name verbatim are now discarded. | 2026-08-29 |
 | OI-21 | The orchestrator asked the same question three turns running when a citizen did not answer it. `next_best_question` now takes an `exclude` set, in both the Python and TypeScript engines. | 2026-08-29 |
 | OI-16 | Partner service areas were random districts within a state, so a Mumbai branch "served" Nagpur 687km away and the router ranked it. Service areas are now the geographically nearest districts, and routing rejects anything beyond a 150km radius with a stated reason. | 2026-08-29 |
 | OI-17 | 120 partners spread uniformly over 53 districts left Nagpur with a single branch, making routing look empty. Seeding now guarantees one partner per district and weights the remainder towards large cities. | 2026-08-29 |

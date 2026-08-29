@@ -85,10 +85,12 @@ async def main() -> int:
     ok = True
 
     print("1. text completion ...", end=" ", flush=True)
+    # Generous budget on purpose: reasoning models spend tokens before answering, and
+    # a tight probe would report a perfectly good model as broken.
     text = await llm.complete_text(
         system="You are a test probe. Reply with exactly the word: READY",
         user="Reply with the single word READY.",
-        max_tokens=16,
+        max_tokens=512,
     )
     if text:
         print(f"OK  -> {text[:60]!r}")

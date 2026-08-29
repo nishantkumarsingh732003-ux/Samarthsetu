@@ -377,16 +377,76 @@ def _validate_llm_fields(payload: dict[str, Any]) -> tuple[list[ExtractedField],
             logger.warning("guardrail: dropping LLM money field %r", name)
             rejected.append(str(name))
             continue
+        value, ok = _coerce_to_contract(name, item.get("value"))
+        if not ok:
+            logger.warning(
+                "guardrail: LLM value %r is outside the contract for %r", item.get("value"), name
+            )
+            rejected.append(str(name))
+            continue
+
         accepted.append(
             ExtractedField(
                 field=name,
-                value=item.get("value"),
+                value=value,
                 confidence=min(max(confidence, 0.0), 1.0),
                 evidence_span=str(item.get("evidence_span", ""))[:200],
                 source="llm",
             )
         )
     return accepted, rejected
+
+
+def _coerce_to_contract(name: str, value: Any) -> tuple[Any, bool]:
+    """Force a model-supplied value into the profile contract, or reject it.
+
+    Models return semantically correct values in the wrong shape all the time —
+    "female" for FEMALE, "sc" for SC, "25" for 25. Left alone these reach
+    `validate_profile`, which raises, which surfaces to the citizen as a failed turn.
+    A model quirk must never break a conversation, so normalise what is unambiguous and
+    drop what is not.
+    """
+    from app.core.geography import DISTRICT_LOOKUP, STATE_LOOKUP
+
+    if value is None:
+        return None, False
+
+    if name == "district":
+        found = DISTRICT_LOOKUP.get(str(value).strip().casefold())
+        return (found.name, True) if found else (None, False)
+    if name == "state":
+        found = STATE_LOOKUP.get(str(value).strip().casefold())
+        return (found, True) if found else (None, False)
+
+    from setu_rules import FIELDS
+
+    field_spec = FIELDS.get(name)
+    if field_spec is None:
+        return None, False
+
+    if field_spec.kind == "boolean":
+        if isinstance(value, bool):
+            return value, True
+        text = str(value).strip().casefold()
+        if text in {"true", "yes", "1"}:
+            return True, True
+        if text in {"false", "no", "0"}:
+            return False, True
+        return None, False
+
+    if field_spec.kind == "number":
+        if isinstance(value, bool):
+            return None, False
+        try:
+            return float(value) if not isinstance(value, int) else value, True
+        except (TypeError, ValueError):
+            return None, False
+
+    text = str(value).strip()
+    if field_spec.choices:
+        upper = text.upper().replace(" ", "_")
+        return (upper, True) if upper in field_spec.choices else (None, False)
+    return (text, True) if text else (None, False)
 
 
 async def extract(
