@@ -285,6 +285,62 @@ distance 0.40, turnaround 0.25, type affinity 0.20, load 0.15. They are returned
 every routing response so the ranking can be argued with rather than reverse-engineered.
 
 
+## The citizen app
+
+Designed for a 5-inch screen, one hand, bright sunlight, and someone who may not read
+fluently.
+
+| Route | What it is |
+|---|---|
+| `/` | Language picker — six large targets, native script, no locale guessed |
+| `/[locale]` | One primary action, named rather than "Start" |
+| `/[locale]/assist` | Voice or typed conversation; answers shown as chips to correct |
+| `/[locale]/results` | Ranked scheme cards, ineligible ones shown greyed with the blocking reason |
+| `/[locale]/results/[scheme]/partners` | Map + list, score-breakdown bars, "nearby but cannot help" |
+| `/[locale]/track/[ref]` | Application status timeline |
+
+```bash
+pnpm --filter @setu/web dev     # http://localhost:3000
+pnpm --filter @setu/web check   # i18n + contrast + build + bundle budget
+```
+
+### Lighthouse, production build
+
+| | /en | /hi | /ta |
+|---|---|---|---|
+| Performance | **100** | **100** | **100** |
+| Accessibility | **100** | **100** | **100** |
+| Best Practices | **100** | **100** | **100** |
+| SEO | **100** | **100** | **100** |
+
+FCP 0.8s · LCP 1.8s · TBT 0ms · CLS 0, under Lighthouse's mobile throttling.
+
+### The budget is enforced, not hoped for
+
+Worst citizen route is **113.9 KB gzipped of a 200 KB budget**. `check-bundle.mjs` reads
+the real build manifest and fails the build if a route crosses the line. Leaflet is ~150KB,
+so the map is behind a dynamic import — a citizen who never opens it never downloads it.
+
+### Three checks that fail the build
+
+- **`check:i18n`** — key parity across all six catalogues, review status declared, and a
+  grep for hardcoded copy in components. A missing key does not crash next-intl; it
+  silently renders the key name to a citizen, which is worse than a build failure.
+- **`check:contrast`** — every foreground/background pair in the palette against WCAG AA,
+  whether or not a page currently uses it. Lighthouse only sees the colours on the page
+  it audited.
+- **`check:bundle`** — the JS budget above.
+
+### Offline
+
+A hand-written service worker (no PWA plugin — it would spend the budget it is meant to
+protect) with three rules: navigations network-first falling back to the cached shell,
+static assets cache-first, and **the API never cached**. An eligibility verdict must not
+be served stale. Results the citizen has already seen live in `localStorage`, so
+`/results` renders with the network gone, under a persistent "Offline — showing saved
+results" banner.
+
+
 ## Vendored skills
 
 `.claude/skills/` contains 376 skills vendored from

@@ -283,6 +283,23 @@ Related to OI-4: the same four languages lack rule-message translations.
 
 ---
 
+## 🟡 OI-29 — the citizen flow has not been walked on a real phone
+
+**Status:** open · **Owner:** repo owner · **Since:** Phase 4
+
+Lighthouse scores 100 across the board under mobile emulation and throttling, and every
+route returns 200. What has **not** happened is a human completing the journey on an
+actual low-end Android phone on a real 2G/3G connection.
+
+Specifically unexercised: Web Speech API recognition (emulation cannot test a
+microphone), the service worker's offline path against genuine connection loss rather
+than devtools, and whether 48px targets are actually comfortable one-handed in sunlight.
+
+**To close:** open the deployed URL on a cheap Android handset, speak an answer, walk
+into a dead spot, and confirm the offline banner and saved results appear.
+
+---
+
 ## 🟢 OI-18 — routing weights are unvalidated judgement
 
 **Status:** open · **Owner:** needs field input · **Since:** Phase 2
@@ -327,6 +344,8 @@ per-phase trail. From Phase 2 onward, commits are made as work lands.
 | OI-24 | The model was handed the rupee amount and phrased it as a disbursement. It is no longer given the figure at all; the amount sentence is rendered by us and appended. | 2026-08-29 |
 | OI-29 | The API test suite made live model calls on any machine with a provider key exported — four failures and a seven-minute run instead of one second. A `conftest.py` autouse fixture now forces the provider off for every test. | 2026-08-29 |
 | OI-30 | `ink-faint` on the page ground was 4.34:1, under WCAG AA. Darkened to 5.33:1, and `check:contrast` now tests every palette pair rather than only colours Lighthouse happens to see. | 2026-08-29 |
+| OI-27 | Tests hit a live LLM provider whenever a developer had a key exported — one run took 407s and produced 4 spurious failures. `tests/conftest.py` now disables every provider for the whole suite. | 2026-08-30 |
+| OI-28 | `ink-faint` on the page ground was 4.34:1, under WCAG AA. Darkened to 5.33:1, and `check-contrast.mjs` now tests every palette pair rather than only what Lighthouse happens to see. | 2026-08-30 |
 | OI-26 | The API response schema silently dropped `translation_status`, so a UI could not tell reviewed copy from machine-written copy. Added to `MatchResultOut`. | 2026-08-29 |
 | OI-25 | `redirect_suggestion` carried an internal scheme code, which the model printed to the citizen as "NSFDC_MICRO_FINANCE". Codes now resolve to official names before reaching the model or the template. | 2026-08-29 |
 | OI-23 | An LLM machine-translated the official scheme name into Hindi. Explanations that do not preserve the official name verbatim are now discarded. | 2026-08-29 |
