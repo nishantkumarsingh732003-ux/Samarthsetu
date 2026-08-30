@@ -75,7 +75,8 @@
       "PSB": "Public sector bank",
       "RRB": "Regional rural bank",
       "NBFC_MFI": "Microfinance institution"
-    }
+    },
+    "applyHere": "Apply through this office"
   },
   "track": {
     "heading": "Your application",
@@ -91,7 +92,8 @@
       "DISBURSED": "Money released",
       "REJECTED": "Not approved",
       "WITHDRAWN": "Withdrawn"
-    }
+    },
+    "indicativeOnly": "SETU does not approve loans. The office decides."
   },
   "common": {
     "back": "Back",
@@ -111,5 +113,35 @@
     "micButtonStop": "Stop voice input",
     "schemeCard": "Scheme: {name}, {verdict}",
     "partnerCard": "Office: {name}, {distance} kilometres away"
+  },
+  "apply": {
+    "heading": "Apply through this office",
+    "notALoan": "SETU does not give loans. This sends your application to the office you chose, and that office decides.",
+    "goingTo": "Application goes to",
+    "aboutYou": "About you",
+    "allOptional": "All of this is optional. You get a reference number either way.",
+    "yourName": "Your name",
+    "yourPhone": "Phone number",
+    "phoneLast4": "We keep only the last 4 digits.",
+    "yourId": "Aadhaar number",
+    "idMasked": "We keep only the last 4 digits. The full number is never stored, and any photo you send has it blacked out.",
+    "consentText": "I agree that SETU may store these details in order to send my application to the office I chose.",
+    "submit": "Send my application",
+    "afterSubmit": "You will get a reference number. Keep it — the office will ask for it."
+  },
+  "docs": {
+    "whatToBring": "What to bring",
+    "yourDocuments": "Your documents",
+    "outstanding": "{count} still needed",
+    "allUploaded": "You have added everything on the list.",
+    "takePhoto": "Take a photo",
+    "replacePhoto": "Take a new photo",
+    "uploading": "Sending…",
+    "uploaded": "Added",
+    "privacyNote": "Any ID number in a photo is blacked out before the photo is saved. We keep only the last 4 digits.",
+    "idMaskedConfirmed": "The ID number in this photo has been blacked out.",
+    "validityPractice": "Most offices ask for one issued within {months} months.",
+    "validityRule": "Must be issued within {months} months.",
+    "checklistUnverified": "This list is our reading of what offices usually ask for. Confirm it at the branch."
   }
 }

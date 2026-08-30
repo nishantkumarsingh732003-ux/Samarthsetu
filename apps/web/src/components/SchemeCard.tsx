@@ -24,12 +24,14 @@ export function SchemeCard({
   locale,
   projectCost,
   district,
+  matchRunId,
 }: {
   result: MatchResult;
   explanation?: Explanation;
   locale: Locale;
   projectCost: number | null;
   district: string | null;
+  matchRunId?: string | null;
 }) {
   const t = useTranslations("results");
   const a11y = useTranslations("a11y");
@@ -157,6 +159,10 @@ export function SchemeCard({
             query: {
               ...(projectCost ? { amount: String(projectCost) } : {}),
               ...(district ? { district } : {}),
+              // Carried so the application can name the family it belongs to and
+              // the engine run that decided it, without a second round trip.
+              family: result.family,
+              ...(matchRunId ? { run: matchRunId } : {}),
             },
           }}
           className="btn-primary mt-4 w-full text-lg"

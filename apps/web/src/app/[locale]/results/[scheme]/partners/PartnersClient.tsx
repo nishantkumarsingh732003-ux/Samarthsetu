@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import { useTranslations } from "next-intl";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -33,6 +34,8 @@ export function PartnersClient({
   const t = useTranslations("partners");
   const c = useTranslations("common");
   const search = useSearchParams();
+  const runId = search.get("run");
+  const family = search.get("family") ?? "";
 
   const [data, setData] = useState<RouteResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -123,6 +126,26 @@ export function PartnersClient({
                     </div>
                   ) : null}
                 </dl>
+
+                {/* The whole journey converges here: this partner, for this scheme,
+                    for this amount. Everything the application needs travels in the
+                    query string so the next screen never has to guess. */}
+                <Link
+                  href={{
+                    pathname: `/${locale}/apply/${schemeCode}`,
+                    query: {
+                      partner: partner.partner_id,
+                      partnerName: partner.name,
+                      partnerType: partner.type,
+                      ...(family ? { family } : {}),
+                      amount: String(data.amount_requested),
+                      ...(runId ? { run: runId } : {}),
+                    },
+                  }}
+                  className="btn-primary mt-4 block w-full text-center"
+                >
+                  {t("applyHere")}
+                </Link>
 
                 <button
                   type="button"

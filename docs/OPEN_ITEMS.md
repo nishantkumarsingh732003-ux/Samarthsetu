@@ -7,7 +7,7 @@ Nothing here is a surprise on demo day if it is read first.
 
 **Legend** — 🔴 blocks the demo · 🟡 weakens the demo · 🟢 tracked, not urgent
 
-Last reviewed: 2026-08-29 (after Phase 4)
+Last reviewed: 2026-08-30 (after Phase 5)
 
 ---
 
@@ -326,6 +326,73 @@ per-phase trail. From Phase 2 onward, commits are made as work lands.
 
 ---
 
+---
+
+## 🟡 OI-31 — the document checklist has no circular behind it
+
+**Status:** open · **Owner:** needs MoSJE/NSFDC input · **Since:** Phase 5
+
+`packages/rules/documents/checklist.yaml` lists 13 documents with a reason for each. The
+list is assembled from what NSFDC channel partners publish on their own application
+pages, not from a scheme circular. `needs_verification: true` is set on the file and the
+API returns it on every checklist response, so the UI says "this is our reading of what
+offices usually ask for — confirm at the branch" rather than stating it as a rule.
+
+The validity windows are the softer half of this. Where a window is common partner
+practice rather than published policy, `validity_is_practice_not_rule` is set and the
+citizen is told "most offices ask for one issued within N months", not "must be".
+
+**Breaks if it stays open:** a citizen carries a document they did not need, or is told a
+certificate is stale on our authority rather than the partner's.
+
+**To close:** obtain the current NSFDC channel-partner documentation circular and set
+`source_url` / `circular_ref` / `needs_verification: false`.
+
+---
+
+## 🟡 OI-32 — OCR quality on a real photograph is unmeasured
+
+**Status:** open · **Owner:** repo owner · **Since:** Phase 5
+
+Redaction is proved against a **rendered** card: clean black text, white ground, no
+skew, no glare. That proves the pipeline works. It does not prove tesseract finds the
+number on a creased Aadhaar card photographed at an angle in a dim room, which is what
+will actually arrive.
+
+The failure mode is asymmetric and it is the bad direction: if OCR cannot read the
+number, `find_government_ids` returns nothing, nothing is painted, and the image is
+stored **unredacted** — because from the code's point of view there was no ID to mask.
+The `ids and painted == 0` guard only fires when the text extractor sees a number the
+pixel locator cannot place. It does not fire when neither sees anything.
+
+**Breaks if it stays open:** a blurred Aadhaar card is stored with a number a human can
+still read even though tesseract could not.
+
+**To close:** photograph 20 real ID documents in realistic conditions, measure the
+detection rate, and if it is not near-total, treat `doc_type == IDENTITY_PROOF` with no
+detected ID as suspicious — refuse it, or store it blurred wholesale rather than trusting
+a negative result.
+
+---
+
+## 🟢 OI-33 — Phase 5 copy is new in all six languages, including Hindi
+
+**Status:** open · **Owner:** needs a reviewer per language · **Since:** Phase 5
+
+`apply.*` and `docs.*` (27 new keys) were written for this phase in all six catalogues.
+`hi` is declared `verified` because the catalogue as a whole was reviewed in Phase 3, but
+these particular strings have not been read by a Hindi speaker since they were added.
+The four draft locales are covered by OI-4; this notes that Hindi now has the same gap
+for the new keys specifically.
+
+`src/i18n/messages.test.ts` catches the mechanical half — a locale that drops or renames
+an ICU placeholder, or leaves a string empty — but says nothing about whether the Tamil
+for "we keep only the last 4 digits" reads naturally.
+
+**To close:** fold these keys into the same review pass as OI-4.
+
+---
+
 ## Closed
 
 | ID | Item | Closed |
@@ -352,3 +419,4 @@ per-phase trail. From Phase 2 onward, commits are made as work lands.
 | OI-21 | The orchestrator asked the same question three turns running when a citizen did not answer it. `next_best_question` now takes an `exclude` set, in both the Python and TypeScript engines. | 2026-08-29 |
 | OI-16 | Partner service areas were random districts within a state, so a Mumbai branch "served" Nagpur 687km away and the router ranked it. Service areas are now the geographically nearest districts, and routing rejects anything beyond a 150km radius with a stated reason. | 2026-08-29 |
 | OI-17 | 120 partners spread uniformly over 53 districts left Nagpur with a single branch, making routing look empty. Seeding now guarantees one partner per district and weights the remainder towards large cities. | 2026-08-29 |
+| OI-34 | `apps/web` shipped a `test: vitest run` script with zero test files in Phase 4, so `pnpm test` — a stated definition-of-done gate — failed from a clean clone. Added 27 tests covering rupee grouping, offline storage under a throwing `localStorage`, and ICU placeholder parity across all six catalogues. | 2026-08-30 |

@@ -1,0 +1,188 @@
+# Document checklist
+#
+# PROVENANCE STATUS: UNVERIFIED AGAINST AN OFFICIAL CIRCULAR.
+# These are the documents NSFDC channel partners typically ask for, assembled from the
+# scheme pages and common lending practice. No circular has been located that fixes the
+# list, so `needs_verification` is true throughout and no validity window is asserted
+# unless a partner-facing source states one.
+#
+# A wrong checklist wastes a citizen's trip to a branch, which is the exact failure this
+# project exists to prevent. Treat every entry as provisional until a partner confirms.
+
+provenance:
+  source: "NSFDC scheme pages and common Channel Partner practice"
+  source_url: "https://nsfdc.nic.in/scheme"
+  circular_ref: null
+  last_verified_on: "2026-08-30"
+  needs_verification: true
+  verification_note: >
+    Confirm the required set with an actual Channel Partner per scheme family, and
+    record the circular that fixes each validity window.
+
+# `applies_to` narrows a document to scheme families, partner types, or a profile
+# condition. Anything omitted means "always".
+documents:
+  - id: CASTE_CERTIFICATE
+    name_i18n:
+      en: "Caste certificate"
+      hi: "जाति प्रमाण पत्र"
+    why_i18n:
+      en: "Proves you belong to a Scheduled Caste, which every NSFDC scheme requires."
+      hi: "यह सिद्ध करता है कि आप अनुसूचित जाति से हैं, जो हर NSFDC योजना के लिए आवश्यक है।"
+    issued_by: "District administration / competent authority"
+    validity_months: null   # Not stated anywhere located; do not assert an expiry.
+    applies_to: {}
+
+  - id: INCOME_CERTIFICATE
+    name_i18n:
+      en: "Income certificate"
+      hi: "आय प्रमाण पत्र"
+    why_i18n:
+      en: >-
+        Shows your annual family income is within the Rs 5,00,000 ceiling that decides
+        eligibility.
+      hi: >-
+        दिखाता है कि आपकी वार्षिक पारिवारिक आय Rs 5,00,000 की सीमा के भीतर है, जो पात्रता
+        तय करती है।
+    issued_by: "Tehsildar / revenue authority"
+    # Widely asked for as "recent"; 12 months is the common practice, not a sourced rule.
+    validity_months: 12
+    validity_is_practice_not_rule: true
+    applies_to: {}
+
+  - id: IDENTITY_PROOF
+    name_i18n:
+      en: "Photo identity proof (Aadhaar, voter ID or PAN)"
+      hi: "फोटो पहचान प्रमाण (आधार, मतदाता पहचान पत्र या पैन)"
+    why_i18n:
+      en: "Confirms who you are. Only the last four digits are ever stored."
+      hi: "आपकी पहचान की पुष्टि करता है। केवल अंतिम चार अंक ही संग्रहीत किए जाते हैं।"
+    issued_by: "UIDAI / Election Commission / Income Tax Department"
+    validity_months: null
+    contains_government_id: true
+    applies_to: {}
+
+  - id: ADDRESS_PROOF
+    name_i18n:
+      en: "Address proof"
+      hi: "पते का प्रमाण"
+    why_i18n:
+      en: "Decides which Channel Partner serves your district."
+      hi: "यह तय करता है कि कौन सा चैनल पार्टनर आपके जिले की सेवा करता है।"
+    issued_by: "Utility bill, ration card or Aadhaar"
+    validity_months: null
+    contains_government_id: true
+    applies_to: {}
+
+  - id: BANK_PASSBOOK
+    name_i18n:
+      en: "Bank passbook or cancelled cheque"
+      hi: "बैंक पासबुक या रद्द चेक"
+    why_i18n:
+      en: "The account the loan would be paid into."
+      hi: "वह खाता जिसमें ऋण की राशि भेजी जाएगी।"
+    issued_by: "Your bank"
+    validity_months: null
+    applies_to: {}
+
+  - id: PHOTOGRAPH
+    name_i18n:
+      en: "Passport-size photograph"
+      hi: "पासपोर्ट आकार का फोटो"
+    why_i18n:
+      en: "Attached to the application form at the branch."
+      hi: "शाखा में आवेदन पत्र के साथ लगाया जाता है।"
+    issued_by: null
+    validity_months: null
+    applies_to: {}
+
+  # --- enterprise schemes ------------------------------------------------------------
+  - id: PROJECT_REPORT
+    name_i18n:
+      en: "Project report"
+      hi: "परियोजना रिपोर्ट"
+    why_i18n:
+      en: >-
+        Explains what you will spend the money on and how the business will repay it.
+      hi: >-
+        बताता है कि आप पैसा किस पर खर्च करेंगे और व्यवसाय उसे कैसे चुकाएगा।
+    issued_by: null
+    validity_months: null
+    applies_to:
+      families: [MICRO_FINANCE, TERM_LOAN]
+
+  - id: QUOTATIONS
+    name_i18n:
+      en: "Supplier quotations for equipment"
+      hi: "उपकरण के लिए आपूर्तिकर्ता कोटेशन"
+    why_i18n:
+      en: "Supports the amount you have asked for on larger projects."
+      hi: "बड़ी परियोजनाओं में आपके द्वारा माँगी गई राशि का समर्थन करता है।"
+    issued_by: "Your supplier"
+    validity_months: null
+    applies_to:
+      families: [TERM_LOAN]
+
+  - id: BUSINESS_REGISTRATION
+    name_i18n:
+      en: "Business registration or Udyam certificate"
+      hi: "व्यवसाय पंजीकरण या उद्यम प्रमाण पत्र"
+    why_i18n:
+      en: "Asked for when the project is a registered manufacturing or service unit."
+      hi: "जब परियोजना एक पंजीकृत विनिर्माण या सेवा इकाई हो तब माँगा जाता है।"
+    issued_by: "Ministry of MSME (Udyam portal)"
+    validity_months: null
+    applies_to:
+      families: [TERM_LOAN]
+      profile_when: "profile.project_sector in ['MANUFACTURING', 'SERVICES']"
+
+  # --- education -----------------------------------------------------------------------
+  - id: ADMISSION_LETTER
+    name_i18n:
+      en: "Admission letter"
+      hi: "प्रवेश पत्र"
+    why_i18n:
+      en: "Confirms your seat. An education loan cannot be processed without it."
+      hi: "आपकी सीट की पुष्टि करता है। इसके बिना शैक्षिक ऋण संसाधित नहीं हो सकता।"
+    issued_by: "Your institution"
+    validity_months: null
+    applies_to:
+      families: [EDUCATION_LOAN]
+
+  - id: FEE_STRUCTURE
+    name_i18n:
+      en: "Fee structure from the institution"
+      hi: "संस्थान से शुल्क संरचना"
+    why_i18n:
+      en: "Sets the course cost the 90% funding is calculated on."
+      hi: "पाठ्यक्रम की वह लागत तय करता है जिस पर 90% वित्तपोषण की गणना होती है।"
+    issued_by: "Your institution"
+    validity_months: null
+    applies_to:
+      families: [EDUCATION_LOAN]
+
+  - id: ACADEMIC_RECORDS
+    name_i18n:
+      en: "Previous marksheets"
+      hi: "पिछली अंकतालिकाएँ"
+    why_i18n:
+      en: "Shows you meet the course's entry requirements."
+      hi: "दिखाता है कि आप पाठ्यक्रम की प्रवेश शर्तें पूरी करते हैं।"
+    issued_by: "Your school or college"
+    validity_months: null
+    applies_to:
+      families: [EDUCATION_LOAN]
+
+  # --- partner-specific ----------------------------------------------------------------
+  - id: GUARANTOR_DETAILS
+    name_i18n:
+      en: "Guarantor details"
+      hi: "गारंटर का विवरण"
+    why_i18n:
+      en: "Banks usually ask for a guarantor on larger loans."
+      hi: "बड़े ऋणों पर बैंक आमतौर पर गारंटर माँगते हैं।"
+    issued_by: null
+    validity_months: null
+    applies_to:
+      partner_types: [PSB, RRB]
+      families: [TERM_LOAN, EDUCATION_LOAN]

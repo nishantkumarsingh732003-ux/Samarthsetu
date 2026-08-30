@@ -57,6 +57,7 @@ export function AssistClient({ locale }: { locale: Locale }) {
           explanations: result.data.explanations ?? [],
           sessionId: result.data.session_id,
           district: (result.data.context?.district as string | undefined) ?? null,
+          matchRunId: result.data.match_run_id ?? null,
         });
         router.push(`/${locale}/results`);
       }

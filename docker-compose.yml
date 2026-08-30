@@ -36,6 +36,10 @@ services:
       XAI_API_KEY: ${XAI_API_KEY:-}
       GROQ_API_KEY: ${GROQ_API_KEY:-}
       LLM_MODEL: ${LLM_MODEL:-}
+      # Redacted document bytes. A named volume, not a bind mount: these are citizen
+      # documents and they do not belong in the working tree.
+      STORAGE_DIR: /data/uploads
+      ID_HASH_SALT: ${ID_HASH_SALT:-}
     ports: ["8000:8000"]
     depends_on:
       postgres: {condition: service_healthy}
@@ -44,6 +48,7 @@ services:
       - ./apps/api:/app
       - ./packages/rules:/packages/rules
       - ./scripts:/scripts
+      - uploads:/data/uploads
 
   web:
     build: ./apps/web
@@ -56,3 +61,4 @@ services:
 
 volumes:
   pgdata:
+  uploads:

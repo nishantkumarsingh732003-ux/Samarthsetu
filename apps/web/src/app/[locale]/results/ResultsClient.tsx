@@ -57,6 +57,7 @@ export function ResultsClient({ locale }: { locale: Locale }) {
           locale={locale}
           projectCost={projectCost}
           district={district}
+          matchRunId={saved.matchRunId ?? null}
         />
       ))}
 

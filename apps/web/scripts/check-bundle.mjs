@@ -30,6 +30,7 @@ const CITIZEN_ROUTES = [
   "/[locale]/assist/page",
   "/[locale]/results/page",
   "/[locale]/results/[scheme]/partners/page",
+  "/[locale]/apply/[scheme]/page",
   "/[locale]/track/[ref]/page",
 ];
 

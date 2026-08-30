@@ -5,6 +5,15 @@ profile before this runs, and may restate the reasons this returns afterwards, b
 never participates in the verdict.
 """
 
+from setu_rules.documents import (
+    DocumentLoadError,
+    DocumentSpec,
+    RequiredDocument,
+    checklist_digest,
+    checklist_provenance,
+    load_documents,
+    required_documents,
+)
 from setu_rules.engine import evaluate, evaluate_scheme, indicative_amount, run
 from setu_rules.loader import RuleLoadError, load_schemes, rules_digest
 from setu_rules.models import (
@@ -40,12 +49,15 @@ __all__ = [
     "SUPPORTED_LANGUAGES",
     "UNKNOWN",
     "Bundle",
+    "DocumentLoadError",
+    "DocumentSpec",
     "Family",
     "MatchResult",
     "MatchRun",
     "NextQuestion",
     "Provenance",
     "Reason",
+    "RequiredDocument",
     "Rule",
     "RuleLoadError",
     "RuleSyntaxError",
@@ -55,14 +67,18 @@ __all__ = [
     "compile_expression",
     "evaluate",
     "bundle_for",
+    "checklist_digest",
+    "checklist_provenance",
     "evaluate_node",
     "evaluate_scheme",
     "field_impact",
     "indicative_amount",
     "language_report",
     "load_bundles",
+    "load_documents",
     "load_schemes",
     "next_best_question",
+    "required_documents",
     "rules_digest",
     "translation_status",
     "run",

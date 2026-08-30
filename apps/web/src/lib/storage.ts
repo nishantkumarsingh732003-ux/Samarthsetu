@@ -22,6 +22,9 @@ export interface SavedResults {
   sessionId: string | null;
   /** From the conversation context, used to pre-fill partner routing. */
   district: string | null;
+  /** The engine run behind these results. An application is pinned to it, so a
+   *  sanction can be replayed against the rules that were live at the time. */
+  matchRunId: string | null;
 }
 
 function available(): boolean {

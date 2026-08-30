@@ -18,6 +18,15 @@ class Settings(BaseSettings):
     DATABASE_URL: str = "postgresql+asyncpg://saarthi:saarthi@localhost:5432/saarthi"
     REDIS_URL: str = "redis://localhost:6379/0"
 
+    # --- documents and consent (DPDP Act 2023) ---
+    # Redacted document bytes only. Compose mounts a named volume here.
+    STORAGE_DIR: str = "./var/uploads"
+    # Salt for the government-ID hash. Rotating this deliberately breaks de-duplication
+    # of existing rows, which is the correct behaviour: the old hashes are no longer
+    # meaningful. Falls back to SECRET_KEY so a dev clone works without extra setup.
+    ID_HASH_SALT: str = ""
+    CONSENT_POLICY_VERSION: str = "2026-08-01"
+
     # --- language model (optional) ---
     # The LLM never decides eligibility. It proposes facts before the rule engine and
     # restates its reasons afterwards, so the provider is swappable and "none" is a
@@ -38,6 +47,11 @@ class Settings(BaseSettings):
     @property
     def allowed_origins(self) -> list[str]:
         return [o.strip() for o in self.ALLOWED_ORIGINS.split(",") if o.strip()]
+
+    @property
+    def id_hash_salt(self) -> str:
+        """Never empty. An unsalted ID hash is a rainbow table waiting to happen."""
+        return self.ID_HASH_SALT or self.SECRET_KEY
 
 
 @lru_cache

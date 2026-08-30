@@ -3,8 +3,14 @@ FROM python:3.11-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /app
 
+# tesseract runs OCR locally. An Aadhaar card does not get uploaded to a third-party
+# API to find out what it says (CLAUDE.md rule 4), so the engine ships in the image.
+# Language packs match the six locales we serve; mar and hin share Devanagari.
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential libpq-dev curl && rm -rf /var/lib/apt/lists/*
+    build-essential libpq-dev curl \
+    tesseract-ocr tesseract-ocr-hin tesseract-ocr-mar tesseract-ocr-ben \
+    tesseract-ocr-tam tesseract-ocr-tel \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY apps/api/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt

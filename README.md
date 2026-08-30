@@ -278,6 +278,91 @@ fields each turn established — never the citizen's raw words, which routinely 
 name, a village or a number spoken aloud.
 
 
+### `POST /api/v1/applications` — submit to a Channel Partner
+
+Consent is written **before** the citizen row, and `citizens.consent_id` is NOT NULL, so
+there is no code path that stores personal data without a consent record to point at.
+Every applicant field is optional except the consent grant; a citizen who will not type
+their Aadhaar into a phone still gets a reference number and a branch to walk into.
+
+```bash
+curl -s localhost:8000/api/v1/applications -H 'Content-Type: application/json' -d '{
+  "scheme_code": "NSFDC_MICRO_FINANCE",
+  "partner_id": "<from /partners/route>",
+  "amount_requested": 72000,
+  "match_run_id": "<from /match>",
+  "applicant": {"display_name": "Sunita Devi", "gov_id_type": "AADHAAR",
+                "gov_id": "2345 6789 0123", "state": "Maharashtra"},
+  "consent": {"granted": true},
+  "language": "hi"
+}'
+# -> {"reference_no": "SETU-2026-MH-000001", "status": "SUBMITTED",
+#     "engine_version": "2.2.0", "documents_outstanding": 7, ...}
+```
+
+The reference number is designed to be read aloud at a branch counter over a bad line:
+`SETU-<year>-<state>-<serial>`. Withholding consent returns **403** and writes nothing —
+not a consent row, not a citizen row.
+
+The application snapshots `match_run_id` and the `engine_version` **that run recorded**,
+not whatever is live now. A sanction six months later can be replayed against the rules
+that were actually in force when the citizen applied.
+
+### `POST /api/v1/applications/{ref}/documents` — upload, redacted before it is stored
+
+OCR runs locally via tesseract in the API image. An Aadhaar card is not uploaded to a
+third-party API to find out what it says.
+
+```
+IDENTITY_PROOF
+  redaction applied : True
+  kept about the ID : [{"id_type": "AADHAAR", "last4": "0123", "salted_hash": "92d1711710..."}]
+  text we stored    : 'Governmentofindia Sunita Devi 1406/1988 XXXX XXXX 0123'
+
+INCOME_CERTIFICATE
+  status  : WARNING
+  warning : [POSSIBLY_EXPIRED] This appears to be dated 2019. Most partners require one
+            issued within the last 6 months.
+```
+
+**Warnings never block.** Telling a citizen their income certificate looks four years old
+while they are still at home saves them a trip; refusing the upload over it moves the
+failure somewhere they cannot see. The citizen decides.
+
+**Redaction fails closed.** If OCR is unavailable, an ID-bearing document is refused with
+**503** rather than stored unredacted. If an ID is found in the text but cannot be located
+in the pixels, the upload is refused too — storing it would leak it. Losing an upload is
+recoverable; leaking an Aadhaar number is not.
+
+### `GET /api/v1/applications/{ref}` — the tracking view
+
+No login. A citizen who walked to a cyber cafe with a number on a slip of paper must be
+able to check their application, so the response carries the state of the application and
+no personal data at all. A 404 is worded identically whether the reference never existed
+or belongs to someone else, so it cannot be used as an oracle.
+
+### `POST /api/v1/applications/{ref}/transition` — partner-side status
+
+Illegal transitions are refused with **409** and a message naming what *is* allowed:
+
+```
+SUBMITTED cannot become SANCTIONED.
+Allowed from here: PARTNER_ACKNOWLEDGED, REJECTED, WITHDRAWN.
+```
+
+A partner cannot sanction an application it never acknowledged. The transition table is a
+model of the process, not a log of whatever happened.
+
+### `GET /api/v1/documents/checklist` — what to actually bring
+
+Narrowed by scheme family, partner type and the facts already given, with a stated reason
+for each document. A condition that cannot yet be decided **includes** the document:
+over-listing costs a citizen one extra sheet of paper, under-listing costs them a second
+trip to the branch, which is the failure this project exists to prevent.
+
+Sunita gets 7 documents, Ramesh 10, Anjali 10 — the same engine, different lists.
+
+
 ### Routing weights
 
 All in [apps/api/app/core/routing_config.py](apps/api/app/core/routing_config.py) —
@@ -297,7 +382,8 @@ fluently.
 | `/[locale]/assist` | Voice or typed conversation; answers shown as chips to correct |
 | `/[locale]/results` | Ranked scheme cards, ineligible ones shown greyed with the blocking reason |
 | `/[locale]/results/[scheme]/partners` | Map + list, score-breakdown bars, "nearby but cannot help" |
-| `/[locale]/track/[ref]` | Application status timeline |
+| `/[locale]/apply/[scheme]` | Consent, optional applicant details, and the document checklist before you submit |
+| `/[locale]/track/[ref]` | Status timeline plus document upload — no login, the reference number is the key |
 
 ```bash
 pnpm --filter @setu/web dev     # http://localhost:3000
@@ -317,7 +403,7 @@ FCP 0.8s · LCP 1.8s · TBT 0ms · CLS 0, under Lighthouse's mobile throttling.
 
 ### The budget is enforced, not hoped for
 
-Worst citizen route is **113.9 KB gzipped of a 200 KB budget**. `check-bundle.mjs` reads
+Worst citizen route is **114.4 KB gzipped of a 200 KB budget**. `check-bundle.mjs` reads
 the real build manifest and fails the build if a route crosses the line. Leaflet is ~150KB,
 so the map is behind a dynamic import — a citizen who never opens it never downloads it.
 
@@ -349,23 +435,73 @@ results" banner.
 of every skill. These are development aids for the team — they are not part of the
 deployed application.
 
+## Privacy, and how it is proved
+
+CLAUDE.md rule 4 and the DPDP Act 2023: a government ID is masked at ingestion, and only
+the last four digits plus a salted hash are retained. That claim is defended at four
+layers and tested at every one of them.
+
+| Layer | Defence | Where |
+|---|---|---|
+| Extracted text | `mask_text` rewrites every ID-shaped run | `app/services/redaction.py` |
+| Image pixels | `redact_image` paints filled rectangles over the digits | `app/services/documents.py` |
+| Persistence boundary | `assert_no_government_id` raises rather than writes | `app/services/redaction.py` |
+| Database | `gov_id_last4 CHECK (~ '^[0-9]{4}$')`, `consent_id NOT NULL` | `app/models/citizen.py` |
+
+The test that matters most renders an Aadhaar-like card, **confirms OCR can read the
+number**, runs the real upload pipeline, and then OCRs the *stored bytes* to prove the
+digits are gone from the pixels — the one layer a reviewer cannot verify by reading code:
+
+```bash
+docker compose exec api python -m pytest tests/test_redaction.py -v   # 18 tests
+```
+
+```
+test_the_stored_image_no_longer_contains_the_number       PASSED
+test_the_analysis_payload_carries_no_full_id              PASSED
+test_an_id_document_is_refused_when_ocr_is_unavailable    PASSED
+test_an_id_found_in_text_but_not_locatable_in_pixels_is_refused  PASSED
+```
+
+Against the live database after a full walk-through — submit, upload an Aadhaar card,
+upload an income certificate, open the tracking page:
+
+```
+citizens              | AADHAAR | last4 0123 | hash 92d1711710828c39...
+documents.ocr_extract | rows containing a full 12-digit ID: 0 of 2
+audit_log.meta        | rows containing a full 12-digit ID: 0 of 49
+stored image files    | OCR reads back: 'Governmentofindia Sunita Devi 1406/1988'
+```
+
+The number the card was rendered with is not in the database, not in the audit log, and
+not in the pixels.
+
 ## Status
 
 Phases 0 (foundation), 1 (eligibility engine), 2 (partner registry and geo routing),
-3 (conversational intake) and 4 (citizen frontend) are complete. See [CLAUDE.md](CLAUDE.md)
-for the engineering contract every phase must satisfy.
+3 (conversational intake), 4 (citizen frontend) and 5 (applications and documents) are
+complete. See [CLAUDE.md](CLAUDE.md) for the engineering contract every phase must satisfy.
 
 ```bash
-pytest packages/rules -q          # 97 tests — the eligibility engine
-pnpm --filter @setu/rules test    # 19 tests — TypeScript conformance with Python
-cd apps/api && pytest -q          # 184 tests — schema, routing, numerals, conversation
+pytest packages/rules -q          # 116 tests — the eligibility engine and checklist
+pnpm -r test                      # 46 tests — TS conformance, message ICU parity, storage
+cd apps/api && pytest -q          # 226 tests — schema, routing, numerals, redaction
 pnpm --filter @setu/web check     # i18n parity, WCAG AA contrast, build, JS budget
+```
+
+The three OCR tests need tesseract, which ships in the API image but is unlikely to be on
+your host — they skip locally and run in the container. To run the API suite there:
+
+```bash
+docker compose exec api pip install -r requirements-dev.txt   # pytest is not in the runtime image
+docker compose exec api python -m pytest -q                   # 226 passed, 0 skipped
 ```
 
 ### The citizen app
 
-Five routes: a language picker at `/`, then `/[locale]` and `/[locale]/assist`,
-`/[locale]/results`, `/[locale]/results/[scheme]/partners`, `/[locale]/track/[ref]`.
+Seven routes: a language picker at `/`, then `/[locale]`, `/[locale]/assist`,
+`/[locale]/results`, `/[locale]/results/[scheme]/partners`, `/[locale]/apply/[scheme]`
+and `/[locale]/track/[ref]`.
 
 Lighthouse on the production build, mobile emulation with throttling:
 
@@ -377,7 +513,7 @@ Lighthouse on the production build, mobile emulation with throttling:
 
 FCP 0.8s · LCP 1.8s · TBT 0ms · CLS 0.
 
-**JS budget: 113.9 KB gzipped of 200 KB** on the worst citizen route. Leaflet is ~150 KB
+**JS budget: 114.4 KB gzipped of 200 KB** on the worst citizen route. Leaflet is ~150 KB
 and is dynamically imported, so a citizen who never opens the map never downloads it.
 `check:bundle` fails the build if a route crosses the line.
 
