@@ -48,6 +48,7 @@ from app.db.session import SessionLocal, engine  # noqa: E402
 
 from scripts.seed.partners import seed_partners  # noqa: E402
 from scripts.seed.schemes import seed_schemes  # noqa: E402
+from scripts.seed.users import seed as seed_users  # noqa: E402
 
 Seeder = Callable[[AsyncSession], Awaitable[str]]
 
@@ -58,6 +59,8 @@ REQUIRED_EXTENSIONS = ("postgis", "vector")
 SEEDERS: dict[str, Seeder] = {
     "schemes": seed_schemes,
     "partners": seed_partners,
+    # Last: the partner login is attached to a seeded Channel Partner.
+    "users": seed_users,
 }
 
 

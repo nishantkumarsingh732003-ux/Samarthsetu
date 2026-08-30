@@ -7,6 +7,7 @@ import uuid
 from fastapi import APIRouter, HTTPException, Request, status
 from geoalchemy2 import Geometry
 from sqlalchemy import cast, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
 from app.api.v1.deps import SessionDep
@@ -16,6 +17,46 @@ from app.schemas.match import PartnerDetailOut, RouteRequest, RouteResponse
 from app.services import audit, routing
 
 router = APIRouter()
+
+
+async def _audit_routing(
+    session: AsyncSession,
+    request: Request,
+    payload: RouteRequest,
+    result: dict,
+    *,
+    from_cache: bool,
+) -> None:
+    """One audit row per routing decision, cached or not.
+
+    `rejected_by_reason` is the anti-misrouting KPI in its raw form: every nearby branch
+    that could not have taken this application, counted by the rule that excluded it.
+    Storing the breakdown rather than a single total is what lets /admin say "authorised
+    for the wrong scheme" separately from "too far", which are different policy problems.
+    """
+    # From the routing result, which counts every exclusion. `why_not` is truncated for
+    # the citizen UI and would undercount this badly.
+    by_reason = dict(result.get("rejected_by_reason") or {})
+
+    await audit.record(
+        session,
+        actor=request.client.host if request.client else "unknown",
+        action="PARTNERS_ROUTED",
+        entity="scheme",
+        entity_id=payload.scheme_code,
+        meta={
+            "amount": payload.amount,
+            "district": payload.district,
+            "match_run_id": payload.match_run_id,
+            "eligible_partner_count": result["eligible_partner_count"],
+            "rejected_count": result["candidates_considered"]
+            - result["eligible_partner_count"],
+            "rejected_by_reason": by_reason,
+            "routing_version": result["routing_version"],
+            "served_from_cache": from_cache,
+        },
+    )
+
 
 
 @router.post(
@@ -40,6 +81,12 @@ async def route(
     cached = await cache.cache_get(key)
     if cached is not None:
         cached["cached"] = True
+        # A cached response is still a routing decision shown to a citizen. Auditing
+        # only on a cache miss would undercount the anti-misrouting KPI exactly when
+        # the system is busiest, and would leave a gap in the "who read what" trail
+        # that CLAUDE.md rule 4 requires.
+        await _audit_routing(session, request, payload, cached, from_cache=True)
+        await session.commit()
         return RouteResponse(**cached)
 
     try:
@@ -58,23 +105,7 @@ async def route(
     except routing.OriginUnknown as exc:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(exc)) from exc
 
-    await audit.record(
-        session,
-        actor=request.client.host if request.client else "unknown",
-        action="PARTNERS_ROUTED",
-        entity="scheme",
-        entity_id=payload.scheme_code,
-        meta={
-            "amount": payload.amount,
-            "district": payload.district,
-            "match_run_id": payload.match_run_id,
-            "eligible_partner_count": result["eligible_partner_count"],
-            # The anti-misrouting KPI: how many nearby branches could not have helped.
-            "rejected_count": result["candidates_considered"]
-            - result["eligible_partner_count"],
-            "routing_version": result["routing_version"],
-        },
-    )
+    await _audit_routing(session, request, payload, result, from_cache=False)
     await session.commit()
 
     await cache.cache_set(key, result)

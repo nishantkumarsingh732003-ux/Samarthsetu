@@ -19,6 +19,7 @@ qualify".
 from __future__ import annotations
 
 from dataclasses import replace
+from functools import lru_cache
 from typing import Any
 
 from setu_rules.loader import load_schemes, rules_digest
@@ -224,3 +225,22 @@ def run(
         results=tuple(results),
         next_question=next_best_question(profile, catalogue),
     )
+
+
+@lru_cache(maxsize=32)
+def rule_messages(language: str = "en") -> dict[str, str]:
+    """Every rule's satisfied-message by rule ID, in one language.
+
+    Lets a consumer re-render a stored decision in a *different* language from the one
+    it was made in. A `match_runs` row records the reasons in the citizen's language,
+    which is right for the citizen and wrong for a branch officer in the partner console
+    who may not read it — but rule IDs are stable and versioned, so the reason can be
+    rebuilt rather than translated.
+    """
+    out: dict[str, str] = {}
+    for scheme in load_schemes():
+        for rule in scheme.rules:
+            out[rule.id] = _message(rule.satisfied_i18n, language) or _message(
+                rule.message_i18n, language
+            )
+    return out

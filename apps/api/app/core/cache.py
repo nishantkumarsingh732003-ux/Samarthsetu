@@ -110,6 +110,25 @@ async def cache_set(key: str, value: Any, ttl: int = CACHE_TTL_SECONDS) -> None:
         logger.warning("routing cache write failed: %s", exc)
 
 
+async def invalidate_routing() -> int:
+    """Drop every cached routing result. Returns how many keys were removed.
+
+    Called when a partner changes capacity: the whole point of the toggle is that the
+    next citizen sees the change, and a TTL-bound stale answer defeats it. SCAN rather
+    than KEYS so a large keyspace does not block Redis, and failures are swallowed for
+    the same reason reads are — a cache must never break the request that touched it.
+    """
+    pattern = f"setu:route:v{ROUTING_VERSION}:*"
+    removed = 0
+    try:
+        client = get_client()
+        async for key in client.scan_iter(match=pattern, count=500):
+            removed += await client.delete(key)
+    except Exception as exc:  # noqa: BLE001 - cache must never break the request
+        logger.warning("routing cache invalidation failed: %s", exc)
+    return removed
+
+
 async def close() -> None:
     global _client
     if _client is not None:

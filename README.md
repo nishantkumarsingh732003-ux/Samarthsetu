@@ -64,7 +64,8 @@ database, applies `alembic upgrade head`, and serves the API and web app.
 
 | | |
 |---|---|
-| Web | http://localhost:3000 |
+| Citizen app | http://localhost:3000 |
+| Staff console | http://localhost:3000/console/login |
 | API docs | http://localhost:8000/docs |
 | Health | http://localhost:8000/health |
 
@@ -73,6 +74,19 @@ Load reference and demo data (safe to re-run — every seeder is idempotent):
 ```bash
 make seed                    # or: python scripts/seed/run.py --list
 ```
+
+That also creates the three console logins. They are demo credentials with a published
+password, which is deliberate for a synthetic-data build — set `SEED_PASSWORD` to change
+them, and the seeder **refuses to run at all** with the default password unless
+`ENVIRONMENT=development`:
+
+| Role | Email | Lands on |
+|---|---|---|
+| Ministry analyst | `admin@setu.gov.in` | `/console/admin` |
+| Branch officer | `partner@setu.gov.in` | `/console/partner` |
+| Citizen | `citizen@setu.gov.in` | nothing — the citizen service needs no account |
+
+Password: `setu-demo-2026`
 
 To run the services directly instead of in Docker:
 
@@ -384,6 +398,9 @@ fluently.
 | `/[locale]/results/[scheme]/partners` | Map + list, score-breakdown bars, "nearby but cannot help" |
 | `/[locale]/apply/[scheme]` | Consent, optional applicant details, and the document checklist before you submit |
 | `/[locale]/track/[ref]` | Status timeline plus document upload — no login, the reference number is the key |
+| `/console/login` | One sign-in form; the role in the response decides where you land |
+| `/console/partner` | Branch officer's queue, capacity toggle, SLA clock |
+| `/console/admin` | Ministry dashboard — funnel, misrouting KPI, underserved districts |
 
 ```bash
 pnpm --filter @setu/web dev     # http://localhost:3000
@@ -425,6 +442,117 @@ static assets cache-first, and **the API never cached**. An eligibility verdict 
 be served stale. Results the citizen has already seen live in `localStorage`, so
 `/results` renders with the network gone, under a persistent "Offline — showing saved
 results" banner.
+
+
+## The two consoles
+
+Three roles, three genuinely different experiences, one sign-in form. Authorisation is a
+`WHERE` clause, not a permission check: every partner-side query filters on the signed-in
+user's `partner_id`, so a forgotten guard returns nothing rather than silently widening
+the result set.
+
+```
+                    /partner/queue   /admin/analytics
+  admin token           403               200
+  partner token         200               403
+  citizen token         403               403
+  no token              401               401
+```
+
+### `/console/partner` — the branch officer
+
+The queue answers "what should I pick up next?" without opening anything: document
+readiness with the missing items **named**, an SLA clock against the partner's own stated
+turnaround, and — one click away — why the router sent this application here, with the
+rule IDs attached. An officer who can see why a case landed on their desk can push back
+when it should not have.
+
+The stored decision holds its reasons in the *citizen's* language. The console rebuilds
+them in the officer's, from stable rule IDs:
+
+```
+[en] MF_CATEGORY_SC: You are a Scheduled Caste applicant.
+[hi] MF_CATEGORY_SC: आप अनुसूचित जाति के आवेदक हैं।
+[ta] MF_CATEGORY_SC: நீங்கள் பட்டியலின சாதி விண்ணப்பதாரர்.
+```
+
+**The capacity toggle is the live demo.** It writes to the same
+`partner_scheme_authorisations` rows the routing engine hard-filters on, and invalidates
+the routing cache, so pausing intake removes the branch from citizen routing on the very
+next call — and tells anyone nearby exactly why:
+
+```
+1. Before  #1 Fusion Micro Finance — Nagpur Service Centre     <- offered
+2. Officer sets Micro Finance Scheme: accepting = false
+3. After   #1 Vidharbha Konkan Gramin Bank, Nagpur Branch      <- gone from the list
+   why_not: "Fusion Micro Finance — Nagpur Service Centre is 9.51 km away but has
+             paused new Micro Finance Scheme applications because its capacity is
+             exhausted."
+4. Officer resumes -> offered again
+```
+
+Rejecting or requesting documents **requires a reason**. Telling a citizen "no" without
+saying why is the behaviour this project exists to replace.
+
+### `/console/admin` — the ministry dashboard
+
+Every figure is a query against the live database. No chart library, no fixture, no
+cached snapshot; the bars are `div`s, so a screen reader gets the number rather than a
+canvas it cannot describe.
+
+**Misrouting prevented** is stated first, because it is the thing this service exists to
+change. It is counted from `audit_log` rows the routing endpoint writes, broken down by
+the rule that excluded each branch — "not authorised for this scheme" and "too far" are
+different policy problems and are reported separately.
+
+**Underserved districts** is the one section that tells the ministry to *do* something
+rather than how they are doing: districts where citizens ran an eligibility check and no
+authorised, accepting partner can process what they matched. Demand is measured from
+eligibility checks rather than applications, because the citizens who matter most are the
+ones who looked, found nothing, and never reached the application table at all.
+
+```
+District          Demand  Partners  Families unserved
+Nagpur, MH             1         6  education loan
+```
+
+Every section exports to CSV (`utf-8-sig`, so Excel opens Devanagari and Tamil labels
+rather than mojibake).
+
+#### The acceptance test: adding one application moves every number
+
+```
+metric                 before    after   moved
+eligibility runs           42       43   yes
+matched                    18       19   yes
+routed                     11       12   yes
+applied                     1        2   yes
+misrouting KPI            259      316   yes
+routing calls              11       12   yes
+districts w/demand          1        2   yes
+scheme mix rows             1        2   yes
+language rows               1        2   yes
+status rows                 1        2   yes
+turnaround rows             1        1   no   <- correct: still SUBMITTED
+```
+
+Turnaround only counts applications that have moved past submission. It moves on the
+partner's next action, not on the citizen's — which is the honest reading of the metric,
+so it is left that way.
+
+### Auth, and what it deliberately is not
+
+Email, password, a signed JWT, three roles. No OAuth provider, no email verification, no
+refresh-token rotation. **Production integrates with NIC / Parichay SSO** and
+`/api/v1/auth/login` is the seam where that swap happens — nothing else in the API asks
+anything but "who is calling".
+
+`bcrypt` is used directly rather than through `passlib`: passlib 1.7.4 raises
+`ValueError: password cannot be longer than 72 bytes` on import against modern bcrypt.
+A password over that limit is **refused, not truncated** — silent truncation means two
+different passwords open one account. An unknown email is verified against a real dummy
+hash so it costs the same ~200ms as a known one, because response timing is otherwise an
+oracle for which addresses are registered.
 
 
 ## Vendored skills
@@ -479,13 +607,13 @@ not in the pixels.
 ## Status
 
 Phases 0 (foundation), 1 (eligibility engine), 2 (partner registry and geo routing),
-3 (conversational intake), 4 (citizen frontend) and 5 (applications and documents) are
-complete. See [CLAUDE.md](CLAUDE.md) for the engineering contract every phase must satisfy.
+3 (conversational intake), 4 (citizen frontend), 5 (applications and documents) and
+6 (partner console and ministry analytics) are complete. See [CLAUDE.md](CLAUDE.md) for the engineering contract every phase must satisfy.
 
 ```bash
 pytest packages/rules -q          # 116 tests — the eligibility engine and checklist
 pnpm -r test                      # 46 tests — TS conformance, message ICU parity, storage
-cd apps/api && pytest -q          # 226 tests — schema, routing, numerals, redaction
+cd apps/api && pytest -q          # 267 tests — schema, routing, redaction, auth, console
 pnpm --filter @setu/web check     # i18n parity, WCAG AA contrast, build, JS budget
 ```
 
@@ -494,14 +622,16 @@ your host — they skip locally and run in the container. To run the API suite t
 
 ```bash
 docker compose exec api pip install -r requirements-dev.txt   # pytest is not in the runtime image
-docker compose exec api python -m pytest -q                   # 226 passed, 0 skipped
+docker compose exec api python -m pytest -q                   # 267 passed, 0 skipped
 ```
 
 ### The citizen app
 
-Seven routes: a language picker at `/`, then `/[locale]`, `/[locale]/assist`,
+Seven citizen routes: a language picker at `/`, then `/[locale]`, `/[locale]/assist`,
 `/[locale]/results`, `/[locale]/results/[scheme]/partners`, `/[locale]/apply/[scheme]`
-and `/[locale]/track/[ref]`.
+and `/[locale]/track/[ref]`. The staff consoles live outside the localised tree at
+`/console/*` — that separation is structural, so a console dependency cannot end up in a
+citizen bundle.
 
 Lighthouse on the production build, mobile emulation with throttling:
 
@@ -520,7 +650,8 @@ and is dynamically imported, so a citizen who never opens the map never download
 Three checks guard the things that are easy to regress silently:
 
 - `check:i18n` — key parity across all six catalogues, every catalogue declaring whether
-  it was reviewed, and no hardcoded English in a component
+  it was reviewed, and no hardcoded English in a **citizen** component (the signed-in
+  staff console is English-only and exempt; see OI-35)
 - `check:contrast` — every foreground/background pair in the palette against WCAG AA,
   whether or not a page currently uses it
 - `check:bundle` — gzipped First Load JS per citizen route

@@ -16,6 +16,7 @@ authorised", and that is reportable.
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -267,6 +268,10 @@ async def find_partners(
         # Ordered by distance because the persuasive case is the *close* branch that
         # cannot help you.
         "why_not": [r.to_dict() for r in rejected[:TOP_N_WHY_NOT]],
+        # Every rejection, tallied by rule — not just the handful `why_not` shows.
+        # The citizen only needs the nearest few; the anti-misrouting KPI needs all of
+        # them, and deriving it from the truncated list undercounted 59 exclusions as 3.
+        "rejected_by_reason": Counter(r.reason_code for r in rejected),
         "data_disclaimer": SYNTHETIC_DISCLAIMER,
     }
 

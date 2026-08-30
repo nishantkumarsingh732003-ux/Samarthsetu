@@ -7,7 +7,7 @@ Nothing here is a surprise on demo day if it is read first.
 
 **Legend** — 🔴 blocks the demo · 🟡 weakens the demo · 🟢 tracked, not urgent
 
-Last reviewed: 2026-08-30 (after Phase 5)
+Last reviewed: 2026-08-30 (after Phase 6)
 
 ---
 
@@ -393,6 +393,67 @@ for "we keep only the last 4 digits" reads naturally.
 
 ---
 
+---
+
+## 🔴 OI-35 — the staff console is English-only
+
+**Status:** open · **Owner:** needs a reviewer per language · **Since:** Phase 6
+
+`/console/partner` is a desk tool for a Channel Partner branch officer, and its chrome —
+buttons, headings, column names — is English. A branch officer in Tamil Nadu or West
+Bengal is precisely the user this project claims to serve, so this is a real gap, not a
+scoping nicety.
+
+What *is* localised is the part that carries meaning: the rule-engine reasons an officer
+reads are rebuilt from stable rule IDs in the officer's language, so "why was this routed
+here" is answerable in all six. `scripts/check-i18n.mjs` now states its scope explicitly
+(citizen components) and exempts `src/app/console` rather than silently passing.
+
+**Breaks if it stays open:** a branch officer who does not read English can still process
+applications — the reasons and the citizen's details are translated — but navigates the
+tool by position rather than by reading it.
+
+**To close:** add a `console` namespace to the six catalogues, in the same review pass as
+OI-4 and OI-33.
+
+---
+
+## 🟡 OI-36 — the 25km coverage radius is our number, not a policy one
+
+**Status:** open · **Owner:** needs MoSJE input · **Since:** Phase 6
+
+`analytics.COVERAGE_RADIUS_KM = 25.0` decides which districts the ministry dashboard
+calls underserved. It is a reasonable "can reach a branch and get home the same day"
+guess, and it is not from any circular. It sits beside `MAX_SERVICE_RADIUS_KM = 150`
+in the routing engine, which is a different unvalidated number for a different purpose
+(OI-18).
+
+The dashboard returns `radius_km` in every response so a reviewer can see what the figure
+was computed against rather than having to trust the label.
+
+**Breaks if it stays open:** a district is named underserved, or not, on our arithmetic
+rather than the ministry's definition of reach.
+
+**To close:** get the accessibility standard MoSJE actually uses for branch coverage.
+
+---
+
+## 🟡 OI-37 — role changes take up to an hour to take effect
+
+**Status:** accepted, documented · **Since:** Phase 6
+
+A JWT carries the role and lives for `ACCESS_TOKEN_EXPIRE_MINUTES` (60). `deps.current_user`
+re-reads the user from the database on every request, so **deactivating an account is
+immediate** — but a *role* change is not reflected until the token is reissued.
+
+At one hour that is an acceptable window for a hackathon build with three seeded accounts,
+and it is written down here so nobody later assumes revocation is instant. Real
+deployment replaces this entirely with NIC / Parichay SSO.
+
+**To close:** not by hand-rolling refresh tokens. This closes when SSO lands.
+
+---
+
 ## Closed
 
 | ID | Item | Closed |
@@ -420,3 +481,8 @@ for "we keep only the last 4 digits" reads naturally.
 | OI-16 | Partner service areas were random districts within a state, so a Mumbai branch "served" Nagpur 687km away and the router ranked it. Service areas are now the geographically nearest districts, and routing rejects anything beyond a 150km radius with a stated reason. | 2026-08-29 |
 | OI-17 | 120 partners spread uniformly over 53 districts left Nagpur with a single branch, making routing look empty. Seeding now guarantees one partner per district and weights the remainder towards large cities. | 2026-08-29 |
 | OI-34 | `apps/web` shipped a `test: vitest run` script with zero test files in Phase 4, so `pnpm test` — a stated definition-of-done gate — failed from a clean clone. Added 27 tests covering rupee grouping, offline storage under a throwing `localStorage`, and ICU placeholder parity across all six catalogues. | 2026-08-30 |
+| OI-38 | Alembic's `include_object` filtered PostGIS tables by *name*, which missed the `tiger` and `tiger_data` schemas entirely — and because `postgis_tiger_geocoder` puts itself on the database `search_path`, autogenerate saw ~30 of its tables as unqualified and emitted `op.drop_table` for every one. The search_path is now pinned to `public` as an asyncpg server setting. | 2026-08-30 |
+| OI-39 | Fixing OI-38 with `SET search_path` on the connection started an implicit transaction that alembic's own `begin_transaction()` did not own: the migration was rolled back while alembic reported `Running upgrade ... done`. Caught because the table was absent afterwards. | 2026-08-30 |
+| OI-40 | A routing call served from the Redis cache returned early and wrote **no audit row**, so both the anti-misrouting KPI and the CLAUDE.md rule 4 "who read what" trail silently undercounted exactly when the system was busiest. | 2026-08-30 |
+| OI-41 | The anti-misrouting KPI was derived from `why_not`, which is truncated to the nearest few for the citizen UI — one routing call that excluded 59 partners contributed 3. The routing result now carries a full `rejected_by_reason` tally. | 2026-08-30 |
+| OI-42 | A partner pausing intake left the routing cache serving the old capacity for its TTL, which on a live demo is the worst possible moment to be stale. `cache.invalidate_routing()` now runs on every capacity change. | 2026-08-30 |

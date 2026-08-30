@@ -14,7 +14,13 @@ from setu_rules.documents import (
     load_documents,
     required_documents,
 )
-from setu_rules.engine import evaluate, evaluate_scheme, indicative_amount, run
+from setu_rules.engine import (
+    evaluate,
+    evaluate_scheme,
+    indicative_amount,
+    rule_messages,
+    run,
+)
 from setu_rules.loader import RuleLoadError, load_schemes, rules_digest
 from setu_rules.models import (
     Family,
@@ -81,6 +87,7 @@ __all__ = [
     "required_documents",
     "rules_digest",
     "translation_status",
+    "rule_messages",
     "run",
     "validate_profile",
 ]

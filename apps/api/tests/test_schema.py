@@ -26,6 +26,8 @@ EXPECTED_TABLES = {
     "documents",
     "audit_log",
     "match_runs",
+    # Phase 6: console logins. The citizen surface still needs no account.
+    "users",
 }
 
 

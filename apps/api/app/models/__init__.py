@@ -18,9 +18,11 @@ from app.models.enums import (
     RuleSeverity,
     SchemeFamily,
     SocialCategory,
+    UserRole,
 )
 from app.models.partner import ChannelPartner, PartnerSchemeAuthorisation
 from app.models.scheme import Scheme, SchemeRule
+from app.models.user import User
 
 __all__ = [
     "Base",
@@ -43,4 +45,6 @@ __all__ = [
     "SchemeFamily",
     "SchemeRule",
     "SocialCategory",
+    "User",
+    "UserRole",
 ]

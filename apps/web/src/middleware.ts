@@ -13,5 +13,8 @@ export const config = {
   // `.+` rather than `.*` so the bare "/" is NOT matched. That route is the language
   // picker and must render, rather than being redirected to a guessed locale — the
   // whole point of the screen is that the citizen chooses.
-  matcher: ["/((?!api|_next|manifest\\.webmanifest|sw\\.js|icons|.*\\..*).+)"],
+  // `console` is excluded because the staff consoles are not part of the citizen
+  // surface: they are English-only desk tools behind a login, and rewriting them to
+  // /en/console would put a sign-in form inside the localised citizen tree.
+  matcher: ["/((?!api|_next|console|manifest\\.webmanifest|sw\\.js|icons|.*\\..*).+)"],
 };

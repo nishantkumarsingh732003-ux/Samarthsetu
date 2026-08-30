@@ -27,11 +27,23 @@ target_metadata = Base.metadata
 
 # PostGIS and pgvector install their own objects into the database. Autogenerate must
 # not try to drop or recreate them.
+#
+# Filtering by *schema* rather than by name, because a name blocklist does not scale:
+# `postgis_tiger_geocoder` alone installs ~30 tables into the `tiger` and `tiger_data`
+# schemas, and an autogenerate run that does not exclude them emits `op.drop_table` for
+# every one. Our own tables all live in `public`; anything outside it is an extension's
+# and is not ours to manage.
+IGNORED_SCHEMAS = {"tiger", "tiger_data", "topology"}
+
+# PostGIS objects that do live in `public`.
 IGNORED_TABLES = {"spatial_ref_sys", "geography_columns", "geometry_columns", "raster_columns",
                   "raster_overviews"}
 
 
 def include_object(object_, name, type_, reflected, compare_to):  # noqa: ANN001, ANN201
+    schema = getattr(object_, "schema", None)
+    if schema in IGNORED_SCHEMAS:
+        return False
     return not (type_ == "table" and name in IGNORED_TABLES)
 
 
@@ -69,7 +81,20 @@ def do_run_migrations(connection: Connection) -> None:
 async def run_async_migrations() -> None:
     section = config.get_section(config.config_ini_section, {})
     section["sqlalchemy.url"] = settings.DATABASE_URL
-    connectable = async_engine_from_config(section, prefix="sqlalchemy.", poolclass=pool.NullPool)
+    connectable = async_engine_from_config(
+        section,
+        prefix="sqlalchemy.",
+        poolclass=pool.NullPool,
+        # `postgis_tiger_geocoder` puts itself on the database search_path
+        # ("$user", public, topology, tiger), so reflection sees its ~30 tables as
+        # unqualified and autogenerate emits a `drop_table` for every one of them.
+        #
+        # This is set as an asyncpg server setting rather than with a `SET search_path`
+        # on the connection: issuing raw SQL before `context.configure` starts an
+        # implicit transaction that alembic's own `begin_transaction()` does not own,
+        # and the migration is then rolled back while alembic still reports success.
+        connect_args={"server_settings": {"search_path": "public"}},
+    )
 
     async with connectable.connect() as connection:
         await connection.run_sync(do_run_migrations)

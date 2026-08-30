@@ -75,3 +75,11 @@ class Gender(StrEnum):
     MALE = "MALE"
     OTHER = "OTHER"
     UNDISCLOSED = "UNDISCLOSED"
+
+
+class UserRole(StrEnum):
+    """Console roles. The citizen journey needs no login — a reference number is the key."""
+
+    CITIZEN = "CITIZEN"
+    PARTNER = "PARTNER"
+    ADMIN = "ADMIN"
