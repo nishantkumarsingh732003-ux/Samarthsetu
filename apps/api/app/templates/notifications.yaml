@@ -1,0 +1,98 @@
+# Outbound message templates, one block per event, in the six languages SETU serves.
+#
+# Written short on purpose. An SMS in Latin script fits 160 characters per segment; in
+# Devanagari, Bengali, Tamil or Telugu the encoding is UCS-2 and a segment is **70
+# characters**. A friendly two-sentence English message that costs one segment costs
+# three in Tamil, and the citizen we are building for is on a Rs 6,000 phone in a
+# village where the sender is paying per segment. Brevity here is a cost decision, not
+# a style preference — `notifications.sms_segments()` measures it and the console shows
+# the count.
+#
+# Placeholders are filled from the notification context. `{ref}` is the reference number
+# and is never translated. Official scheme names are passed through verbatim
+# (CLAUDE.md) — never machine-translated into a template.
+#
+# status: whether a speaker of that language has reviewed the copy. `draft` is carried
+# through to the console the same way rule translations are, rather than hidden.
+
+_meta:
+  status:
+    en: verified
+    hi: draft
+    mr: draft
+    bn: draft
+    ta: draft
+    te: draft
+  note: >-
+    Written for this phase and not yet read by a native speaker in any language other
+    than English. Tracked as OPEN_ITEMS OI-33 alongside the citizen app copy.
+
+events:
+  APPLICATION_SUBMITTED:
+    description: The citizen has applied and needs their reference number.
+    en: "SETU: application {ref} sent to {partner}. Keep this number. Track: {link}"
+    hi: "SETU: आवेदन {ref} {partner} को भेजा गया। यह नंबर रखें। देखें: {link}"
+    mr: "SETU: अर्ज {ref} {partner} कडे पाठवला. हा क्रमांक जपा. पाहा: {link}"
+    bn: "SETU: আবেদন {ref} {partner}-এ পাঠানো হয়েছে। নম্বরটি রাখুন। দেখুন: {link}"
+    ta: "SETU: விண்ணப்பம் {ref} {partner}க்கு அனுப்பப்பட்டது. எண்ணை வைத்திருங்கள்: {link}"
+    te: "SETU: దరఖాస్తు {ref} {partner}కి పంపబడింది. నంబర్ ఉంచుకోండి: {link}"
+
+  PARTNER_ACKNOWLEDGED:
+    description: A named officer has picked the application up.
+    en: "SETU: {partner} has your application {ref} and is reviewing it."
+    hi: "SETU: {partner} के पास आपका आवेदन {ref} है, समीक्षा जारी है।"
+    mr: "SETU: {partner} कडे तुमचा अर्ज {ref} आहे, तपासणी सुरू आहे."
+    bn: "SETU: {partner} আপনার আবেদন {ref} পেয়েছে, পর্যালোচনা চলছে।"
+    ta: "SETU: {partner} உங்கள் விண்ணப்பம் {ref} பெற்று பரிசீலிக்கிறது."
+    te: "SETU: {partner} మీ దరఖాస్తు {ref} పొంది సమీక్షిస్తోంది."
+
+  DOCS_REQUESTED:
+    description: >-
+      The one message that must carry the reason. A citizen told "documents needed"
+      without being told which walks back to the branch and finds out there.
+    en: "SETU: {ref} needs a document. {reason} Add it here: {link}"
+    hi: "SETU: {ref} के लिए दस्तावेज़ चाहिए। {reason} यहाँ जोड़ें: {link}"
+    mr: "SETU: {ref} साठी कागदपत्र हवे. {reason} इथे जोडा: {link}"
+    bn: "SETU: {ref}-এর জন্য নথি দরকার। {reason} এখানে দিন: {link}"
+    ta: "SETU: {ref}க்கு ஆவணம் தேவை. {reason} இங்கே சேர்க்க: {link}"
+    te: "SETU: {ref}కి పత్రం కావాలి. {reason} ఇక్కడ చేర్చండి: {link}"
+
+  UNDER_APPRAISAL:
+    description: Appraisal has begun. Sent so silence is never the status.
+    en: "SETU: {partner} is now appraising application {ref}."
+    hi: "SETU: {partner} अब आवेदन {ref} की जाँच कर रहा है।"
+    mr: "SETU: {partner} आता अर्ज {ref} तपासत आहे."
+    bn: "SETU: {partner} এখন আবেদন {ref} মূল্যায়ন করছে।"
+    ta: "SETU: {partner} இப்போது விண்ணப்பம் {ref} ஆய்வு செய்கிறது."
+    te: "SETU: {partner} ఇప్పుడు దరఖాస్తు {ref} పరిశీలిస్తోంది."
+
+  SANCTIONED:
+    description: >-
+      Sanctioned is not disbursed. The wording says the partner decided, and does not
+      promise money has moved — the same discipline the citizen-facing explanations use.
+    en: "SETU: {partner} has sanctioned {ref}. They will contact you about next steps."
+    hi: "SETU: {partner} ने {ref} स्वीकृत किया। आगे की जानकारी वे देंगे।"
+    mr: "SETU: {partner} ने {ref} मंजूर केला. पुढील माहिती ते देतील."
+    bn: "SETU: {partner} {ref} অনুমোদন করেছে। পরবর্তী ধাপ তারা জানাবে।"
+    ta: "SETU: {partner} {ref} அனுமதித்தது. அடுத்த படிகளை அவர்கள் தெரிவிப்பார்கள்."
+    te: "SETU: {partner} {ref} ఆమోదించింది. తదుపరి వివరాలు వారు తెలుపుతారు."
+
+  DISBURSED:
+    description: The money has actually moved. Only the partner can trigger this.
+    en: "SETU: {partner} has released the funds for {ref}."
+    hi: "SETU: {partner} ने {ref} की राशि जारी कर दी है।"
+    mr: "SETU: {partner} ने {ref} ची रक्कम दिली आहे."
+    bn: "SETU: {partner} {ref}-এর টাকা ছেড়েছে।"
+    ta: "SETU: {partner} {ref}க்கான தொகையை வழங்கியது."
+    te: "SETU: {partner} {ref} మొత్తాన్ని విడుదల చేసింది."
+
+  REJECTED:
+    description: >-
+      Always carries the reason and always names the next step. A refusal with no
+      reason and no route onward is the failure this project exists to replace.
+    en: "SETU: {partner} could not approve {ref}. {reason} Other options: {link}"
+    hi: "SETU: {partner} {ref} स्वीकृत नहीं कर सका। {reason} अन्य विकल्प: {link}"
+    mr: "SETU: {partner} {ref} मंजूर करू शकला नाही. {reason} इतर पर्याय: {link}"
+    bn: "SETU: {partner} {ref} অনুমোদন করেনি। {reason} অন্য বিকল্প: {link}"
+    ta: "SETU: {partner} {ref} அனுமதிக்கவில்லை. {reason} வேறு வழிகள்: {link}"
+    te: "SETU: {partner} {ref} ఆమోదించలేదు. {reason} ఇతర మార్గాలు: {link}"

@@ -45,6 +45,10 @@ class Session:
     questions_asked: list[str] = field(default_factory=list)
     turns: list[dict[str, Any]] = field(default_factory=list)
     pending_confirmation: dict[str, Any] | None = None
+    # The last question put to the citizen: {"field": ..., "choices": [...]}.
+    # Their next message is almost always an answer to it, and knowing which
+    # question is what lets a bare "SC" or a bare number be read correctly.
+    last_question: dict[str, Any] | None = None
 
     @property
     def question_count(self) -> int:
@@ -73,6 +77,7 @@ class Session:
             "questions_asked": self.questions_asked,
             "turns": self.turns,
             "pending_confirmation": self.pending_confirmation,
+            "last_question": self.last_question,
         }
 
     @classmethod
@@ -85,6 +90,7 @@ class Session:
             questions_asked=data.get("questions_asked", []),
             turns=data.get("turns", []),
             pending_confirmation=data.get("pending_confirmation"),
+            last_question=data.get("last_question"),
         )
 
 

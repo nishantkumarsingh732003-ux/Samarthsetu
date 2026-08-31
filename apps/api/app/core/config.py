@@ -27,6 +27,27 @@ class Settings(BaseSettings):
     ID_HASH_SALT: str = ""
     CONSENT_POLICY_VERSION: str = "2026-08-01"
 
+    # --- notifications and reach ---
+    # database | console | sms | whatsapp. The demo runs on `database`: the message is
+    # stored and read on the citizen's tracking page, needing no contact address at all.
+    NOTIFICATION_DRIVER: str = "database"
+    WHATSAPP_TOKEN: str = ""
+    WHATSAPP_VERIFY_TOKEN: str = ""
+    # Used to build the tracking link inside a message.
+    PUBLIC_WEB_URL: str = "http://localhost:3000"
+
+    # --- hardening ---
+    # Requests per window, per client, per route group. Generous by design: the point is
+    # to stop a runaway script, not to ration a citizen who taps twice on 2G.
+    RATE_LIMIT_ENABLED: bool = True
+    RATE_LIMIT_WINDOW_SECONDS: int = 60
+    RATE_LIMIT_DEFAULT: int = 120
+    # The conversational endpoint costs a model call, so it is metered harder.
+    RATE_LIMIT_CONVERSATION: int = 30
+    RATE_LIMIT_LOGIN: int = 10
+    # JSON lines rather than prose, so logs are greppable in a container.
+    LOG_JSON: bool = True
+
     # --- language model (optional) ---
     # The LLM never decides eligibility. It proposes facts before the rule engine and
     # restates its reasons afterwards, so the provider is swappable and "none" is a

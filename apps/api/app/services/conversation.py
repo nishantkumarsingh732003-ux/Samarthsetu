@@ -67,7 +67,17 @@ async def handle_turn(
         # restated the value we will pick it up below.
 
     # --- 2. extract facts ----------------------------------------------------------
-    result = await extraction.extract(utterance, language, convo.profile)
+    # The question we put to the citizen last turn. Their message is almost always an
+    # answer to it, and knowing which question it was is what lets a bare "SC" or a
+    # bare "80 hazaar" be read as the answer rather than guessed at.
+    last = convo.last_question or {}
+    asked_field = last.get("field") or (
+        convo.questions_asked[-1] if convo.questions_asked else None
+    )
+    asked_choices = last.get("choices")
+    result = await extraction.extract(
+        utterance, language, convo.profile, asked_field, asked_choices
+    )
 
     for item in result.accepted:
         _write(convo, item.field, item.value)
@@ -116,6 +126,7 @@ async def handle_turn(
     if question is not None and not convo.at_question_limit:
         payload = question.to_dict()
         convo.questions_asked.append(payload["field"])
+        convo.last_question = {"field": payload["field"], "choices": payload.get("choices")}
         convo.record_turn(established, payload["field"])
         await session_store.save(convo)
         return {
@@ -134,6 +145,7 @@ async def handle_turn(
             "next_question": payload,
         }
 
+    convo.last_question = None
     convo.record_turn(established, None)
     await session_store.save(convo)
 

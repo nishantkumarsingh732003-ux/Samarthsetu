@@ -14,12 +14,15 @@ from app.models.enums import (
     DocumentValidationStatus,
     Gender,
     GovIdType,
+    NotificationChannel,
+    NotificationStatus,
     PartnerType,
     RuleSeverity,
     SchemeFamily,
     SocialCategory,
     UserRole,
 )
+from app.models.notification import Notification
 from app.models.partner import ChannelPartner, PartnerSchemeAuthorisation
 from app.models.scheme import Scheme, SchemeRule
 from app.models.user import User
@@ -38,6 +41,9 @@ __all__ = [
     "Gender",
     "GovIdType",
     "MatchRun",
+    "Notification",
+    "NotificationChannel",
+    "NotificationStatus",
     "PartnerSchemeAuthorisation",
     "PartnerType",
     "RuleSeverity",

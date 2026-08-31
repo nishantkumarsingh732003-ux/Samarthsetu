@@ -20,7 +20,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models import Application, ChannelPartner, Scheme
 from app.models.enums import ApplicationStatus
-from app.services import audit
+from app.services import audit, notifications
 
 # Two-letter codes so the reference number says where the application was raised.
 STATE_CODES: dict[str, str] = {
@@ -75,6 +75,18 @@ ALLOWED_TRANSITIONS: dict[ApplicationStatus, frozenset[ApplicationStatus]] = {
     ApplicationStatus.DISBURSED: frozenset(),
     ApplicationStatus.REJECTED: frozenset(),
     ApplicationStatus.WITHDRAWN: frozenset(),
+}
+
+
+# Transitions a citizen is told about, and the template used. WITHDRAWN is absent on
+# purpose: the citizen withdrew, so telling them they withdrew is noise.
+NOTIFIED_TRANSITIONS: dict[ApplicationStatus, str] = {
+    ApplicationStatus.PARTNER_ACKNOWLEDGED: "PARTNER_ACKNOWLEDGED",
+    ApplicationStatus.DOCS_REQUESTED: "DOCS_REQUESTED",
+    ApplicationStatus.UNDER_APPRAISAL: "UNDER_APPRAISAL",
+    ApplicationStatus.SANCTIONED: "SANCTIONED",
+    ApplicationStatus.DISBURSED: "DISBURSED",
+    ApplicationStatus.REJECTED: "REJECTED",
 }
 
 
@@ -185,6 +197,13 @@ async def create_application(
             "engine_version": engine_version,
         },
     )
+
+    # The citizen leaves with a reference number on screen; this is the copy they can
+    # come back to. It never raises — a message that cannot be delivered must not roll
+    # back the application it is reporting on.
+    await notifications.notify(
+        session, event="APPLICATION_SUBMITTED", application=application, actor=actor
+    )
     return application
 
 
@@ -230,4 +249,13 @@ async def transition(
             "reason": reason,
         },
     )
+
+    # Silence is never a status. Every transition the citizen would want to know about
+    # has a template; anything else passes through without one rather than inventing
+    # copy nobody reviewed.
+    event = NOTIFIED_TRANSITIONS.get(to_status)
+    if event:
+        await notifications.notify(
+            session, event=event, application=application, reason=reason, actor=actor
+        )
     return application

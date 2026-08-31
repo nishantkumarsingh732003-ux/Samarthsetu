@@ -144,25 +144,61 @@ async def test_the_street_vendor_is_routed_to_micro_finance() -> None:
 
 
 @pytest.mark.asyncio
-async def test_a_bare_amount_is_confirmed_rather_than_assumed() -> None:
-    """"ढाई लाख" with no context could be income or requirement. We ask."""
+async def test_a_bare_amount_out_of_the_blue_is_confirmed_rather_than_assumed() -> None:
+    """"ढाई लाख" with nothing asked could be income or requirement, so we ask.
+
+    Tested at the extraction layer because that is where the ambiguity lives. Through
+    the orchestrator there is almost always an outstanding question, and the answer to
+    a direct question is not ambiguous — see the test below.
+    """
+    from app.services import extraction
+
+    result = await extraction.extract("ढाई लाख", "hi", {}, asked_field=None)
+    assert result.accepted == []
+    assert [f.field for f in result.needs_confirmation] == ["annual_family_income"]
+
+
+@pytest.mark.asyncio
+async def test_an_amount_answering_the_question_we_asked_is_not_re_confirmed() -> None:
+    """We asked for their income and they gave a number. Asking "did you mean your
+    income?" straight back reads as not listening, and it was also wrong: before this
+    was fixed, a reply to "how much do you need?" was confirmed as *income*, and a
+    citizen agreeing set the wrong field and changed their verdict.
+    """
     final = await run_conversation(TURNS[:3])
-    assert final["stage"] == "CONFIRMING"
-    assert final["question_field"] == "annual_family_income"
-    assert "250,000" in final["question"]
-    # Crucially, it has NOT been written to the profile yet.
-    assert "annual_family_income" not in final["profile"]
+    assert final["profile"]["annual_family_income"] == 250000.0
+    assert final["stage"] == "ASKING"
 
 
 @pytest.mark.asyncio
 async def test_declining_a_confirmation_does_not_write_the_value() -> None:
-    final = await run_conversation([*TURNS[:3], "नहीं"])
+    from app.services import extraction
+    from app.services import session as session_store
+
+    convo = await session_store.load_or_create(None, "hi")
+    convo.pending_confirmation = {
+        "field": "annual_family_income", "value": 250000.0, "confidence": 0.5
+    }
+    await session_store.save(convo)
+
+    db = FakeSession()
+    final = await conversation.handle_turn(db, convo.session_id, "नहीं", "hi")
     assert "annual_family_income" not in final["profile"]
+    assert extraction is not None  # imported for the side-effect-free contract above
 
 
 @pytest.mark.asyncio
 async def test_confirming_writes_the_value() -> None:
-    final = await run_conversation(TURNS[:4])
+    from app.services import session as session_store
+
+    convo = await session_store.load_or_create(None, "hi")
+    convo.pending_confirmation = {
+        "field": "annual_family_income", "value": 250000.0, "confidence": 0.5
+    }
+    await session_store.save(convo)
+
+    db = FakeSession()
+    final = await conversation.handle_turn(db, convo.session_id, "हाँ", "hi")
     assert final["profile"]["annual_family_income"] == 250000.0
 
 
@@ -178,24 +214,37 @@ async def test_a_decision_is_reached_within_six_questions() -> None:
 
 
 @pytest.mark.asyncio
-async def test_the_same_question_is_never_asked_twice_in_a_row() -> None:
-    """Re-asking an unanswered question is fine; repeating it verbatim reads as broken.
+async def test_a_question_only_repeats_when_nothing_else_is_worth_asking() -> None:
+    """A citizen who does not answer should be asked something else next — unless there
+    *is* nothing else.
 
-    A citizen who does not answer "how much do you need?" should be asked something
-    else next, and only returned to that question once it is the one thing still
-    standing between them and an answer.
+    The original form of this test forbade any consecutive repeat outright, which is
+    too strong. Once every other field is known, the unanswered one is the single thing
+    standing between the citizen and a verdict, and asking it again is better than
+    deciding without it or giving up. So the invariant tested is the narrower, true one:
+    a repeat is only allowed when no other field could change any rule.
     """
+    from setu_rules import field_impact
+
     db = FakeSession()
     session_id = None
     asked: list[str] = []
+    profiles: list[dict[str, Any]] = []
     for utterance in TURNS:
         result = await conversation.handle_turn(db, session_id, utterance, "hi")
         session_id = result["session_id"]
         if result["stage"] == "ASKING":
             asked.append(result["question_field"])
+            profiles.append(dict(result["profile"]))
 
-    consecutive = [a for a, b in zip(asked, asked[1:], strict=False) if a == b]
-    assert not consecutive, f"asked the same field twice in a row: {asked}"
+    for index in range(1, len(asked)):
+        if asked[index] != asked[index - 1]:
+            continue
+        alternatives = set(field_impact(profiles[index])) - {asked[index]}
+        assert not alternatives, (
+            f"repeated {asked[index]!r} while {sorted(alternatives)} were still worth "
+            f"asking; sequence was {asked}"
+        )
 
 
 @pytest.mark.asyncio

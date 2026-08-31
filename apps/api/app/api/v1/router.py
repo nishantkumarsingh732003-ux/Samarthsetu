@@ -8,6 +8,7 @@ from app.api.v1.routes import (
     match,
     partner_console,
     partners,
+    webhook,
 )
 
 api_router = APIRouter()
@@ -30,3 +31,5 @@ api_router.include_router(
     partner_console.router, prefix="/partner", tags=["partner console"]
 )
 api_router.include_router(admin.router, prefix="/admin", tags=["admin"])
+# The feature-phone entry point. Same orchestrator, plain-text rendering.
+api_router.include_router(webhook.router, prefix="/webhook", tags=["webhook"])

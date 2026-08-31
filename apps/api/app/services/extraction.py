@@ -215,15 +215,42 @@ def _negated_near(text: str, cue: str) -> bool:
     return any(neg in window for neg in NEGATION_CUES)
 
 
+# Fields a bare number can plausibly answer. Used only when we asked for one of them.
+AMOUNT_FIELDS = frozenset({"annual_family_income", "project_cost", "existing_loans"})
+
+
 def extract_deterministic(
-    utterance: str, profile: dict[str, Any], language: str = "en"
+    utterance: str,
+    profile: dict[str, Any],
+    language: str = "en",
+    asked_field: str | None = None,
+    asked_choices: list[str] | None = None,
 ) -> list[ExtractedField]:
-    """Everything we can establish without a model."""
+    """Everything we can establish without a model.
+
+    `asked_field` is the field the orchestrator just asked about. It matters for one
+    case only — a bare number with no cue words — and it matters a great deal there.
+    Without it, "80 hazaar" in reply to "how much do you need?" was read as an *income*
+    of Rs 80,000, and the citizen was asked to confirm a figure they never gave. Saying
+    yes would then have set the wrong field and changed the verdict.
+    """
     text = normalise_digits(utterance).lower()
     found: list[ExtractedField] = []
 
     def add(name: str, value: Any, confidence: float, evidence: str) -> None:
         found.append(ExtractedField(name, value, confidence, evidence, "deterministic"))
+
+    # --- an exact answer to a choice question --------------------------------------
+    # We offered "SC / ST / OBC / GENERAL" and they replied "SC". The cue lists cannot
+    # help here: they are substring-matched, and a bare "sc" cue would fire inside
+    # "school" and "science". An exact match against what we ourselves offered is both
+    # safer and stronger — and it is what a tapped chip in the web app sends.
+    if asked_field and asked_choices:
+        answer = utterance.strip().casefold()
+        for choice in asked_choices:
+            if answer == str(choice).strip().casefold():
+                add(asked_field, choice, 0.97, str(choice))
+                return found
 
     # --- amounts -------------------------------------------------------------------
     amount = parse_amount(utterance)
@@ -241,8 +268,14 @@ def extract_deterministic(
         elif income_cue and cost_cue:
             # Both cues present and one amount: too ambiguous to write.
             add("annual_family_income", amount.value, 0.45, amount.evidence)
+        elif asked_field in AMOUNT_FIELDS:
+            # We asked for exactly this and they answered with a number. That is the
+            # strongest signal available short of cue words, and stronger than the
+            # guess below — a reply to a direct question is not ambiguous.
+            add(asked_field, amount.value, 0.92, amount.evidence)
         else:
-            # A bare number. We know the value exactly; we do not know what it is for.
+            # A bare number with nothing asked. We know the value exactly; we do not
+            # know what it is for, so it goes to confirmation rather than to the profile.
             target = (
                 "annual_family_income"
                 if profile.get("annual_family_income") is None
@@ -474,13 +507,19 @@ def _coerce_to_contract(name: str, value: Any) -> tuple[Any, bool]:
 
 
 async def extract(
-    utterance: str, language: str = "en", profile: dict[str, Any] | None = None
+    utterance: str,
+    language: str = "en",
+    profile: dict[str, Any] | None = None,
+    asked_field: str | None = None,
+    asked_choices: list[str] | None = None,
 ) -> ExtractionResult:
     """Extract facts from one utterance, splitting confident from uncertain."""
     profile = profile or {}
     result = ExtractionResult()
 
-    candidates = extract_deterministic(utterance, profile, language)
+    candidates = extract_deterministic(
+        utterance, profile, language, asked_field, asked_choices
+    )
     seen = {c.field for c in candidates}
 
     missing = {f for f in EXTRACTABLE_FIELDS if f not in seen and profile.get(f) is None}

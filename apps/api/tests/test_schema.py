@@ -28,6 +28,8 @@ EXPECTED_TABLES = {
     "match_runs",
     # Phase 6: console logins. The citizen surface still needs no account.
     "users",
+    # Phase 7: outbound messages to a citizen.
+    "notifications",
 }
 
 

@@ -90,10 +90,11 @@ function walk(dir) {
 }
 
 // The console is a signed-in, English-only desk tool for Channel Partner officers and
-// ministry analysts — not part of the citizen surface this rule protects. The strings
+// ministry analysts, and /demo is a pitch tool for showing the architecture to a
+// reviewer — neither is part of the citizen surface this rule protects. The strings
 // that *do* matter there (the rule-engine reasons an officer reads) come from the API
 // already localised. Tracked in docs/OPEN_ITEMS.md.
-const EXEMPT_DIRS = [join(SRC, "app", "console")];
+const EXEMPT_DIRS = [join(SRC, "app", "console"), join(SRC, "app", "demo")];
 
 // Files exempt from the string check, with a reason each.
 const EXEMPT = new Set([

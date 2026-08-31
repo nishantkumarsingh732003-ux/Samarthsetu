@@ -7,7 +7,7 @@ Nothing here is a surprise on demo day if it is read first.
 
 **Legend** — 🔴 blocks the demo · 🟡 weakens the demo · 🟢 tracked, not urgent
 
-Last reviewed: 2026-08-30 (after Phase 6)
+Last reviewed: 2026-08-31 (after Phase 7)
 
 ---
 
@@ -454,6 +454,46 @@ deployment replaces this entirely with NIC / Parichay SSO.
 
 ---
 
+---
+
+## 🟡 OI-43 — no notification can actually leave the building
+
+**Status:** open, deliberate · **Owner:** needs a product + DPDP decision · **Since:** Phase 7
+
+Phase 5 stores `phone_last4` and nothing more, because at that point nothing needed to
+contact the citizen. Phase 7 needs to, and the schema will not support it: `SmsDriver`
+and `WhatsAppDriver` implement the full interface and raise `ContactUnavailable`, because
+a driver that returned `SENT` would put a green tick beside a message nobody received.
+
+The in-app channel is not a workaround dressed up as a virtue — it needs no address, so
+it leaks nothing, works offline, and cannot be read off a shared handset. But it only
+reaches a citizen who comes back to the tracking page, and the whole point of a
+notification is reaching someone who has not.
+
+**To close, deliberately rather than by accident:** add a delivery number under its own
+consent purpose (not the eligibility purpose), stored encrypted with `phone_last4` kept
+for display, revocable independently, and excluded from every console response the way
+`gov_id_hash` already is. Then set `NOTIFICATION_DRIVER=sms`.
+
+---
+
+## 🟢 OI-44 — rate limiting is per-IP, and a village shares one
+
+**Status:** open · **Owner:** repo owner · **Since:** Phase 7
+
+The limiter buckets on `request.client.host`. Behind carrier-grade NAT — which is most
+mobile data in India — a whole town can present as one address, so a busy afternoon in a
+district could look like one client exceeding 120 requests a minute.
+
+It fails open on a Redis outage but *not* on this: the counter would be perfectly
+functional and perfectly wrong. The limits are set high enough that it is unlikely at
+demo scale, and the failure is a 429 with a `Retry-After`, not a lost application.
+
+**To close:** bucket on the session id where one exists and fall back to IP only for
+unauthenticated first contact, or trust `X-Forwarded-For` from a known proxy only.
+
+---
+
 ## Closed
 
 | ID | Item | Closed |
@@ -486,3 +526,6 @@ deployment replaces this entirely with NIC / Parichay SSO.
 | OI-40 | A routing call served from the Redis cache returned early and wrote **no audit row**, so both the anti-misrouting KPI and the CLAUDE.md rule 4 "who read what" trail silently undercounted exactly when the system was busiest. | 2026-08-30 |
 | OI-41 | The anti-misrouting KPI was derived from `why_not`, which is truncated to the nearest few for the citizen UI — one routing call that excluded 59 partners contributed 3. The routing result now carries a full `rejected_by_reason` tally. | 2026-08-30 |
 | OI-42 | A partner pausing intake left the routing cache serving the old capacity for its TTL, which on a live demo is the worst possible moment to be stale. `cache.invalidate_routing()` now runs on every capacity change. | 2026-08-30 |
+| OI-45 | A bare amount answering a direct question was bound to the wrong field: asked "how much do you need?", a citizen replying "80 hazaar" had it read as an annual **income** of Rs 80,000 and was asked to confirm a figure they never gave. Agreeing would have set the wrong field and changed their verdict. Extraction now receives the field that was asked. | 2026-08-31 |
+| OI-46 | Answering a multiple-choice question with the exact option we offered extracted nothing: the cue lists are substring-matched and a bare "sc" cue would fire inside "school", so no cue existed. A tapped chip in the web app and a numbered reply on WhatsApp both fell through, and the orchestrator re-asked. The session now records the last question and its choices, and an exact match binds directly. | 2026-08-31 |
+| OI-47 | uvicorn's access log wrote a second line for every request, duplicating the middleware's and always carrying an empty request_id because it runs outside the ContextVar scope — two lines per request, one of them untraceable. Disabled rather than reformatted. | 2026-08-31 |

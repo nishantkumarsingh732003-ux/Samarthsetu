@@ -12,3 +12,5 @@ fmt:     ; cd apps/api && ruff format . && cd ../.. && pnpm -r format
 
 # Recompile the rule bundle + golden snapshot after editing packages/rules/schemes/*.yaml
 rules:   ; python packages/rules/scripts/regenerate_golden.py
+# Kill the language model and prove a full citizen journey still completes.
+chaos:   ; bash scripts/chaos.sh

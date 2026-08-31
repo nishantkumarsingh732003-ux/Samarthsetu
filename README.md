@@ -66,6 +66,7 @@ database, applies `alembic upgrade head`, and serves the API and web app.
 |---|---|
 | Citizen app | http://localhost:3000 |
 | Staff console | http://localhost:3000/console/login |
+| Feature-phone demo | http://localhost:3000/demo/whatsapp |
 | API docs | http://localhost:8000/docs |
 | Health | http://localhost:8000/health |
 
@@ -401,6 +402,7 @@ fluently.
 | `/console/login` | One sign-in form; the role in the response decides where you land |
 | `/console/partner` | Branch officer's queue, capacity toggle, SLA clock |
 | `/console/admin` | Ministry dashboard — funnel, misrouting KPI, underserved districts |
+| `/demo/whatsapp` | Feature-phone simulator — same orchestrator, plain text, segment costs |
 
 ```bash
 pnpm --filter @setu/web dev     # http://localhost:3000
@@ -555,6 +557,138 @@ hash so it costs the same ~200ms as a known one, because response timing is othe
 oracle for which addresses are registered.
 
 
+## Reach: the citizens a smartphone app never gets to
+
+The people furthest from a Channel Partner branch are also the least likely to own a
+smartphone. A service that only reaches people who already have one has selected against
+exactly the citizens it was funded to help.
+
+### `POST /api/v1/webhook/whatsapp` — the same product, over text
+
+This is not a second implementation. Every message runs `conversation.handle_turn`, the
+identical function the citizen app calls: same deterministic rule engine, same six
+languages, same rule IDs. Only the *rendering* is different, and that lives in the route
+because it is a property of the channel.
+
+Try it without a Meta account at **http://localhost:3000/demo/whatsapp**:
+
+```
+>> mujhe sabzi ka thela lagana hai
+   आपको कुल कितने पैसे की ज़रूरत है?                     [ASKING · 1 segment]
+
+>> 80 hazaar
+   आप किस सामाजिक श्रेणी से हैं?
+   1) SC   2) ST   3) OBC   4) GENERAL
+   Reply with the number.                                [ASKING · 2 segments]
+
+>> 1
+   आपके परिवार की कुल वार्षिक आय कितनी है?               [ASKING · 1 segment]
+
+>> 1.8 lakh
+   *Micro Finance Scheme*
+   - आप अनुसूचित जाति के आवेदक हैं।
+   - आपकी वार्षिक पारिवारिक आय Rs 5,00,000 की सीमा के भीतर है।
+   Indicative: up to Rs 72,000
+   SETU does not lend. A Channel Partner decides.        [DECIDED · 4 segments]
+```
+
+A complete eligibility journey in four keypad messages. Meta's real webhook contract is
+honoured — `GET` answers `hub.challenge`, `POST` parses their envelope and ignores
+delivery receipts — and a WhatsApp sender is a phone number, so the session key is a
+**salted hash of it**; the number is never written down.
+
+### Notifications, and the arithmetic nobody costs
+
+Every status change a citizen would want to know about renders a message in their own
+language and stores it. Four drivers behind one interface; the demo runs on `database`,
+which needs no contact address, no network and no third party.
+
+```
+event                  ch      lang  seg  body
+APPLICATION_SUBMITTED  IN_APP  ta     3   SETU: விண்ணப்பம் SETU-2026-MH-000001 …க்கு அனுப்பப்பட்டது…
+PARTNER_ACKNOWLEDGED   IN_APP  ta     2   SETU: … உங்கள் விண்ணப்பம் … பெற்று பரிசீலிக்கிறது.
+DOCS_REQUESTED         IN_APP  ta     3   SETU: …க்கு ஆவணம் தேவை. Caste certificate is not readable. …
+UNDER_APPRAISAL        IN_APP  ta     2   SETU: … இப்போது விண்ணப்பம் … ஆய்வு செய்கிறது.
+SANCTIONED             IN_APP  ta     2   SETU: … அனுமதித்தது. அடுத்த படிகளை அவர்கள் தெரிவிப்பார்கள்.
+```
+
+**That `seg` column is the point.** An SMS segment is 160 characters in GSM-7 and **70 in
+UCS-2** — and every Indic script forces UCS-2. A message that costs one segment in
+English costs three in Tamil, and the sender pays per segment. `sms_segments()` implements
+the real encoding rules (including that an emoji is two code units and `€` is two
+septets), a test asserts no template exceeds two segments in any of the six languages, and
+the count is stored on every row. The cost of serving people in their own language is
+visible at the point the messages are written, not on an invoice later.
+
+**The SMS and WhatsApp drivers refuse rather than pretend.** They implement the same
+interface and are wired in, but Phase 5 stores only `phone_last4`, so there is nothing to
+dial. They raise `ContactUnavailable`; a driver that returned `SENT` would put a green
+tick beside a message nobody received. Lifting that is a schema and consent decision, not
+something to slip in behind a notification feature — see OI-43.
+
+## Hardening: what happens when things break
+
+### `make chaos` — the drill
+
+`scripts/chaos.sh` points the running API at a model endpoint that does not resolve,
+drives a full citizen journey through the real HTTP surface, and compares the verdict
+against a baseline captured moments earlier with the model configured.
+
+```
+1. Baseline — NSFDC_MICRO_FINANCE / ELIGIBLE (engine 2.2.0, rules 545b833da4e8f55d)
+   rules fired: MF_CATEGORY_SC,MF_INCOME_CEILING,MF_NOT_FOR_EDUCATION,
+                MF_PROJECT_COST_BAND,MF_LOAN_CAP_BINDS
+2. Killing the language model → GROQ_BASE_URL=http://127.0.0.1:9/v1
+3. A full citizen journey, model down
+   ✓ Same scheme matched          ✓ Conversation still advanced (ASKING)
+   ✓ Same verdict                 ✓ WhatsApp channel still replies
+   ✓ Same rules fired, in order   ✓ Routing still works
+   ✓ Same rules digest            ✓ Application submitted: SETU-2026-MH-000002
+   ✓ Extraction fell back to      ✓ Tracking page renders
+     the deterministic reader     ✓ Citizen was notified (1 message)
+
+PASS — the core service degrades, it does not die.
+```
+
+The rules digest being byte-identical is the whole argument: **no model was ever involved
+in deciding.** Only the wording changes. `--keep-down` leaves it broken to poke at.
+
+### Tracing, logging, limits
+
+One JSON object per line, one request ID per request, carried in a `ContextVar` so a log
+line five layers down in the rule engine still reports which request it belonged to:
+
+```json
+{"ts":"2026-08-31T18:51:33+0000","level":"INFO","logger":"app.core.middleware",
+ "msg":"request","request_id":"aac891c742834047","method":"GET",
+ "path":"/api/v1/applications/NOPE","status":404,"duration_ms":96.04,"client":"172.18.0.1"}
+```
+
+The ID is returned in `X-Request-ID`, adopted from an upstream proxy when one sets it, and
+included in every error body — so a citizen quoting a reference off an error screen gives
+support one `grep`. uvicorn's own access log is *disabled* rather than reformatted: it
+duplicated this line and ran outside the ContextVar scope, so its copy was always
+untraceable.
+
+Rate limiting is a fixed window in Redis, banded by route group — login hardest (10/min,
+the only endpoint worth brute-forcing), the conversation next (30/min, it costs a model
+call), everything else 120/min. It **fails open**: if Redis is unreachable the request is
+served. Rate limiting exists to stop a runaway script, and a cache outage becoming an
+eligibility outage is the wrong trade for a service people are relying on.
+
+`GET /readyz` reports what the service can currently reach. Note the field name:
+
+```json
+{"database":"ok","redis":"ok","llm_provider_configured":"none",
+ "llm_required_for_eligibility":false,"eligibility_available":true}
+```
+
+It reports *configuration*, not reachability, and is named so nobody reads `"groq"` during
+an outage and concludes the model is answering. Probing the provider would put a paid,
+multi-second call on a path an orchestrator hits every few seconds — and would not change
+the answer, because eligibility does not depend on it.
+
+
 ## Vendored skills
 
 `.claude/skills/` contains 376 skills vendored from
@@ -607,13 +741,14 @@ not in the pixels.
 ## Status
 
 Phases 0 (foundation), 1 (eligibility engine), 2 (partner registry and geo routing),
-3 (conversational intake), 4 (citizen frontend), 5 (applications and documents) and
-6 (partner console and ministry analytics) are complete. See [CLAUDE.md](CLAUDE.md) for the engineering contract every phase must satisfy.
+3 (conversational intake), 4 (citizen frontend), 5 (applications and documents),
+6 (partner console and ministry analytics) and 7 (reach, notifications, hardening) are
+complete. See [CLAUDE.md](CLAUDE.md) for the engineering contract every phase must satisfy.
 
 ```bash
 pytest packages/rules -q          # 116 tests — the eligibility engine and checklist
 pnpm -r test                      # 46 tests — TS conformance, message ICU parity, storage
-cd apps/api && pytest -q          # 267 tests — schema, routing, redaction, auth, console
+cd apps/api && pytest -q          # 338 tests — rules, redaction, auth, console, reach
 pnpm --filter @setu/web check     # i18n parity, WCAG AA contrast, build, JS budget
 ```
 
@@ -622,7 +757,7 @@ your host — they skip locally and run in the container. To run the API suite t
 
 ```bash
 docker compose exec api pip install -r requirements-dev.txt   # pytest is not in the runtime image
-docker compose exec api python -m pytest -q                   # 267 passed, 0 skipped
+docker compose exec api python -m pytest -q                   # 338 passed, 0 skipped
 ```
 
 ### The citizen app

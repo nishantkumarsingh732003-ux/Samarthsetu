@@ -83,3 +83,24 @@ class UserRole(StrEnum):
     CITIZEN = "CITIZEN"
     PARTNER = "PARTNER"
     ADMIN = "ADMIN"
+
+
+class NotificationChannel(StrEnum):
+    """How a message reached the citizen.
+
+    IN_APP is the only channel that needs no contact address, which is why it is the
+    one the demo runs on — and, given Phase 5's masking, the only one that can deliver
+    today. See OPEN_ITEMS OI-43.
+    """
+
+    IN_APP = "IN_APP"
+    SMS = "SMS"
+    WHATSAPP = "WHATSAPP"
+    CONSOLE = "CONSOLE"
+
+
+class NotificationStatus(StrEnum):
+    PENDING = "PENDING"
+    SENT = "SENT"
+    FAILED = "FAILED"
+    SUPPRESSED = "SUPPRESSED"
