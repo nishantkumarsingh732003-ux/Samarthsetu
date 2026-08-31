@@ -1,8 +1,11 @@
-.PHONY: up down seed api web test lint fmt migrate rules
+.PHONY: up down seed demo api web test lint fmt migrate rules chaos
 
 up:      ; docker compose up -d
 down:    ; docker compose down
 seed:    ; docker compose exec api python /scripts/seed/run.py
+# The whole demo world in one command: reference data, then the three personas and
+# a background population built by running the real services.
+demo:    ; docker compose exec api python /scripts/seed/run.py && docker compose exec api python /scripts/seed/demo.py
 api:     ; cd apps/api && uvicorn app.main:app --reload --port 8000
 web:     ; pnpm --filter @setu/web dev
 migrate: ; cd apps/api && alembic upgrade head

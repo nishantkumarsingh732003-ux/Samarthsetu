@@ -7,7 +7,7 @@ Nothing here is a surprise on demo day if it is read first.
 
 **Legend** — 🔴 blocks the demo · 🟡 weakens the demo · 🟢 tracked, not urgent
 
-Last reviewed: 2026-08-31 (after Phase 7)
+Last reviewed: 2026-09-01 (after Phase 8 — all phases complete)
 
 ---
 
@@ -494,6 +494,32 @@ unauthenticated first contact, or trust `X-Forwarded-For` from a known proxy onl
 
 ---
 
+---
+
+## 🟡 OI-48 — never deployed to a public URL
+
+**Status:** open, deliberate · **Owner:** repo owner · **Since:** Phase 8
+
+The Phase 8 spec asks for a live URL verified from a phone on mobile data. The configs
+are checked in and complete (`apps/web/vercel.json`, `render.yaml`,
+[DEPLOYMENT.md](DEPLOYMENT.md) with the PostGIS/pgvector step Render will not do for you)
+but nothing has been deployed: that needs accounts and credentials belonging to the
+repository owner, and publishing a government-adjacent service is a decision to take
+deliberately rather than a side effect of a build.
+
+Consequences worth knowing before deploying, all listed in DEPLOYMENT.md: `SECRET_KEY`
+defaults to `change-me`, `ID_HASH_SALT` falls back to it, the login page prints demo
+credentials, and `STORAGE_DIR` is a local path that an ephemeral filesystem loses on
+redeploy.
+
+**Also unclosed by this:** OI-29, walking the citizen flow on a real low-end Android over
+mobile data. Lighthouse's throttling is a model of a bad connection, not a bad connection.
+
+**To close:** run the DEPLOYMENT.md checklist, deploy, put the URL at the top of the
+README, and open it on a cheap handset away from office wifi.
+
+---
+
 ## Closed
 
 | ID | Item | Closed |
@@ -529,3 +555,5 @@ unauthenticated first contact, or trust `X-Forwarded-For` from a known proxy onl
 | OI-45 | A bare amount answering a direct question was bound to the wrong field: asked "how much do you need?", a citizen replying "80 hazaar" had it read as an annual **income** of Rs 80,000 and was asked to confirm a figure they never gave. Agreeing would have set the wrong field and changed their verdict. Extraction now receives the field that was asked. | 2026-08-31 |
 | OI-46 | Answering a multiple-choice question with the exact option we offered extracted nothing: the cue lists are substring-matched and a bare "sc" cue would fire inside "school", so no cue existed. A tapped chip in the web app and a numbered reply on WhatsApp both fell through, and the orchestrator re-asked. The session now records the last question and its choices, and an exact match binds directly. | 2026-08-31 |
 | OI-47 | uvicorn's access log wrote a second line for every request, duplicating the middleware's and always carrying an empty request_id because it runs outside the ContextVar scope — two lines per request, one of them untraceable. Disabled rather than reformatted. | 2026-08-31 |
+| OI-49 | The `PARTNERS_ROUTED` audit row was written by the HTTP route rather than by `routing.find_partners`, so the anti-misrouting KPI counted only decisions that arrived over HTTP. The demo seeder calls the service directly, and the ministry dashboard reported "shown a partner: 0" beside 39 applications. The audit now lives with the decision; the route audits only the cache-hit path it alone can see. | 2026-09-01 |
+| OI-50 | `Notification.attempts` has a Python-side column default, which is applied at flush — so `attempts += 1` inside `notify()` raised `NoneType + int`. The fail-open guard caught it and the application transition stood, which is exactly why it went unnoticed: the citizen's message was silently dropped. Found by seeding 39 journeys at once. | 2026-09-01 |

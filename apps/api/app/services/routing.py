@@ -37,6 +37,7 @@ from app.core.routing_config import (
     WEIGHTS,
 )
 from app.models import ChannelPartner, PartnerSchemeAuthorisation, Scheme
+from app.services import audit
 
 SYNTHETIC_DISCLAIMER = (
     "Channel Partner records are synthetic demo data pending the official MoSJE "
@@ -184,8 +185,17 @@ async def find_partners(
     lat: float | None = None,
     lng: float | None = None,
     district: str | None = None,
+    actor: str = "anonymous",
+    match_run_id: str | None = None,
 ) -> dict[str, Any]:
-    """Rank the partners that can actually process this scheme for this citizen."""
+    """Rank the partners that can actually process this scheme for this citizen.
+
+    Writes its own `PARTNERS_ROUTED` audit row. That used to live in the HTTP route,
+    which made the anti-misrouting KPI count only the decisions that happened to arrive
+    over HTTP — the demo seeder calls this service directly and the ministry dashboard
+    reported "shown a partner: 0" beside 39 applications. An audit record belongs with
+    the decision, not with one of its callers.
+    """
     scheme = (
         await session.execute(select(Scheme).where(Scheme.code == scheme_code))
     ).scalar_one_or_none()
@@ -254,7 +264,7 @@ async def find_partners(
     for i, p in enumerate(top, start=1):
         p.rank = i
 
-    return {
+    payload = {
         "routing_version": ROUTING_VERSION,
         "scheme_code": scheme.code,
         "scheme_name": scheme.official_name,
@@ -274,6 +284,27 @@ async def find_partners(
         "rejected_by_reason": Counter(r.reason_code for r in rejected),
         "data_disclaimer": SYNTHETIC_DISCLAIMER,
     }
+
+    await audit.record(
+        session,
+        actor=actor,
+        action="PARTNERS_ROUTED",
+        entity="scheme",
+        entity_id=scheme.code,
+        meta={
+            "amount": amount,
+            "district": district,
+            "match_run_id": match_run_id,
+            "eligible_partner_count": payload["eligible_partner_count"],
+            "rejected_count": payload["candidates_considered"]
+            - payload["eligible_partner_count"],
+            # Every exclusion, tallied by rule — the anti-misrouting KPI in raw form.
+            "rejected_by_reason": dict(payload["rejected_by_reason"]),
+            "routing_version": ROUTING_VERSION,
+            "served_from_cache": False,
+        },
+    )
+    return payload
 
 
 def _reject_reason(

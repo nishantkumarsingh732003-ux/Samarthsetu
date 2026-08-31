@@ -181,3 +181,20 @@ def test_every_driver_satisfies_the_same_contract() -> None:
     for name, driver in n.DRIVERS.items():
         assert hasattr(driver, "channel"), name
         assert callable(driver.send), name
+
+
+def test_a_new_notification_starts_with_a_countable_attempt_count() -> None:
+    """A Python-side column default is applied at flush, not at construction.
+
+    Reading `attempts` before then yielded None, and `attempts += 1` raised inside
+    `notify` — caught by the guard, so the application transition stood, but the
+    citizen's message was silently lost. Exactly the failure mode a fail-open wrapper
+    is good at hiding.
+    """
+    from app.models import Notification
+
+    assert Notification(attempts=0).attempts == 0
+    assert Notification().attempts is None, (
+        "if this ever becomes 0 the ORM changed; the explicit attempts=0 in notify() "
+        "can then be dropped"
+    )

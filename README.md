@@ -1,40 +1,108 @@
 # SETU — Scheme Eligibility & Transparent Uptake
 
 **SIH 2026 — Problem Statement 26092: AI-Driven Scheme Matching for Marginalized Entrepreneurs**
+Ministry of Social Justice & Empowerment · Department of Social Justice & Empowerment · Software · Smart Automation
 
-| | |
-|---|---|
-| Organization | Ministry of Social Justice and Empowerment (MoSJE) |
-| Department | Department of Social Justice and Empowerment |
-| Category | Software |
-| Theme | Smart Automation |
+> **Two commands and you have the whole thing running.**
+>
+> ```bash
+> docker compose up -d && make demo
+> ```
+>
+> | | |
+> |---|---|
+> | Citizen app | **http://localhost:3000** |
+> | Staff console | **http://localhost:3000/console/login** |
+> | Feature-phone demo | **http://localhost:3000/demo/whatsapp** |
+> | API docs | http://localhost:8000/docs |
+>
+> Console logins: `admin@setu.gov.in` or `partner@setu.gov.in`, password `setu-demo-2026`.
+> The citizen app needs no account — that is the point of it.
+>
+> Not deployed to a public URL. The configs are checked in ([docs/DEPLOYMENT.md](docs/DEPLOYMENT.md))
+> so that is one deliberate action by whoever owns the accounts, rather than something
+> that happened during a build.
+
+**Channel Partner records in this repository are synthetic**, pending the official MoSJE
+partner master. Every screen that shows one says so.
 
 ## The problem
 
-SC-community citizens with family income up to ₹5.00 lakh are eligible for concessional
-credit (6.5%–8% p.a., up to 90% of project cost), but:
+A Scheduled Caste entrepreneur or student cannot answer two questions:
 
-1. They don't know **which** scheme fits them — Micro Finance (≤ ₹1.40 L),
-   Term Loan (≤ ₹50.00 L), or Educational Loan.
-2. Direct applications are not accepted. Funds route through a **Channel Finance System**
-   of 100+ partners (SCAs, PSBs, RRBs, NBFC-MFIs) and applicants can't find the nearest
-   authorized partner that handles their loan category.
+1. **Which government credit scheme actually fits me?** — Micro Finance (project up to ₹1.40 L), Term Loan (up to ₹50.00 L), or the Educational Loan Scheme.
+2. **Which of the 100+ Channel Partners near me is authorised to process _that_ scheme?**
+
+Direct applications are not accepted; everything routes through a Channel Finance System
+of State Channelising Agencies, public sector banks, regional rural banks and NBFC-MFIs.
+So citizens guess, walk into the wrong branch, and the application is misrouted or
+delayed. Nobody queues twice.
+
+In the seeded demo world, the router prevented **2,216 wrong-counter outcomes across 39
+citizens** — 959 branches that were not authorised or had paused intake, 1,163 out of
+reach, 55 wrong ticket size, and 39 citizens redirected to a different scheme entirely
+before they went anywhere.
 
 ## The solution
 
-A deterministic eligibility engine, a geo-aware partner routing engine, and a
-conversational multilingual front door.
+```mermaid
+flowchart LR
+  subgraph citizen["Citizen"]
+    W["Web PWA<br/>6 languages · 114KB · offline"]
+    P["Feature phone<br/>text only"]
+  end
+  W --> O
+  P --> O
+  O["Conversation orchestrator"]
+  O -->|"messy words → facts"| L["LLM<br/>extract + explain<br/><b>never decides</b>"]
+  L -.->|"proposes only"| O
+  O ==>|"decides"| R["Rule engine<br/>versioned YAML · Kleene logic"]
+  R ==> M[("match_runs<br/>never deleted")]
+  R --> G["Geo router<br/>PostGIS · why_not[]"]
+  G --> A["Applications<br/>documents · redaction"]
+  A --> C1["Partner console"]
+  A --> C2["Ministry dashboard"]
+```
+
+The double line is the decision path. The dotted line is everything a language model is
+permitted to do.
+
+## The LLM never decides eligibility
+
+This is the load-bearing claim of the whole project, and it is enforced rather than
+asserted.
+
+- A **deterministic, versioned rule engine** decides. Same profile plus same rules gives byte-identical output, every time.
+- Every verdict carries `engine_version`, a `rules_digest`, and the **rule IDs that fired** — in `matched_because[]` and `blocked_because[]`, both shown to the citizen.
+- Every scheme figure carries `source_url`, `circular_ref`, `effective_from`, `last_verified_on`. Where we could not cite one, the response carries `needs_verification: true` and the UI badges it rather than hiding it.
+- Every decision is written to `match_runs`, which is **never deleted**, and every application snapshots the `match_run_id` and engine version that produced it — so a sanction months later is replayable against the rules that were live when the citizen applied.
+- Missing facts produce `NEED_MORE_INFO` and the single next question worth asking, never a refusal. The engine uses three-valued logic: unknown is not false.
+
+**When the rules change next April:** edit the YAML, bump `engine_version`, re-run the
+golden tests. No code deploy.
+
+**Proved, not claimed** — `make chaos` points the running service at a model endpoint that
+does not exist and drives a full citizen journey through the real HTTP surface:
 
 ```
-Citizen profile ──▶ Eligibility rules ──▶ Ranking ──▶ Explained match
-   (voice/text,        (versioned,        (fit score)     + nearest AUTHORISED
-    6 languages)        auditable)                          Channel Partner
+✓ Same scheme matched     ✓ Same verdict     ✓ Same rules fired, in the same order
+✓ Same rules digest — policy did not shift   ✓ Application submitted: SETU-2026-MH-000002
+
+PASS — the core service degrades, it does not die.
 ```
 
-**The LLM never decides eligibility.** A versioned rule engine decides; the LLM only
-extracts facts from messy input and restates the engine's reasons in the user's
-language. Every verdict is reproducible and traceable to a rule ID. See
+The rules digest coming back byte-identical is the argument: no model was ever involved in
+deciding. Only the wording changes. See
 [docs/adr/0001-rules-not-llm-for-eligibility.md](docs/adr/0001-rules-not-llm-for-eligibility.md).
+
+## What to look at first
+
+| If you have | Open |
+|---|---|
+| 6 minutes | [docs/DEMO_SCRIPT.md](docs/DEMO_SCRIPT.md) — exact clicks and what to say |
+| 10 slides | [docs/pitch-outline.md](docs/pitch-outline.md) |
+| a critical eye | [docs/OPEN_ITEMS.md](docs/OPEN_ITEMS.md) — 47 entries, open ones first |
+| 2 minutes | `make demo && make chaos` |
 
 ## Repository layout
 
@@ -44,8 +112,8 @@ language. Every verdict is reproducible and traceable to a rule ID. See
 | `apps/web/` | Next.js citizen app (multilingual, low-literacy friendly, offline-first) |
 | [`packages/rules/`](packages/rules/README.md) | Versioned YAML scheme rules + the deterministic eligibility engine (Python + TypeScript) |
 | `infra/` | Docker, Kubernetes, nginx, Terraform |
-| `docs/` | [Architecture](docs/architecture.md), [data model](docs/data-model.md), [open items](docs/OPEN_ITEMS.md), API spec, ADRs |
-| `scripts/` | Setup and seed scripts |
+| `docs/` | [Demo script](docs/DEMO_SCRIPT.md), [pitch outline](docs/pitch-outline.md), [deployment](docs/DEPLOYMENT.md), [architecture](docs/architecture.md), [data model](docs/data-model.md), [open items](docs/OPEN_ITEMS.md), ADRs |
+| `scripts/` | Setup, seeding, and [`chaos.sh`](scripts/chaos.sh) |
 | `.claude/skills/` | Vendored skill library (see below) |
 
 ## Running locally
@@ -73,8 +141,35 @@ database, applies `alembic upgrade head`, and serves the API and web app.
 Load reference and demo data (safe to re-run — every seeder is idempotent):
 
 ```bash
-make seed                    # or: python scripts/seed/run.py --list
+make seed                    # reference data: schemes, 120 partners, console logins
+make demo                    # the above, then the full demo world
 ```
+
+`make demo` builds three personas and a background population of ~36 applications **by
+running the real services** — `run_match`, `find_partners`, `create_application`. Nothing
+is written into a fixture, so if a rule changes the seeded world changes with it, and the
+seeder fails loudly if a persona stops exercising the scheme family the demo script
+claims:
+
+```
+  personas
+    Sunita Devi    Nagpur       NSFDC_MICRO_FINANCE   SETU-2026-MH-000001  PARTNER_ACKNOWLEDGED
+    Ramesh Kumar   Patna        NSFDC_TERM_LOAN       SETU-2026-BR-000001  UNDER_APPRAISAL  [redirected off Micro Finance]
+    Anjali R       Coimbatore   NSFDC_EDUCATION_LOAN  SETU-2026-TN-000001  SANCTIONED
+
+  demo world
+    citizens 39 · applications 39 · documents 88 · notifications 97 · match runs 39
+    by status  SUBMITTED=9 PARTNER_ACKNOWLEDGED=9 UNDER_APPRAISAL=7 DOCS_REQUESTED=6
+               SANCTIONED=5 REJECTED=2 DISBURSED=1
+```
+
+One persona per scheme family, three states, three languages. **Ramesh is the one that
+carries the pitch:** he asks about the scheme everyone has heard of with a ₹12 lakh
+project, and the engine tells him it does not fit and names the Term Loan instead —
+before he goes anywhere near a branch.
+
+`demo.py` is the one place allowed to delete `match_runs`, because a demo reset is not a
+production operation. That exception is stated rather than silent.
 
 That also creates the three console logins. They are demo credentials with a published
 password, which is deliberate for a synthetic-data build — set `SEED_PASSWORD` to change
@@ -740,15 +835,15 @@ not in the pixels.
 
 ## Status
 
-Phases 0 (foundation), 1 (eligibility engine), 2 (partner registry and geo routing),
-3 (conversational intake), 4 (citizen frontend), 5 (applications and documents),
-6 (partner console and ministry analytics) and 7 (reach, notifications, hardening) are
-complete. See [CLAUDE.md](CLAUDE.md) for the engineering contract every phase must satisfy.
+All eight phases are complete: 0 (foundation), 1 (eligibility engine), 2 (partner
+registry and geo routing), 3 (conversational intake), 4 (citizen frontend),
+5 (applications and documents), 6 (partner console and ministry analytics),
+7 (reach, notifications, hardening) and 8 (demo world, deployment, pitch). See [CLAUDE.md](CLAUDE.md) for the engineering contract every phase must satisfy.
 
 ```bash
 pytest packages/rules -q          # 116 tests — the eligibility engine and checklist
 pnpm -r test                      # 46 tests — TS conformance, message ICU parity, storage
-cd apps/api && pytest -q          # 338 tests — rules, redaction, auth, console, reach
+cd apps/api && pytest -q          # 339 tests — rules, redaction, auth, console, reach
 pnpm --filter @setu/web check     # i18n parity, WCAG AA contrast, build, JS budget
 ```
 
@@ -757,7 +852,7 @@ your host — they skip locally and run in the container. To run the API suite t
 
 ```bash
 docker compose exec api pip install -r requirements-dev.txt   # pytest is not in the runtime image
-docker compose exec api python -m pytest -q                   # 338 passed, 0 skipped
+docker compose exec api python -m pytest -q                   # 339 passed, 0 skipped
 ```
 
 ### The citizen app
@@ -796,7 +891,10 @@ Known gaps and blockers are tracked in [docs/OPEN_ITEMS.md](docs/OPEN_ITEMS.md).
 ## Data disclaimer
 
 Channel Partner records used in the demo are **synthetic**, pending the official MoSJE
-partner master.
+partner master, and every screen that shows one says so. The citizens, applications and
+documents created by `make demo` are synthetic too — but the *verdicts* on them are not
+staged: they are produced by running the real rule engine and the real router, so they
+are exactly as correct as the product is.
 
 Scheme figures in `packages/rules/schemes/` are verified against
 [nsfdc.nic.in](https://nsfdc.nic.in/scheme) as of 2026-08-29, but no scheme **circular

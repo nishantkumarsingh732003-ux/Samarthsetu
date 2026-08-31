@@ -319,6 +319,11 @@ async def notify(
             recipient_hint=citizen.phone_last4,
             status=NotificationStatus.PENDING,
             sms_segments=segments,
+            # Set here rather than left to the column default: a Python-side
+            # `default=` is only applied at flush, so reading the attribute before
+            # then yields None and `attempts += 1` raises. That failure was caught
+            # by the guard below — the transition stood — but the message was lost.
+            attempts=0,
         )
         session.add(notification)
 
@@ -335,7 +340,7 @@ async def notify(
             notification.error = f"Driver raised unexpectedly: {exc}"
             logger.exception("notification driver %s raised", driver.channel)
 
-        notification.attempts += 1
+        notification.attempts = (notification.attempts or 0) + 1
         if notification.status is NotificationStatus.SENT:
             notification.sent_at = datetime.now(UTC)
 

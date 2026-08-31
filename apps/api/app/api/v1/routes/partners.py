@@ -27,7 +27,11 @@ async def _audit_routing(
     *,
     from_cache: bool,
 ) -> None:
-    """One audit row per routing decision, cached or not.
+    """Audits a routing decision served **from cache**.
+
+    A live decision is audited by `routing.find_partners` itself, so this covers only
+    the path where that function was never called — otherwise a cache miss would write
+    two rows and double the KPI.
 
     `rejected_by_reason` is the anti-misrouting KPI in its raw form: every nearby branch
     that could not have taken this application, counted by the rule that excluded it.
@@ -97,6 +101,8 @@ async def route(
             lat=payload.lat,
             lng=payload.lng,
             district=payload.district,
+            actor=request.client.host if request.client else "unknown",
+            match_run_id=payload.match_run_id,
         )
     except routing.SchemeNotFound as exc:
         raise HTTPException(
@@ -105,7 +111,7 @@ async def route(
     except routing.OriginUnknown as exc:
         raise HTTPException(status.HTTP_422_UNPROCESSABLE_ENTITY, str(exc)) from exc
 
-    await _audit_routing(session, request, payload, result, from_cache=False)
+    # `find_partners` already wrote the audit row for this decision.
     await session.commit()
 
     await cache.cache_set(key, result)
