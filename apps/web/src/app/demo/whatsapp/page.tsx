@@ -44,9 +44,18 @@ const OPENERS: Record<string, string> = {
 
 const API = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1";
 
+/** A throwaway sender number. Generated on the client only — see below. */
+function randomSender(): string {
+  return "9198765" + Math.floor(10000 + Math.random() * 89999);
+}
+
 export default function WhatsAppSimulator() {
   const [language, setLanguage] = useState<string>("hi");
-  const [sender, setSender] = useState("9198765" + Math.floor(10000 + Math.random() * 89999));
+  // Empty until mounted, then filled in `useEffect`. A `useState` initialiser runs
+  // during server rendering *and* again on the client, so seeding it with Math.random()
+  // gives the two passes different numbers and React fails hydration on the mismatch.
+  // Anything non-deterministic — random, Date.now, crypto — has to wait for the client.
+  const [sender, setSender] = useState("");
   const [turns, setTurns] = useState<Turn[]>([]);
   const [draft, setDraft] = useState("");
   const [busy, setBusy] = useState(false);
@@ -54,11 +63,16 @@ export default function WhatsAppSimulator() {
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    setSender(randomSender());
+  }, []);
+
+  useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [turns]);
 
   async function send(text: string) {
-    if (!text.trim() || busy) return;
+    // No sender before mount, and the API keys the conversation session off it.
+    if (!text.trim() || busy || !sender) return;
     setTurns((prior) => [...prior, { from: "citizen", text }]);
     setDraft("");
     setBusy(true);
@@ -97,7 +111,7 @@ export default function WhatsAppSimulator() {
     setTurns([]);
     setError(null);
     // A new sender means a new session; the old one is keyed by a hash of this string.
-    setSender("9198765" + Math.floor(10000 + Math.random() * 89999));
+    setSender(randomSender());
   }
 
   const totalSegments = turns.reduce((sum, turn) => sum + (turn.segments ?? 0), 0);
@@ -127,7 +141,12 @@ export default function WhatsAppSimulator() {
             ))}
           </select>
         </label>
-        <button type="button" onClick={() => void send(OPENERS[language])} className="btn-secondary text-base">
+        <button
+          type="button"
+          disabled={!sender}
+          onClick={() => void send(OPENERS[language])}
+          className="btn-secondary text-base disabled:opacity-50"
+        >
           Start the demo
         </button>
         <button type="button" onClick={reset} className="btn-secondary text-base">
@@ -189,13 +208,13 @@ export default function WhatsAppSimulator() {
           aria-label="Message"
           className="min-w-0 flex-1 rounded-card border-2 border-line bg-surface px-4 py-3 text-base"
         />
-        <button type="submit" disabled={busy} className="btn-primary disabled:opacity-50">
+        <button type="submit" disabled={busy || !sender} className="btn-primary disabled:opacity-50">
           {busy ? "…" : "Send"}
         </button>
       </form>
 
       <p className="mt-3 text-sm text-ink-faint">
-        Sender {sender} · {totalSegments} segment{totalSegments === 1 ? "" : "s"} billed so
+        Sender {sender || "…"} · {totalSegments} segment{totalSegments === 1 ? "" : "s"} billed so
         far. Indic scripts encode as UCS-2, where a segment is 70 characters rather than
         160 — the cost of answering someone in their own language, made visible.
       </p>

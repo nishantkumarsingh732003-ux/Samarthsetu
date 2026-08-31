@@ -884,6 +884,11 @@ Three checks guard the things that are easy to regress silently:
   staff console is English-only and exempt; see OI-35)
 - `check:contrast` — every foreground/background pair in the palette against WCAG AA,
   whether or not a page currently uses it
+- `check:hydration` — nothing non-deterministic (`Math.random`, `Date.now`) in a
+  `useState` initialiser or interpolated into JSX inside a client component. A `"use
+  client"` component still renders on the server, so such a value differs between the two
+  passes and React throws in the browser — while TypeScript, ESLint, the build and every
+  test pass. We shipped exactly that bug, so it now has a check
 - `check:bundle` — gzipped First Load JS per citizen route
 
 Known gaps and blockers are tracked in [docs/OPEN_ITEMS.md](docs/OPEN_ITEMS.md).
