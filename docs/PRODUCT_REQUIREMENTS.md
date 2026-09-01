@@ -126,6 +126,12 @@ live query.
 `POST /api/v1/webhook/whatsapp` runs the same `handle_turn` as the web app. Numbered
 menus, six languages, SMS segment accounting. Simulator at `/demo/whatsapp`.
 
+### FR-16a Reachable from a real handset — built
+The app resolves the API from `window.location` rather than a baked-in `localhost`, so
+opening `http://<lan-ip>:3000` on a phone calls `http://<lan-ip>:8000` with no rebuild.
+CORS admits RFC 1918 origins **in development only**. Before this, the one device the
+product is designed for was the one device it could not be tested on.
+
 ### FR-16 Accessibility and offline — built
 WCAG AA on every palette pair, 48px targets, visible focus, skip links, reduced motion,
 voice input, read-aloud. The offline shell caches navigations and assets; **the API is
@@ -161,7 +167,7 @@ URL. `/demo` is on the removal checklist in `DEPLOYMENT.md`.
 | Eligibility without a model | must work | proved by `make chaos` — built |
 | Clean start | `docker compose up` from a clean clone | 37–44 s — built |
 | Deterministic demo | no randomness, no external API | fixed seed — built |
-| Eligibility p95 | < 500 ms | **not measured — gap** |
+| Eligibility p95 | < 500 ms | **9.46 ms** — `make bench` |
 
 ## Explicit non-goals
 

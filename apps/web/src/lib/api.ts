@@ -5,10 +5,13 @@
  * thrown error the UI has to guess at. On a 2G connection and a Rs 6,000 phone, requests
  * failing is normal operation, not an exception.
  */
+import { apiBase } from "@/lib/apiBase";
+
 import type { Locale } from "@/i18n/config";
 
-const BASE =
-  process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1";
+// Resolved per call rather than at module load: the value depends on `window.location`,
+// which does not exist when this module is first evaluated during server rendering.
+const BASE = () => apiBase();
 
 export interface Reason {
   rule_id: string;
@@ -146,7 +149,7 @@ export type ApiResult<T> =
 
 async function post<T>(path: string, body: unknown): Promise<ApiResult<T>> {
   try {
-    const response = await fetch(`${BASE}${path}`, {
+    const response = await fetch(`${BASE()}${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
@@ -269,7 +272,7 @@ export interface DocumentUploadResponse {
 
 async function get<T>(path: string): Promise<ApiResult<T>> {
   try {
-    const response = await fetch(`${BASE}${path}`);
+    const response = await fetch(`${BASE()}${path}`);
     if (response.status === 404) return { ok: false, error: "notfound", status: 404 };
     if (!response.ok) return { ok: false, error: "server", status: response.status };
     return { ok: true, data: (await response.json()) as T };
@@ -336,7 +339,7 @@ export async function uploadDocument(
   if (validityMonths) form.append("validity_months", String(validityMonths));
   try {
     const response = await fetch(
-      `${BASE}/applications/${encodeURIComponent(reference)}/documents`,
+      `${BASE()}/applications/${encodeURIComponent(reference)}/documents`,
       { method: "POST", body: form },
     );
     if (response.status === 404) return { ok: false, error: "notfound", status: 404 };

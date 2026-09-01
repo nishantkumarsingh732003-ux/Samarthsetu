@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState } from "react";
 
+import { apiBase } from "@/lib/apiBase";
+
 /**
  * A text-only client for the SETU conversation, shaped like a chat thread.
  *
@@ -42,7 +44,7 @@ const OPENERS: Record<string, string> = {
   te: "naaku kooragaya bandi pettali",
 };
 
-const API = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1";
+const API = () => apiBase();
 
 /** A throwaway sender number. Generated on the client only — see below. */
 function randomSender(): string {
@@ -79,7 +81,7 @@ export default function WhatsAppSimulator() {
     setError(null);
 
     try {
-      const response = await fetch(`${API}/webhook/whatsapp`, {
+      const response = await fetch(`${API()}/webhook/whatsapp`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ simulate: true, sender, text, language }),

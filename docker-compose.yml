@@ -38,6 +38,9 @@ services:
       LLM_MODEL: ${LLM_MODEL:-}
       # Redacted document bytes. A named volume, not a bind mount: these are citizen
       # documents and they do not belong in the working tree.
+      # Overridable from the shell so `scripts/bench.py` can measure the service rather
+      # than measuring our own rate limiter. Defaults to on.
+      RATE_LIMIT_ENABLED: ${RATE_LIMIT_ENABLED:-true}
       STORAGE_DIR: /data/uploads
       ID_HASH_SALT: ${ID_HASH_SALT:-}
     ports: ["8000:8000"]

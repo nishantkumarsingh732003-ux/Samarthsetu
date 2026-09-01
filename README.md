@@ -16,6 +16,7 @@ Ministry of Social Justice & Empowerment · Department of Social Justice & Empow
 > | Judge console | **http://localhost:3000/demo** |
 > | Feature-phone demo | **http://localhost:3000/demo/whatsapp** |
 > | API docs | http://localhost:8000/docs |
+> | On a phone | `http://<your-lan-ip>:3000` — same wifi, no rebuild |
 >
 > Console logins: `admin@setu.gov.in` or `partner@setu.gov.in`, password `setu-demo-2026`.
 > The citizen app needs no account — that is the point of it.
@@ -137,6 +138,7 @@ database, applies `alembic upgrade head`, and serves the API and web app.
 | Staff console | http://localhost:3000/console/login |
 | Feature-phone demo | http://localhost:3000/demo/whatsapp |
 | API docs | http://localhost:8000/docs |
+> | On a phone | `http://<your-lan-ip>:3000` — same wifi, no rebuild |
 | Health | http://localhost:8000/health |
 
 Load reference and demo data (safe to re-run — every seeder is idempotent):

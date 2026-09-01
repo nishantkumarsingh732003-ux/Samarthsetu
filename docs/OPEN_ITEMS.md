@@ -7,7 +7,7 @@ Nothing here is a surprise on demo day if it is read first.
 
 **Legend** — 🔴 blocks the demo · 🟡 weakens the demo · 🟢 tracked, not urgent
 
-Last reviewed: 2026-09-01 (after the SIH-spec audit)
+Last reviewed: 2026-09-02 (after the field-validation pass)
 
 ---
 
@@ -562,3 +562,5 @@ README, and open it on a cheap handset away from office wifi.
 | OI-53 | Python's `round()` is half-to-even and JavaScript's `Math.round` is half-up. The fit score produced an exact halfway case (96.7 x 0.15 scales to 1450.5), so the two engines disagreed — 14.5 against 14.51. Caught by the conformance suite. Rounding is now defined explicitly in both rather than inherited from either language. | 2026-09-01 |
 | OI-54 | `make demo` was not idempotent: the reference seeder wholesale-replaced the partner registry, which the demo seeder's applications then referenced, so the second run died on a foreign key. Re-running the seed is the documented way to recover a broken demo, so it had to survive being run twice. The registry is now kept when it is already referenced — the generator is deterministic, so what is there is what would be rebuilt. | 2026-09-01 |
 | OI-55 | A NUL byte — legal in JSON as ` `, legal in a URL as `%00` — passed Pydantic and the rule engine and died inside asyncpg, because Postgres `text` and `jsonb` cannot store one. A 500 on a public, unauthenticated endpoint, which is an information disclosure whether or not the payload achieved anything. Rejected at the edge with a 400. Found by the security surface tests on their first run. | 2026-09-01 |
+| OI-56 | The eligibility p95 requirement was stated and never measured, which is a claim rather than a fact. `scripts/bench.py` measures three layers separately: the engine alone p95 0.23 ms, `/match` over HTTP p95 **9.46 ms** against a 500 ms requirement, PostGIS routing p95 12.52 ms. | 2026-09-02 |
+| OI-57 | The citizen app had `http://localhost:8000` baked in as its API fallback, which assumed the browser and the API were the same machine. On a phone `localhost` is the phone, so every call failed — the device this product is designed for was the one device it could not run on, which is why OI-29 stayed open. The base URL now follows `window.location`, and CORS admits private-range origins in development only. | 2026-09-02 |

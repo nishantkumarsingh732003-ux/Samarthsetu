@@ -11,7 +11,10 @@
  * not a cookie — there is no CSRF surface to defend if the browser never attaches
  * credentials on its own.
  */
-const BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1";
+import { apiBase } from "@/lib/apiBase";
+
+// Resolved per call: it depends on `window.location`, absent at module load during SSR.
+const BASE = () => apiBase();
 
 const TOKEN_KEY = "setu.console.token";
 const USER_KEY = "setu.console.user";
@@ -67,7 +70,7 @@ export function signOut(): void {
 async function request<T>(path: string, init: RequestInit = {}): Promise<Result<T>> {
   const token = getToken();
   try {
-    const response = await fetch(`${BASE}${path}`, {
+    const response = await fetch(`${BASE()}${path}`, {
       ...init,
       headers: {
         ...(init.body ? { "Content-Type": "application/json" } : {}),
@@ -257,7 +260,7 @@ export function getAnalytics(): Promise<Result<Analytics>> {
 export async function downloadCsv(section: string): Promise<string | null> {
   const token = getToken();
   try {
-    const response = await fetch(`${BASE}/admin/export.csv?section=${section}`, {
+    const response = await fetch(`${BASE()}/admin/export.csv?section=${section}`, {
       headers: token ? { Authorization: `Bearer ${token}` } : {},
     });
     if (!response.ok) return `Export failed (${response.status})`;

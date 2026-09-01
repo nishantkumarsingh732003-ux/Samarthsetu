@@ -1,4 +1,4 @@
-.PHONY: up down seed demo api web test lint fmt migrate rules chaos
+.PHONY: up down seed demo api web test lint fmt migrate rules chaos bench
 
 up:      ; docker compose up -d
 down:    ; docker compose down
@@ -17,3 +17,5 @@ fmt:     ; cd apps/api && ruff format . && cd ../.. && pnpm -r format
 rules:   ; python packages/rules/scripts/regenerate_golden.py
 # Kill the language model and prove a full citizen journey still completes.
 chaos:   ; bash scripts/chaos.sh
+# Measure eligibility latency. The limiter has to be off, or we measure the limiter.
+bench:   ; RATE_LIMIT_ENABLED=false docker compose up -d --force-recreate api && sleep 6 && docker compose exec api python /scripts/bench.py; docker compose up -d --force-recreate api

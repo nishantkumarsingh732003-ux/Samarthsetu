@@ -70,6 +70,29 @@ class Settings(BaseSettings):
         return [o.strip() for o in self.ALLOWED_ORIGINS.split(",") if o.strip()]
 
     @property
+    def allowed_origin_regex(self) -> str | None:
+        """In development only, also admit the machine's own LAN address.
+
+        This project's premise is a Rs 6,000 handset on a bad connection, and that
+        cannot be checked from a laptop. Opening the app on a phone means the browser's
+        origin is `http://192.168.1.9:3000`, which an exact allowlist rejects — so the
+        one device the product is designed for was the one device it could not be tested
+        on (OPEN_ITEMS OI-29).
+
+        Scoped to RFC 1918 ranges and to development. In production `ALLOWED_ORIGINS`
+        remains an exact list and this returns None, because a wildcard on a private
+        range is still a wildcard to anything sharing that network.
+        """
+        if self.ENVIRONMENT != "development":
+            return None
+        return (
+            r"http://(localhost|127\.0\.0\.1"
+            r"|10\.\d{1,3}\.\d{1,3}\.\d{1,3}"
+            r"|192\.168\.\d{1,3}\.\d{1,3}"
+            r"|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}):\d+"
+        )
+
+    @property
     def id_hash_salt(self) -> str:
         """Never empty. An unsalted ID hash is a rainbow table waiting to happen."""
         return self.ID_HASH_SALT or self.SECRET_KEY

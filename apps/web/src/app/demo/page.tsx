@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 
+import { apiBase, apiOrigin } from "@/lib/apiBase";
+
 /**
  * Mission control for a live demo.
  *
@@ -30,7 +32,7 @@ import { useCallback, useEffect, useState } from "react";
  * anywhere else, so `/demo` is on the removal checklist in docs/DEPLOYMENT.md — beside
  * the demo-credentials block on the sign-in page, which has the same problem.
  */
-const API = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:8000/api/v1";
+const API = () => apiBase();
 
 interface Reason {
   rule_id: string;
@@ -93,7 +95,7 @@ const LANGUAGES = [
 ] as const;
 
 async function call<T>(path: string, body?: unknown): Promise<T> {
-  const response = await fetch(`${API}${path}`, {
+  const response = await fetch(`${API()}${path}`, {
     method: body ? "POST" : "GET",
     headers: body ? { "Content-Type": "application/json" } : undefined,
     body: body ? JSON.stringify(body) : undefined,
@@ -122,7 +124,7 @@ export default function DemoConsole() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`${API.replace("/api/v1", "")}/readyz`)
+    fetch(`${apiOrigin()}/readyz`)
       .then((r) => r.json())
       .then((d) => {
         setReady(d.checks);
@@ -333,7 +335,7 @@ export default function DemoConsole() {
           email: "admin@setu.gov.in",
           password: "setu-demo-2026",
         });
-        const response = await fetch(`${API}/admin/analytics`, {
+        const response = await fetch(`${API()}/admin/analytics`, {
           headers: { Authorization: `Bearer ${login.access_token}` },
         });
         const d = (await response.json()) as {
