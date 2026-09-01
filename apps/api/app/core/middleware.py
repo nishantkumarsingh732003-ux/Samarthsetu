@@ -73,6 +73,53 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         return response
 
 
+class RejectNullBytes(BaseHTTPMiddleware):
+    """Refuse input PostgreSQL physically cannot store, before it reaches PostgreSQL.
+
+    A NUL byte is legal in JSON (as \u0000) and legal in a percent-encoded URL (`%00`),
+    but Postgres `text` and `jsonb` cannot hold one. So it travels happily through
+    Pydantic, through the rule engine, and dies inside asyncpg as an unhandled error —
+    a 500 on a public, unauthenticated endpoint, which is an information disclosure
+    whether or not the payload achieved anything.
+
+    Found by `tests/test_security_surface.py`, which is what that file is for.
+
+    Rejected at the edge rather than sanitised: a NUL in a citizen's occupation or a
+    reference number is never a legitimate value, and silently stripping it would store
+    something the citizen did not type.
+    """
+
+    async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+        # `request.url.path` is already percent-decoded, so this catches %00 too.
+        if "\x00" in request.url.path:
+            return self._refuse("the web address")
+
+        if request.method in {"POST", "PUT", "PATCH"}:
+            # Caching the body here is safe: Starlette memoises it, so the route's own
+            # `await request.json()` reuses these bytes rather than re-reading a
+            # consumed stream.
+            body = await request.body()
+            if b"\x00" in body or rb"\u0000" in body:
+                return self._refuse("the information you sent")
+
+        return await call_next(request)
+
+    @staticmethod
+    def _refuse(what: str) -> JSONResponse:
+        logger.warning("null_byte_rejected")
+        return JSONResponse(
+            status_code=400,
+            content={
+                "detail": (
+                    f"There is an invalid character in {what}. "
+                    "Please retype it and try again."
+                ),
+                "request_id": current_request_id(),
+            },
+            headers={REQUEST_ID_HEADER: current_request_id()},
+        )
+
+
 def _limit_for(path: str) -> tuple[str, int]:
     """Which bucket this path counts against, and how many it allows.
 

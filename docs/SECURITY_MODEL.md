@@ -17,10 +17,10 @@ What the system defends, how, and — as importantly — what it does not defend
 | T2 | A citizen's data is read by the wrong partner | Broken authorisation | Query-level scoping, §3 | mitigated |
 | T3 | A model fabricates an eligibility decision | LLM | Structural exclusion, §2 | mitigated |
 | T4 | An attacker enumerates registered emails | Login timing / message | Constant-time path, §3 | mitigated |
-| T5 | An attacker enumerates reference numbers | Tracking endpoint | Identical 404s; **no rate limit on enumeration specifically** | partial |
+| T5 | An attacker enumerates reference numbers | Tracking endpoint | Identical 404s, tested; no enumeration-specific limit | partial |
 | T6 | A traceback leaks internals | Unhandled exception | Global error boundary, §4 | mitigated |
 | T7 | A runaway script exhausts the service | Any client | Banded rate limiting, fails open, §4 | mitigated |
-| T8 | Injection through free text | Citizen or officer input | ORM parameter binding; **no explicit test** | partial |
+| T8 | Injection through free text | Citizen or officer input | ORM parameter binding, 82 surface tests | mitigated |
 | T9 | An officer acts without accountability | Insider | Append-only audit log, §5 | mitigated |
 | T10 | A stale verdict is served from cache | Us | API never cached client-side | mitigated |
 
@@ -154,5 +154,5 @@ exactly the sort of scope creep purpose limitation exists to prevent.
 | OI-43 | No dialable number, so SMS cannot send | Deliberate. Lifting it is a consent decision |
 | OI-44 | Rate limiting is per-IP; CGNAT makes a town one IP | Limits are set high; failure is a 429, not a lost application |
 | T5 | Reference numbers are not enumeration-hardened | The tracking response carries no personal data |
-| T8 | No explicit injection test | SQLAlchemy binds parameters throughout; untested is not the same as unhandled |
+| T11 | Unstorable bytes reaching the driver | A NUL is legal in JSON and in a URL but not in Postgres text. Rejected at the edge since 2026-09-01; found by the surface tests |
 | OI-48 | Never deployed; `SECRET_KEY` defaults to `change-me` | Checklist in `DEPLOYMENT.md` gates this |

@@ -8,7 +8,11 @@ from app.api.v1.router import api_router
 from app.core import errors
 from app.core import logging as log_setup
 from app.core.config import settings
-from app.core.middleware import RateLimitMiddleware, RequestContextMiddleware
+from app.core.middleware import (
+    RateLimitMiddleware,
+    RejectNullBytes,
+    RequestContextMiddleware,
+)
 
 log_setup.configure()
 logger = logging.getLogger(__name__)
@@ -45,6 +49,7 @@ app = FastAPI(
 
 # Middleware runs bottom-up on the way in, so the request ID is assigned *before* the
 # rate limiter can reject anything — a 429 still carries an ID the citizen can quote.
+app.add_middleware(RejectNullBytes)
 app.add_middleware(RateLimitMiddleware)
 app.add_middleware(RequestContextMiddleware)
 

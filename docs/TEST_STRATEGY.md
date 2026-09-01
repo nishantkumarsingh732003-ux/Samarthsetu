@@ -1,11 +1,11 @@
 # SETU — test strategy
 
-**501 tests.** What they cover, what they deliberately do not, and where the gaps are.
+**632 tests.** What they cover, what they deliberately do not, and where the gaps are.
 
 | Suite | Count | Runner |
 |---|---|---|
-| API | 339 | `cd apps/api && pytest -q` |
-| Rule engine | 116 | `pytest packages/rules -q` |
+| API | 434 | `cd apps/api && pytest -q` |
+| Rule engine | 152 | `pytest packages/rules -q` |
 | TypeScript | 46 | `pnpm -r test` |
 
 Plus five build-failing checks and one runtime drill (`make chaos`).
@@ -62,10 +62,22 @@ live model did the thing it prevents.
 - A provider error degrades instead of raising; extraction and explanation both fall back
 - `describe()` never leaks a key
 
-**Gap.** No test asserts end-to-end that a verdict is identical with a model present and
-absent. That equivalence is proved at runtime by `make chaos`, which compares the scheme,
-verdict, rule IDs and rules digest against a baseline — but it is a shell drill, not a
-test. Closing this is on the roadmap.
+### Adversarial: a model that is present and hostile — 13 tests
+
+`test_llm_cannot_override.py` runs the real orchestration path against a stubbed provider
+that returns approvals, inflated amounts, renamed schemes and fabricated eligibility, and
+asserts the deterministic output is unchanged. It cannot invent a scheme, inflate the
+amount past the loan cap, make an ineligible citizen eligible, or touch the engine version
+or rules digest.
+
+The last test in that file is the one that makes the rest mean anything:
+
+```
+test_the_hostile_model_is_actually_reached
+```
+
+Every other assertion says "the hostile output did not get through" — and all of them
+would also pass if the model were never called at all. That test counts the calls.
 
 ## Privacy — 18 tests
 
@@ -150,13 +162,32 @@ digest** are byte-identical to a baseline taken moments earlier with the model c
 `GROQ_API_KEY` exported runs the suite against a live provider: one real run took 407
 seconds and produced four spurious failures.
 
+## Security surface — 82 tests
+
+`test_security_surface.py` drives the running API over real HTTP, the way `chaos.sh`
+does, and skips cleanly when nothing is running. Injection-shaped strings into every
+unauthenticated endpoint, malformed and oversized bodies, wrong types, deep nesting,
+control characters, five scripts. Then: no traceback in any error, a request ID on every
+response, identical 404 wording so a reference number cannot be enumerated, every console
+endpoint refusing an anonymous caller, `alg: none` refused, a partner token refused at the
+ministry dashboard, and a **live 429** proving the Redis round trip.
+
+The in-process route was tried first and abandoned. `TestClient` starts a fresh event
+loop per request while the app's async engine is a module-level singleton bound to the
+first loop, so every request after the first failed with "attached to a different loop" —
+500s the real service does not produce. Testing over the wire avoids that and exercises
+more.
+
+**It found a real bug on its first run.** A NUL byte — legal in JSON as ` `, legal
+in a URL as `%00` — passed Pydantic, passed the rule engine, and died inside asyncpg,
+because Postgres `text` and `jsonb` cannot store one. A 500 on a public, unauthenticated
+endpoint. Now rejected at the edge with a 400, and pinned by two tests.
+
 ## Known gaps
 
 | Gap | Why it is open |
 |---|---|
-| No end-to-end LLM-equivalence **test** | Proved by `make chaos`; not yet a test |
-| No injection / malformed-input security test | SQLAlchemy binds parameters throughout; untested ≠ unhandled |
-| No live 429 test | Banding is unit-tested; the Redis round trip is verified by hand |
+| No browser-level LLM-equivalence test | Covered at the service layer and by `make chaos` |
 | No browser E2E (Playwright) | Deliberate: high maintenance for a hackathon build. Routes are smoke-checked by HTTP status |
 | No eligibility p95 measurement | The NFR is stated and unverified |
 | OCR unproven on real photographs | OI-32. Proved on rendered cards only |
