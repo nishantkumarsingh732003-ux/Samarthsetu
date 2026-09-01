@@ -13,6 +13,7 @@ Ministry of Social Justice & Empowerment · Department of Social Justice & Empow
 > |---|---|
 > | Citizen app | **http://localhost:3000** |
 > | Staff console | **http://localhost:3000/console/login** |
+> | Judge console | **http://localhost:3000/demo** |
 > | Feature-phone demo | **http://localhost:3000/demo/whatsapp** |
 > | API docs | http://localhost:8000/docs |
 >
@@ -497,6 +498,7 @@ fluently.
 | `/console/login` | One sign-in form; the role in the response decides where you land |
 | `/console/partner` | Branch officer's queue, capacity toggle, SLA clock |
 | `/console/admin` | Ministry dashboard — funnel, misrouting KPI, underserved districts |
+| `/demo` | Judge console — nine scenarios, one click each, nothing external |
 | `/demo/whatsapp` | Feature-phone simulator — same orchestrator, plain text, segment costs |
 
 ```bash

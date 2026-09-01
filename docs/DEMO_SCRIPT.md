@@ -13,6 +13,7 @@ Open four tabs and leave them on these pages:
 
 | Tab | URL |
 |---|---|
+| 0 | http://localhost:3000/demo ← **the console; drive from here if anything goes wrong** |
 | 1 | http://localhost:3000 |
 | 2 | http://localhost:3000/console/login |
 | 3 | http://localhost:3000/demo/whatsapp |

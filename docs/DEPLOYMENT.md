@@ -19,6 +19,10 @@ system on a laptop, offline, in about forty seconds, and that is what the run sh
 - [ ] `ENVIRONMENT=production`.
 - [ ] `ALLOWED_ORIGINS` set to the real web origin. `*` would let any site call the API with a citizen's session.
 - [ ] The demo-credentials block removed from `apps/web/src/app/console/login/page.tsx`.
+- [ ] **The `/demo` routes removed** (`apps/web/src/app/demo/`). The judge console signs in
+      with the seeded admin credentials from client-side code, which puts an admin password
+      in the page source — fine on a laptop over synthetic data, not fine on a URL. The
+      WhatsApp simulator alongside it is also a pitch tool, not a citizen surface.
 - [ ] A decision taken on `LLM_PROVIDER`. `none` is fully supported and costs nothing; the service works without it (`make chaos` proves this).
 - [ ] Partner data replaced, or the synthetic-data disclaimer left visibly in place.
 

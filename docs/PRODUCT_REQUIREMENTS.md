@@ -136,9 +136,21 @@ Request IDs, structured JSON logs, banded rate limiting that fails open, a globa
 boundary that never leaks a traceback, health and readiness endpoints, JWT with three
 roles, append-only audit log.
 
-### FR-18 Judge mode — **GAP**
-No `/demo` mission-control page. Scenarios must currently be driven by hand, which is a
-risk under time pressure in front of a jury.
+### FR-18 Judge mode — built
+`/demo` is a mission control for a live demo: nine scenarios, each one click, each with
+the sentence to say while it loads. A status strip reports database, Redis and model
+reachability so a failure is visible before it is embarrassing.
+
+Three properties it holds to. **Nothing external** — every call goes to the local API, so
+no scenario depends on a model or a network. **Nothing random** — the profiles are fixed
+constants, so the same numbers appear in rehearsal and on the day. **Nothing
+destructive** — there is deliberately no reset button; a destructive HTTP endpoint on a
+government-adjacent service is not worth saving one terminal command, so `make demo` is
+shown instead. The scenarios are independent and idempotent, so they do not need one.
+
+**Not for deployment.** The analytics scenario signs in with the seeded admin credentials
+from client-side code, which is fine on a laptop over synthetic data and unacceptable on a
+URL. `/demo` is on the removal checklist in `DEPLOYMENT.md`.
 
 ## Non-functional requirements
 
