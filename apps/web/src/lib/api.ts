@@ -16,6 +16,20 @@ export interface Reason {
   severity: string;
 }
 
+export interface FitComponent {
+  key: string;
+  score: number;
+  weight: number;
+  contribution: number;
+  /** The sentence the citizen reads. A bare number is the opaque score this replaces. */
+  detail: string;
+}
+
+export interface Fit {
+  total: number;
+  components: FitComponent[];
+}
+
 export interface MatchResult {
   scheme_code: string;
   official_name: string;
@@ -32,6 +46,8 @@ export interface MatchResult {
   redirect_suggestion: string | null;
   needs_verification: boolean;
   rank: number | null;
+  /** Why this scheme ranked here. Presentational — order comes from the engine. */
+  fit: Fit | null;
   translation_status: string;
 }
 

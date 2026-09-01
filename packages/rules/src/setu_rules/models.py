@@ -7,6 +7,7 @@ for the golden snapshot tests and for decision replay.
 
 from __future__ import annotations
 
+import math
 from dataclasses import dataclass, field
 from enum import StrEnum
 from typing import Any
@@ -124,6 +125,69 @@ class Scheme:
     pending_translations: tuple[str, ...] = ()
 
 
+def round_half_up(value: float, places: int) -> float:
+    """Round the way JavaScript does, because the other engine is JavaScript.
+
+    Python's `round()` is half-to-even; `Math.round()` is half-up. They disagree on
+    exact halves, and the fit score produces one: 96.7 x 0.15 scales to precisely
+    1450.5, which Python renders 14.5 and JavaScript 14.51. The conformance suite
+    compares the two engines field by field, so it caught it — but relying on either
+    language's default was the bug, not the mismatch.
+
+    This mirrors `Math.round(value * 10**places) / 10**places` exactly. Inputs here are
+    scores and weights and are never negative; half-up and half-away-from-zero differ
+    only for negatives, so that case is left undefined rather than guessed at.
+    """
+    factor = 10**places
+    return math.floor(value * factor + 0.5) / factor
+
+
+@dataclass(frozen=True, slots=True)
+class FitComponent:
+    """One named, defensible reason a scheme scored the way it did.
+
+    `score` is 0-100 for that component alone; `weight` is its share of the total.
+    `detail` is the plain sentence a citizen reads — never a formula.
+    """
+
+    key: str
+    score: float
+    weight: float
+    detail: str
+
+    @property
+    def contribution(self) -> float:
+        return round_half_up(self.score * self.weight, 2)
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "key": self.key,
+            "score": self.score,
+            "weight": self.weight,
+            "contribution": self.contribution,
+            "detail": self.detail,
+        }
+
+
+@dataclass(frozen=True, slots=True)
+class FitScore:
+    """Why this scheme ranked where it did, in components a citizen can argue with.
+
+    `engine.evaluate` ranks on `total`, after the verdict. A score that did not drive
+    the order would explain nothing. Ties fall through to `_rank_key` and then to the
+    scheme code, so the float decides without ever being the last word.
+    """
+
+    total: float
+    components: tuple[FitComponent, ...]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "total": self.total,
+            "components": [c.to_dict() for c in self.components],
+        }
+
+
 @dataclass(frozen=True, slots=True)
 class MatchResult:
     scheme_code: str
@@ -142,6 +206,8 @@ class MatchResult:
     needs_verification: bool = False
     provenance: Provenance | None = None
     rank: int | None = None
+    # Why this scheme ranked where it did, and what the ranking is based on.
+    fit: FitScore | None = None
     # "verified" | "draft" | "fallback" — whether the prose above has been read by a
     # speaker of the requested language. A draft reason still tells a citizen why they
     # were refused credit, so the UI must be able to say it is unreviewed.
@@ -167,6 +233,7 @@ class MatchResult:
             "needs_verification": self.needs_verification,
             "provenance": self.provenance.to_dict() if self.provenance else None,
             "rank": self.rank,
+            "fit": self.fit.to_dict() if self.fit else None,
             "translation_status": self.translation_status,
         }
 

@@ -33,10 +33,10 @@ from __future__ import annotations
 import random
 from typing import Any
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.models import ChannelPartner, PartnerSchemeAuthorisation, Scheme
+from app.models import Application, ChannelPartner, PartnerSchemeAuthorisation, Scheme
 from app.models.enums import PartnerType
 from app.core.geography import DISTRICTS, DISTRICTS_BY_STATE, District, nearest_districts
 
@@ -313,7 +313,34 @@ async def seed_partners(session: AsyncSession) -> str:
     if not scheme_ids:
         raise SystemExit("Seed schemes before partners: python scripts/seed/run.py schemes")
 
-    # Wholesale replacement keeps the seeder idempotent without merge ambiguity.
+    # Wholesale replacement, *unless* applications already point at these partners.
+    #
+    # The generator is seeded and deterministic, so a registry that is already populated
+    # is byte-for-byte what this function would rebuild. Deleting and re-inserting it
+    # would therefore change nothing except the primary keys — and those are exactly
+    # what `applications.partner_id` references, so the delete fails on a foreign key.
+    #
+    # That made `make demo` non-idempotent: the first run worked, and the second died
+    # inside the *reference* seeder because the *demo* seeder had since created
+    # applications. Re-running the seed is the documented way to recover a broken demo,
+    # so it has to survive being run twice.
+    referenced = (
+        await session.execute(
+            select(func.count())
+            .select_from(Application)
+            .where(Application.partner_id.isnot(None))
+        )
+    ).scalar_one()
+    existing = (
+        await session.execute(select(func.count()).select_from(ChannelPartner))
+    ).scalar_one()
+
+    if referenced and existing:
+        return (
+            f"{existing} partners kept — {referenced} application(s) reference them, and "
+            "the registry is already what this seeder would build"
+        )
+
     await session.execute(delete(PartnerSchemeAuthorisation))
     await session.execute(delete(ChannelPartner))
 

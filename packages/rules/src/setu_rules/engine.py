@@ -22,6 +22,7 @@ from dataclasses import replace
 from functools import lru_cache
 from typing import Any
 
+from setu_rules.fit import fit_score
 from setu_rules.loader import load_schemes, rules_digest
 from setu_rules.models import (
     MatchResult,
@@ -202,12 +203,32 @@ def evaluate(
     catalogue = schemes if schemes is not None else load_schemes()
     by_code = {s.code: s for s in catalogue}
 
-    results = [evaluate_scheme(s, profile, language) for s in catalogue]
-    results.sort(
-        key=lambda r: (_VERDICT_ORDER[r.verdict], *_rank_key(r, by_code[r.scheme_code], profile))
-    )
+    scored = [
+        replace(r, fit=fit_score(by_code[r.scheme_code], r, profile))
+        for r in (evaluate_scheme(s, profile, language) for s in catalogue)
+    ]
 
-    return [replace(r, rank=i) for i, r in enumerate(results, start=1)]
+    # Ordering, in four keys, and each one earns its place:
+    #
+    #   1. verdict      — something you can have always outranks something you cannot.
+    #   2. -fit.total   — the score the citizen is shown. It has to *drive* the order,
+    #                     or it explains nothing and is decoration on a sort it cannot
+    #                     account for. This is the whole point of showing it.
+    #   3. _rank_key    — tightest fit, then cheapest, then most generous. Breaks ties
+    #                     on the score using rule-derived facts rather than a float.
+    #   4. scheme_code  — guarantees a total order, so ranking can never depend on the
+    #                     order schemes came off the filesystem.
+    #
+    # Keys 3 and 4 are what let key 2 be a float at all: two schemes tying on a rounded
+    # score fall through to facts, never to iteration order.
+    scored.sort(
+        key=lambda r: (
+            _VERDICT_ORDER[r.verdict],
+            -r.fit.total,
+            *_rank_key(r, by_code[r.scheme_code], profile),
+        )
+    )
+    return [replace(r, rank=i) for i, r in enumerate(scored, start=1)]
 
 
 def run(

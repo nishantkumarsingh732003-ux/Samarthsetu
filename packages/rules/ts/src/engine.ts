@@ -1,6 +1,7 @@
 import bundleJson from "../../dist/rules.json";
 import { evaluateNode, UNKNOWN } from "./evaluate";
 import { FIELDS } from "./fields";
+import { fitScore } from "./fit";
 import type {
   MatchResult,
   MatchRun,
@@ -139,6 +140,7 @@ export function evaluateScheme(
     needs_verification: scheme.provenance.needs_verification,
     provenance: scheme.provenance,
     rank: null,
+    fit: null,
     translation_status: translationStatus(language),
   };
 }
@@ -160,12 +162,23 @@ function rankKey(scheme: Scheme, profile: Profile): [number, number, number] {
 
 export function evaluate(profile: Profile, language = "en"): MatchResult[] {
   const byCode = new Map(bundle.schemes.map((s) => [s.code, s]));
-  const results = bundle.schemes.map((s) => evaluateScheme(s, profile, language));
+  const results = bundle.schemes.map((s) => {
+    const r = evaluateScheme(s, profile, language);
+    return { ...r, fit: fitScore(s, r, profile) };
+  });
 
+  // Ordering, in four keys — mirrors `engine.evaluate` in Python exactly:
+  //   1. verdict      something you can have outranks something you cannot
+  //   2. -fit.total   the score the citizen is shown has to drive the order, or it
+  //                   explains nothing and is decoration on a sort it cannot account for
+  //   3. rankKey      ties on the score fall through to rule-derived facts, not a float
+  //   4. scheme_code  guarantees a total order, independent of catalogue order
   results.sort((a, b) => {
     const va = VERDICT_ORDER[a.verdict];
     const vb = VERDICT_ORDER[b.verdict];
     if (va !== vb) return va - vb;
+
+    if (a.fit.total !== b.fit.total) return b.fit.total - a.fit.total;
 
     const ka = rankKey(byCode.get(a.scheme_code)!, profile);
     const kb = rankKey(byCode.get(b.scheme_code)!, profile);

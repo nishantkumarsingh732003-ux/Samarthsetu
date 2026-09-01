@@ -1,6 +1,6 @@
 {
   "anjali_student_6l": {
-    "engine_version": "2.2.0",
+    "engine_version": "2.3.0",
     "input_snapshot": {
       "admission_confirmed": true,
       "annual_family_income": 260000,
@@ -15,6 +15,46 @@
         "blocked_because": [],
         "confidence": 1.0,
         "family": "EDUCATION_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds a course.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 22.5,
+              "detail": "This scheme sets no ceiling on the cost of the course.",
+              "key": "amount_fit",
+              "score": 90.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 20.0,
+              "detail": "You meet every requirement.",
+              "key": "category_fit",
+              "score": 100.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 97.0
+        },
         "indicative_amount": 540000.0,
         "indicative_interest_band": [
           6.5,
@@ -95,6 +135,46 @@
         ],
         "confidence": 1.0,
         "family": "TERM_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds a business, and you asked about studies.",
+              "key": "purpose_fit",
+              "score": 0.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 25.0,
+              "detail": "Rs 600,000 sits well inside the Rs 5,000,000 ceiling.",
+              "key": "amount_fit",
+              "score": 100.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Education costs are funded under the Educational Loan Scheme, not this one.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 4.5,
+              "detail": "8% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 30.0,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 39.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           8.0,
@@ -167,6 +247,46 @@
         ],
         "confidence": 1.0,
         "family": "MICRO_FINANCE",
+        "fit": {
+          "components": [
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds a business, and you asked about studies.",
+              "key": "purpose_fit",
+              "score": 0.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Rs 600,000 is above this scheme's Rs 140,000 ceiling.",
+              "key": "amount_fit",
+              "score": 0.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Education costs are funded under the Educational Loan Scheme, not this one.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 24.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -224,7 +344,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "category_only": {
-    "engine_version": "2.2.0",
+    "engine_version": "2.3.0",
     "input_snapshot": {
       "category": "SC"
     },
@@ -265,6 +385,46 @@
         "blocked_because": [],
         "confidence": 0.25,
         "family": "EDUCATION_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 15.0,
+              "detail": "We do not know yet what the money is for.",
+              "key": "purpose_fit",
+              "score": 50.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 12.5,
+              "detail": "We do not know the amount yet.",
+              "key": "amount_fit",
+              "score": 50.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 10.0,
+              "detail": "3 more answers needed to be sure.",
+              "key": "category_fit",
+              "score": 50.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 2.5,
+              "detail": "3 answers still missing.",
+              "key": "information",
+              "score": 25.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 54.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -323,6 +483,46 @@
         "blocked_because": [],
         "confidence": 0.25,
         "family": "MICRO_FINANCE",
+        "fit": {
+          "components": [
+            {
+              "contribution": 15.0,
+              "detail": "We do not know yet what the money is for.",
+              "key": "purpose_fit",
+              "score": 50.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 12.5,
+              "detail": "We do not know the amount yet.",
+              "key": "amount_fit",
+              "score": 50.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 10.0,
+              "detail": "3 more answers needed to be sure.",
+              "key": "category_fit",
+              "score": 50.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 2.5,
+              "detail": "3 answers still missing.",
+              "key": "information",
+              "score": 25.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 54.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -373,6 +573,46 @@
         "blocked_because": [],
         "confidence": 0.2,
         "family": "TERM_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 15.0,
+              "detail": "We do not know yet what the money is for.",
+              "key": "purpose_fit",
+              "score": 50.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 12.5,
+              "detail": "We do not know the amount yet.",
+              "key": "amount_fit",
+              "score": 50.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 10.0,
+              "detail": "3 more answers needed to be sure.",
+              "key": "category_fit",
+              "score": 50.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 4.5,
+              "detail": "8% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 30.0,
+              "weight": 0.15
+            },
+            {
+              "contribution": 2.5,
+              "detail": "3 answers still missing.",
+              "key": "information",
+              "score": 25.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           8.0,
@@ -423,7 +663,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "empty_profile": {
-    "engine_version": "2.2.0",
+    "engine_version": "2.3.0",
     "input_snapshot": {},
     "next_question": {
       "choices": [
@@ -458,6 +698,46 @@
         "blocked_because": [],
         "confidence": 0.0,
         "family": "EDUCATION_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 15.0,
+              "detail": "We do not know yet what the money is for.",
+              "key": "purpose_fit",
+              "score": 50.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 12.5,
+              "detail": "We do not know the amount yet.",
+              "key": "amount_fit",
+              "score": 50.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 10.0,
+              "detail": "4 more answers needed to be sure.",
+              "key": "category_fit",
+              "score": 50.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 0.0,
+              "detail": "4 answers still missing.",
+              "key": "information",
+              "score": 0.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 52.0
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -511,6 +791,46 @@
         "blocked_because": [],
         "confidence": 0.0,
         "family": "MICRO_FINANCE",
+        "fit": {
+          "components": [
+            {
+              "contribution": 15.0,
+              "detail": "We do not know yet what the money is for.",
+              "key": "purpose_fit",
+              "score": 50.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 12.5,
+              "detail": "We do not know the amount yet.",
+              "key": "amount_fit",
+              "score": 50.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 10.0,
+              "detail": "4 more answers needed to be sure.",
+              "key": "category_fit",
+              "score": 50.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 0.0,
+              "detail": "4 answers still missing.",
+              "key": "information",
+              "score": 0.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 52.0
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -556,6 +876,46 @@
         "blocked_because": [],
         "confidence": 0.0,
         "family": "TERM_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 15.0,
+              "detail": "We do not know yet what the money is for.",
+              "key": "purpose_fit",
+              "score": 50.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 12.5,
+              "detail": "We do not know the amount yet.",
+              "key": "amount_fit",
+              "score": 50.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 10.0,
+              "detail": "4 more answers needed to be sure.",
+              "key": "category_fit",
+              "score": 50.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 4.5,
+              "detail": "8% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 30.0,
+              "weight": 0.15
+            },
+            {
+              "contribution": 0.0,
+              "detail": "4 answers still missing.",
+              "key": "information",
+              "score": 0.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 42.0
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           8.0,
@@ -601,7 +961,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "income_exactly_at_ceiling": {
-    "engine_version": "2.2.0",
+    "engine_version": "2.3.0",
     "input_snapshot": {
       "annual_family_income": 500000,
       "category": "SC",
@@ -614,6 +974,46 @@
         "blocked_because": [],
         "confidence": 1.0,
         "family": "MICRO_FINANCE",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 25.0,
+              "detail": "Rs 100,000 sits well inside the Rs 140,000 ceiling.",
+              "key": "amount_fit",
+              "score": 100.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 20.0,
+              "detail": "You meet every requirement.",
+              "key": "category_fit",
+              "score": 100.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 99.5
+        },
         "indicative_amount": 90000.0,
         "indicative_interest_band": [
           6.5,
@@ -686,6 +1086,46 @@
         ],
         "confidence": 1.0,
         "family": "TERM_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Rs 100,000 is below this scheme's Rs 140,000 floor.",
+              "key": "amount_fit",
+              "score": 0.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "The Term Loan is for units costing more than Rs 1,40,000. Smaller projects are funded under the Micro Finance Scheme.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 4.5,
+              "detail": "8% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 30.0,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           8.0,
@@ -753,6 +1193,46 @@
         ],
         "confidence": 1.0,
         "family": "EDUCATION_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds a course, and you asked about a business.",
+              "key": "purpose_fit",
+              "score": 0.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 22.5,
+              "detail": "This scheme sets no ceiling on the cost of the course.",
+              "key": "amount_fit",
+              "score": 90.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds education costs only.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 7.5,
+              "detail": "One answer still missing.",
+              "key": "information",
+              "score": 75.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -819,7 +1299,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "income_one_rupee_over": {
-    "engine_version": "2.2.0",
+    "engine_version": "2.3.0",
     "input_snapshot": {
       "annual_family_income": 500001,
       "category": "SC",
@@ -838,6 +1318,46 @@
         ],
         "confidence": 1.0,
         "family": "MICRO_FINANCE",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 25.0,
+              "detail": "Rs 100,000 sits well inside the Rs 140,000 ceiling.",
+              "key": "amount_fit",
+              "score": 100.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Annual family income must not exceed Rs 5,00,000.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 79.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -910,6 +1430,46 @@
         ],
         "confidence": 1.0,
         "family": "TERM_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Rs 100,000 is below this scheme's Rs 140,000 floor.",
+              "key": "amount_fit",
+              "score": 0.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Annual family income must not exceed Rs 5,00,000.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 4.5,
+              "detail": "8% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 30.0,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           8.0,
@@ -977,6 +1537,46 @@
         ],
         "confidence": 1.0,
         "family": "EDUCATION_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds a course, and you asked about a business.",
+              "key": "purpose_fit",
+              "score": 0.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 22.5,
+              "detail": "This scheme sets no ceiling on the cost of the course.",
+              "key": "amount_fit",
+              "score": 90.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Annual family income must not exceed Rs 5,00,000.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 7.5,
+              "detail": "One answer still missing.",
+              "key": "information",
+              "score": 75.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -1038,7 +1638,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "micro_finance_boundary_140000": {
-    "engine_version": "2.2.0",
+    "engine_version": "2.3.0",
     "input_snapshot": {
       "annual_family_income": 200000,
       "category": "SC",
@@ -1051,6 +1651,46 @@
         "blocked_because": [],
         "confidence": 1.0,
         "family": "MICRO_FINANCE",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 15.0,
+              "detail": "Rs 140,000 is close to the Rs 140,000 ceiling, so there is little room if costs rise.",
+              "key": "amount_fit",
+              "score": 60.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 16.0,
+              "detail": "You meet every requirement, with a note to check.",
+              "key": "category_fit",
+              "score": 80.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 85.5
+        },
         "indicative_amount": 125000.0,
         "indicative_interest_band": [
           6.5,
@@ -1124,6 +1764,46 @@
         ],
         "confidence": 1.0,
         "family": "TERM_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 25.0,
+              "detail": "Rs 140,000 sits well inside the Rs 5,000,000 ceiling.",
+              "key": "amount_fit",
+              "score": 100.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "The Term Loan is for units costing more than Rs 1,40,000. Smaller projects are funded under the Micro Finance Scheme.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 4.5,
+              "detail": "8% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 30.0,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 69.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           8.0,
@@ -1191,6 +1871,46 @@
         ],
         "confidence": 1.0,
         "family": "EDUCATION_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds a course, and you asked about a business.",
+              "key": "purpose_fit",
+              "score": 0.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 22.5,
+              "detail": "This scheme sets no ceiling on the cost of the course.",
+              "key": "amount_fit",
+              "score": 90.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds education costs only.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 7.5,
+              "detail": "One answer still missing.",
+              "key": "information",
+              "score": 75.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -1257,7 +1977,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "micro_finance_boundary_140001_redirects": {
-    "engine_version": "2.2.0",
+    "engine_version": "2.3.0",
     "input_snapshot": {
       "annual_family_income": 200000,
       "category": "SC",
@@ -1270,6 +1990,46 @@
         "blocked_because": [],
         "confidence": 1.0,
         "family": "TERM_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 25.0,
+              "detail": "Rs 140,001 sits well inside the Rs 5,000,000 ceiling.",
+              "key": "amount_fit",
+              "score": 100.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 20.0,
+              "detail": "You meet every requirement.",
+              "key": "category_fit",
+              "score": 100.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 4.5,
+              "detail": "8% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 30.0,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 89.5
+        },
         "indicative_amount": 126000.9,
         "indicative_interest_band": [
           8.0,
@@ -1335,6 +2095,114 @@
       {
         "blocked_because": [
           {
+            "message": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Rs 140,001 is above this scheme's Rs 140,000 ceiling.",
+              "key": "amount_fit",
+              "score": 0.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 54.5
+        },
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 2,
+        "redirect_suggestion": "NSFDC_TERM_LOAN",
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
+        "verdict": "INELIGIBLE",
+        "warnings": [
+          {
+            "message": "This scheme lends at most Rs 1,25,000, which is less than 90% of your project cost. You will need to arrange the difference yourself.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ]
+      },
+      {
+        "blocked_because": [
+          {
             "message": "This scheme funds education costs only.",
             "rule_id": "EL_PURPOSE_IS_EDUCATION",
             "severity": "HARD_BLOCK"
@@ -1342,6 +2210,46 @@
         ],
         "confidence": 1.0,
         "family": "EDUCATION_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds a course, and you asked about a business.",
+              "key": "purpose_fit",
+              "score": 0.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 22.5,
+              "detail": "This scheme sets no ceiling on the cost of the course.",
+              "key": "amount_fit",
+              "score": 90.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds education costs only.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 7.5,
+              "detail": "One answer still missing.",
+              "key": "information",
+              "score": 75.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -1397,86 +2305,18 @@
           "source_url": "https://nsfdc.nic.in/scheme",
           "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
         },
-        "rank": 2,
+        "rank": 3,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
         "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
-      },
-      {
-        "blocked_because": [
-          {
-            "message": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
-            "rule_id": "MF_PROJECT_COST_BAND",
-            "severity": "HARD_BLOCK"
-          }
-        ],
-        "confidence": 1.0,
-        "family": "MICRO_FINANCE",
-        "indicative_amount": null,
-        "indicative_interest_band": [
-          6.5,
-          6.5
-        ],
-        "matched_because": [
-          {
-            "message": "You are a Scheduled Caste applicant.",
-            "rule_id": "MF_CATEGORY_SC",
-            "severity": "HARD_BLOCK"
-          },
-          {
-            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
-            "rule_id": "MF_INCOME_CEILING",
-            "severity": "HARD_BLOCK"
-          },
-          {
-            "message": "Your requirement is an enterprise project, which this scheme funds.",
-            "rule_id": "MF_NOT_FOR_EDUCATION",
-            "severity": "HARD_BLOCK"
-          }
-        ],
-        "max_funding_pct": 90,
-        "missing_fields": [],
-        "needs_verification": true,
-        "official_name": "Micro Finance Scheme",
-        "provenance": {
-          "circular_ref": null,
-          "effective_from": null,
-          "last_verified_on": "2026-08-29",
-          "needs_verification": true,
-          "open_questions": [
-            {
-              "field": "circular_ref",
-              "question": "Which NSFDC circular governs the current MFS terms?"
-            },
-            {
-              "field": "effective_from",
-              "question": "From what date do the current MFS amounts apply?"
-            }
-          ],
-          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
-          "source_url": "https://nsfdc.nic.in/scheme",
-          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
-        },
-        "rank": 3,
-        "redirect_suggestion": "NSFDC_TERM_LOAN",
-        "scheme_code": "NSFDC_MICRO_FINANCE",
-        "translation_status": "verified",
-        "verdict": "INELIGIBLE",
-        "warnings": [
-          {
-            "message": "This scheme lends at most Rs 1,25,000, which is less than 90% of your project cost. You will need to arrange the difference yourself.",
-            "rule_id": "MF_LOAN_CAP_BINDS",
-            "severity": "SOFT_WARN"
-          }
-        ]
       }
     ],
     "rules_digest": "545b833da4e8f55d"
   },
   "non_sc_applicant": {
-    "engine_version": "2.2.0",
+    "engine_version": "2.3.0",
     "input_snapshot": {
       "annual_family_income": 180000,
       "category": "OBC",
@@ -1495,6 +2335,46 @@
         ],
         "confidence": 1.0,
         "family": "MICRO_FINANCE",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 25.0,
+              "detail": "Rs 80,000 sits well inside the Rs 140,000 ceiling.",
+              "key": "amount_fit",
+              "score": 100.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "This scheme is for Scheduled Caste applicants.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 79.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -1567,6 +2447,46 @@
         ],
         "confidence": 1.0,
         "family": "TERM_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Rs 80,000 is below this scheme's Rs 140,000 floor.",
+              "key": "amount_fit",
+              "score": 0.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "This scheme is for Scheduled Caste applicants.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 4.5,
+              "detail": "8% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 30.0,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           8.0,
@@ -1634,6 +2554,46 @@
         ],
         "confidence": 1.0,
         "family": "EDUCATION_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds a course, and you asked about a business.",
+              "key": "purpose_fit",
+              "score": 0.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 22.5,
+              "detail": "This scheme sets no ceiling on the cost of the course.",
+              "key": "amount_fit",
+              "score": 90.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "This scheme is for Scheduled Caste applicants.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 7.5,
+              "detail": "One answer still missing.",
+              "key": "information",
+              "score": 75.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -1695,7 +2655,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "over_term_loan_ceiling": {
-    "engine_version": "2.2.0",
+    "engine_version": "2.3.0",
     "input_snapshot": {
       "annual_family_income": 300000,
       "category": "SC",
@@ -1707,6 +2667,114 @@
       {
         "blocked_because": [
           {
+            "message": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Rs 6,000,000 is above this scheme's Rs 140,000 ceiling.",
+              "key": "amount_fit",
+              "score": 0.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 54.5
+        },
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 1,
+        "redirect_suggestion": "NSFDC_TERM_LOAN",
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
+        "verdict": "INELIGIBLE",
+        "warnings": [
+          {
+            "message": "This scheme lends at most Rs 1,25,000, which is less than 90% of your project cost. You will need to arrange the difference yourself.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ]
+      },
+      {
+        "blocked_because": [
+          {
             "message": "This scheme funds education costs only.",
             "rule_id": "EL_PURPOSE_IS_EDUCATION",
             "severity": "HARD_BLOCK"
@@ -1714,6 +2782,46 @@
         ],
         "confidence": 1.0,
         "family": "EDUCATION_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds a course, and you asked about a business.",
+              "key": "purpose_fit",
+              "score": 0.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 22.5,
+              "detail": "This scheme sets no ceiling on the cost of the course.",
+              "key": "amount_fit",
+              "score": 90.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds education costs only.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 7.5,
+              "detail": "One answer still missing.",
+              "key": "information",
+              "score": 75.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -1764,7 +2872,7 @@
           "source_url": "https://nsfdc.nic.in/scheme",
           "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
         },
-        "rank": 1,
+        "rank": 2,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
         "translation_status": "verified",
@@ -1780,74 +2888,6 @@
       {
         "blocked_because": [
           {
-            "message": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
-            "rule_id": "MF_PROJECT_COST_BAND",
-            "severity": "HARD_BLOCK"
-          }
-        ],
-        "confidence": 1.0,
-        "family": "MICRO_FINANCE",
-        "indicative_amount": null,
-        "indicative_interest_band": [
-          6.5,
-          6.5
-        ],
-        "matched_because": [
-          {
-            "message": "You are a Scheduled Caste applicant.",
-            "rule_id": "MF_CATEGORY_SC",
-            "severity": "HARD_BLOCK"
-          },
-          {
-            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
-            "rule_id": "MF_INCOME_CEILING",
-            "severity": "HARD_BLOCK"
-          },
-          {
-            "message": "Your requirement is an enterprise project, which this scheme funds.",
-            "rule_id": "MF_NOT_FOR_EDUCATION",
-            "severity": "HARD_BLOCK"
-          }
-        ],
-        "max_funding_pct": 90,
-        "missing_fields": [],
-        "needs_verification": true,
-        "official_name": "Micro Finance Scheme",
-        "provenance": {
-          "circular_ref": null,
-          "effective_from": null,
-          "last_verified_on": "2026-08-29",
-          "needs_verification": true,
-          "open_questions": [
-            {
-              "field": "circular_ref",
-              "question": "Which NSFDC circular governs the current MFS terms?"
-            },
-            {
-              "field": "effective_from",
-              "question": "From what date do the current MFS amounts apply?"
-            }
-          ],
-          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
-          "source_url": "https://nsfdc.nic.in/scheme",
-          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
-        },
-        "rank": 2,
-        "redirect_suggestion": "NSFDC_TERM_LOAN",
-        "scheme_code": "NSFDC_MICRO_FINANCE",
-        "translation_status": "verified",
-        "verdict": "INELIGIBLE",
-        "warnings": [
-          {
-            "message": "This scheme lends at most Rs 1,25,000, which is less than 90% of your project cost. You will need to arrange the difference yourself.",
-            "rule_id": "MF_LOAN_CAP_BINDS",
-            "severity": "SOFT_WARN"
-          }
-        ]
-      },
-      {
-        "blocked_because": [
-          {
             "message": "The Term Loan covers units costing up to Rs 50,00,000.",
             "rule_id": "TL_PROJECT_COST_CEILING",
             "severity": "HARD_BLOCK"
@@ -1855,6 +2895,46 @@
         ],
         "confidence": 1.0,
         "family": "TERM_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Rs 6,000,000 is above this scheme's Rs 5,000,000 ceiling.",
+              "key": "amount_fit",
+              "score": 0.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "The Term Loan covers units costing up to Rs 50,00,000.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 4.5,
+              "detail": "8% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 30.0,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           8.0,
@@ -1916,7 +2996,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "ramesh_workshop_12l": {
-    "engine_version": "2.2.0",
+    "engine_version": "2.3.0",
     "input_snapshot": {
       "annual_family_income": 420000,
       "category": "SC",
@@ -1930,6 +3010,46 @@
         "blocked_because": [],
         "confidence": 1.0,
         "family": "TERM_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 25.0,
+              "detail": "Rs 1,200,000 sits well inside the Rs 5,000,000 ceiling.",
+              "key": "amount_fit",
+              "score": 100.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 20.0,
+              "detail": "You meet every requirement.",
+              "key": "category_fit",
+              "score": 100.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 4.5,
+              "detail": "8% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 30.0,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 89.5
+        },
         "indicative_amount": 1080000.0,
         "indicative_interest_band": [
           8.0,
@@ -1995,6 +3115,114 @@
       {
         "blocked_because": [
           {
+            "message": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
+            "rule_id": "MF_PROJECT_COST_BAND",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "MICRO_FINANCE",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Rs 1,200,000 is above this scheme's Rs 140,000 ceiling.",
+              "key": "amount_fit",
+              "score": 0.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 54.5
+        },
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          6.5,
+          6.5
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "MF_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "MF_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your requirement is an enterprise project, which this scheme funds.",
+            "rule_id": "MF_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Micro Finance Scheme",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current MFS terms?"
+            },
+            {
+              "field": "effective_from",
+              "question": "From what date do the current MFS amounts apply?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
+        },
+        "rank": 2,
+        "redirect_suggestion": "NSFDC_TERM_LOAN",
+        "scheme_code": "NSFDC_MICRO_FINANCE",
+        "translation_status": "verified",
+        "verdict": "INELIGIBLE",
+        "warnings": [
+          {
+            "message": "This scheme lends at most Rs 1,25,000, which is less than 90% of your project cost. You will need to arrange the difference yourself.",
+            "rule_id": "MF_LOAN_CAP_BINDS",
+            "severity": "SOFT_WARN"
+          }
+        ]
+      },
+      {
+        "blocked_because": [
+          {
             "message": "This scheme funds education costs only.",
             "rule_id": "EL_PURPOSE_IS_EDUCATION",
             "severity": "HARD_BLOCK"
@@ -2002,6 +3230,46 @@
         ],
         "confidence": 1.0,
         "family": "EDUCATION_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds a course, and you asked about a business.",
+              "key": "purpose_fit",
+              "score": 0.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 22.5,
+              "detail": "This scheme sets no ceiling on the cost of the course.",
+              "key": "amount_fit",
+              "score": 90.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds education costs only.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 7.5,
+              "detail": "One answer still missing.",
+              "key": "information",
+              "score": 75.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -2057,86 +3325,18 @@
           "source_url": "https://nsfdc.nic.in/scheme",
           "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
         },
-        "rank": 2,
+        "rank": 3,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
         "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
-      },
-      {
-        "blocked_because": [
-          {
-            "message": "The Micro Finance Scheme covers units costing up to Rs 1,40,000.",
-            "rule_id": "MF_PROJECT_COST_BAND",
-            "severity": "HARD_BLOCK"
-          }
-        ],
-        "confidence": 1.0,
-        "family": "MICRO_FINANCE",
-        "indicative_amount": null,
-        "indicative_interest_band": [
-          6.5,
-          6.5
-        ],
-        "matched_because": [
-          {
-            "message": "You are a Scheduled Caste applicant.",
-            "rule_id": "MF_CATEGORY_SC",
-            "severity": "HARD_BLOCK"
-          },
-          {
-            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
-            "rule_id": "MF_INCOME_CEILING",
-            "severity": "HARD_BLOCK"
-          },
-          {
-            "message": "Your requirement is an enterprise project, which this scheme funds.",
-            "rule_id": "MF_NOT_FOR_EDUCATION",
-            "severity": "HARD_BLOCK"
-          }
-        ],
-        "max_funding_pct": 90,
-        "missing_fields": [],
-        "needs_verification": true,
-        "official_name": "Micro Finance Scheme",
-        "provenance": {
-          "circular_ref": null,
-          "effective_from": null,
-          "last_verified_on": "2026-08-29",
-          "needs_verification": true,
-          "open_questions": [
-            {
-              "field": "circular_ref",
-              "question": "Which NSFDC circular governs the current MFS terms?"
-            },
-            {
-              "field": "effective_from",
-              "question": "From what date do the current MFS amounts apply?"
-            }
-          ],
-          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
-          "source_url": "https://nsfdc.nic.in/scheme",
-          "verification_note": "Amounts, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. The income ceiling of Rs 5,00,000 is from nsfdc.nic.in/eligibility-requirements and is stated there as effective 2026-01-07. No circular number has been located, so effective_from for the scheme itself remains null."
-        },
-        "rank": 3,
-        "redirect_suggestion": "NSFDC_TERM_LOAN",
-        "scheme_code": "NSFDC_MICRO_FINANCE",
-        "translation_status": "verified",
-        "verdict": "INELIGIBLE",
-        "warnings": [
-          {
-            "message": "This scheme lends at most Rs 1,25,000, which is less than 90% of your project cost. You will need to arrange the difference yourself.",
-            "rule_id": "MF_LOAN_CAP_BINDS",
-            "severity": "SOFT_WARN"
-          }
-        ]
       }
     ],
     "rules_digest": "545b833da4e8f55d"
   },
   "student_without_confirmed_admission": {
-    "engine_version": "2.2.0",
+    "engine_version": "2.3.0",
     "input_snapshot": {
       "admission_confirmed": false,
       "annual_family_income": 260000,
@@ -2149,73 +3349,6 @@
       {
         "blocked_because": [
           {
-            "message": "Education costs are funded under the Educational Loan Scheme, not this one.",
-            "rule_id": "TL_NOT_FOR_EDUCATION",
-            "severity": "HARD_BLOCK"
-          }
-        ],
-        "confidence": 1.0,
-        "family": "TERM_LOAN",
-        "indicative_amount": null,
-        "indicative_interest_band": [
-          8.0,
-          8.0
-        ],
-        "matched_because": [
-          {
-            "message": "You are a Scheduled Caste applicant.",
-            "rule_id": "TL_CATEGORY_SC",
-            "severity": "HARD_BLOCK"
-          },
-          {
-            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
-            "rule_id": "TL_INCOME_CEILING",
-            "severity": "HARD_BLOCK"
-          },
-          {
-            "message": "Your project is large enough for this scheme.",
-            "rule_id": "TL_PROJECT_COST_FLOOR",
-            "severity": "HARD_BLOCK"
-          },
-          {
-            "message": "Your project cost fits within the Rs 50,00,000 band.",
-            "rule_id": "TL_PROJECT_COST_CEILING",
-            "severity": "HARD_BLOCK"
-          }
-        ],
-        "max_funding_pct": 90,
-        "missing_fields": [],
-        "needs_verification": true,
-        "official_name": "Term Loan",
-        "provenance": {
-          "circular_ref": null,
-          "effective_from": null,
-          "last_verified_on": "2026-08-29",
-          "needs_verification": true,
-          "open_questions": [
-            {
-              "field": "circular_ref",
-              "question": "Which NSFDC circular governs the current Term Loan terms?"
-            },
-            {
-              "field": "moratorium_months",
-              "question": "How should the 12-month plantation/construction moratorium be modelled?"
-            }
-          ],
-          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
-          "source_url": "https://nsfdc.nic.in/scheme",
-          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
-        },
-        "rank": 1,
-        "redirect_suggestion": "NSFDC_EDUCATION_LOAN",
-        "scheme_code": "NSFDC_TERM_LOAN",
-        "translation_status": "verified",
-        "verdict": "INELIGIBLE",
-        "warnings": []
-      },
-      {
-        "blocked_because": [
-          {
             "message": "A confirmed admission is required before an education loan can be processed.",
             "rule_id": "EL_ADMISSION_CONFIRMED",
             "severity": "HARD_BLOCK"
@@ -2223,6 +3356,46 @@
         ],
         "confidence": 1.0,
         "family": "EDUCATION_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds a course.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 22.5,
+              "detail": "This scheme sets no ceiling on the cost of the course.",
+              "key": "amount_fit",
+              "score": 90.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "A confirmed admission is required before an education loan can be processed.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 77.0
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -2281,9 +3454,116 @@
           "source_url": "https://nsfdc.nic.in/scheme",
           "verification_note": "Loan cap, funding percentage and interest verified from the NSFDC scheme page on 2026-08-29. Repayment tenure is stated there as two different figures depending on disbursement status (12 years or 10 years), and the moratorium as \"course period plus one year\"; neither reduces to a single number the engine can hold, so both are left null rather than approximated."
         },
-        "rank": 2,
+        "rank": 1,
         "redirect_suggestion": null,
         "scheme_code": "NSFDC_EDUCATION_LOAN",
+        "translation_status": "verified",
+        "verdict": "INELIGIBLE",
+        "warnings": []
+      },
+      {
+        "blocked_because": [
+          {
+            "message": "Education costs are funded under the Educational Loan Scheme, not this one.",
+            "rule_id": "TL_NOT_FOR_EDUCATION",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "confidence": 1.0,
+        "family": "TERM_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds a business, and you asked about studies.",
+              "key": "purpose_fit",
+              "score": 0.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 25.0,
+              "detail": "Rs 600,000 sits well inside the Rs 5,000,000 ceiling.",
+              "key": "amount_fit",
+              "score": 100.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Education costs are funded under the Educational Loan Scheme, not this one.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 4.5,
+              "detail": "8% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 30.0,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 39.5
+        },
+        "indicative_amount": null,
+        "indicative_interest_band": [
+          8.0,
+          8.0
+        ],
+        "matched_because": [
+          {
+            "message": "You are a Scheduled Caste applicant.",
+            "rule_id": "TL_CATEGORY_SC",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your annual family income is within the Rs 5,00,000 ceiling.",
+            "rule_id": "TL_INCOME_CEILING",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project is large enough for this scheme.",
+            "rule_id": "TL_PROJECT_COST_FLOOR",
+            "severity": "HARD_BLOCK"
+          },
+          {
+            "message": "Your project cost fits within the Rs 50,00,000 band.",
+            "rule_id": "TL_PROJECT_COST_CEILING",
+            "severity": "HARD_BLOCK"
+          }
+        ],
+        "max_funding_pct": 90,
+        "missing_fields": [],
+        "needs_verification": true,
+        "official_name": "Term Loan",
+        "provenance": {
+          "circular_ref": null,
+          "effective_from": null,
+          "last_verified_on": "2026-08-29",
+          "needs_verification": true,
+          "open_questions": [
+            {
+              "field": "circular_ref",
+              "question": "Which NSFDC circular governs the current Term Loan terms?"
+            },
+            {
+              "field": "moratorium_months",
+              "question": "How should the 12-month plantation/construction moratorium be modelled?"
+            }
+          ],
+          "source": "NSFDC scheme page, cross-checked against SIH 2026 Problem Statement 26092",
+          "source_url": "https://nsfdc.nic.in/scheme",
+          "verification_note": "Band, loan cap, interest, tenure and moratorium verified from the NSFDC scheme page on 2026-08-29. That page notes a longer 12-month moratorium for plantation and construction activities; the engine records the general 6-month figure because it holds no field for activity type yet."
+        },
+        "rank": 2,
+        "redirect_suggestion": "NSFDC_EDUCATION_LOAN",
+        "scheme_code": "NSFDC_TERM_LOAN",
         "translation_status": "verified",
         "verdict": "INELIGIBLE",
         "warnings": []
@@ -2303,6 +3583,46 @@
         ],
         "confidence": 1.0,
         "family": "MICRO_FINANCE",
+        "fit": {
+          "components": [
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds a business, and you asked about studies.",
+              "key": "purpose_fit",
+              "score": 0.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Rs 600,000 is above this scheme's Rs 140,000 ceiling.",
+              "key": "amount_fit",
+              "score": 0.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Education costs are funded under the Educational Loan Scheme, not this one.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 24.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,
@@ -2360,7 +3680,7 @@
     "rules_digest": "545b833da4e8f55d"
   },
   "sunita_street_vendor_80k": {
-    "engine_version": "2.2.0",
+    "engine_version": "2.3.0",
     "input_snapshot": {
       "annual_family_income": 180000,
       "category": "SC",
@@ -2374,6 +3694,46 @@
         "blocked_because": [],
         "confidence": 1.0,
         "family": "MICRO_FINANCE",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 25.0,
+              "detail": "Rs 80,000 sits well inside the Rs 140,000 ceiling.",
+              "key": "amount_fit",
+              "score": 100.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 20.0,
+              "detail": "You meet every requirement.",
+              "key": "category_fit",
+              "score": 100.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 99.5
+        },
         "indicative_amount": 72000.0,
         "indicative_interest_band": [
           6.5,
@@ -2446,6 +3806,46 @@
         ],
         "confidence": 1.0,
         "family": "TERM_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 30.0,
+              "detail": "This scheme funds an enterprise project.",
+              "key": "purpose_fit",
+              "score": 100.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 0.0,
+              "detail": "Rs 80,000 is below this scheme's Rs 140,000 floor.",
+              "key": "amount_fit",
+              "score": 0.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "The Term Loan is for units costing more than Rs 1,40,000. Smaller projects are funded under the Micro Finance Scheme.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 4.5,
+              "detail": "8% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 30.0,
+              "weight": 0.15
+            },
+            {
+              "contribution": 10.0,
+              "detail": "We have everything this scheme asks.",
+              "key": "information",
+              "score": 100.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           8.0,
@@ -2513,6 +3913,46 @@
         ],
         "confidence": 1.0,
         "family": "EDUCATION_LOAN",
+        "fit": {
+          "components": [
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds a course, and you asked about a business.",
+              "key": "purpose_fit",
+              "score": 0.0,
+              "weight": 0.3
+            },
+            {
+              "contribution": 22.5,
+              "detail": "This scheme sets no ceiling on the cost of the course.",
+              "key": "amount_fit",
+              "score": 90.0,
+              "weight": 0.25
+            },
+            {
+              "contribution": 0.0,
+              "detail": "This scheme funds education costs only.",
+              "key": "category_fit",
+              "score": 0.0,
+              "weight": 0.2
+            },
+            {
+              "contribution": 14.51,
+              "detail": "6.5% interest and covers up to 90% of the cost.",
+              "key": "cost_of_credit",
+              "score": 96.7,
+              "weight": 0.15
+            },
+            {
+              "contribution": 7.5,
+              "detail": "One answer still missing.",
+              "key": "information",
+              "score": 75.0,
+              "weight": 0.1
+            }
+          ],
+          "total": 44.5
+        },
         "indicative_amount": null,
         "indicative_interest_band": [
           6.5,

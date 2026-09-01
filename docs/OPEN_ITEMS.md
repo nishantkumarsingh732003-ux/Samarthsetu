@@ -7,7 +7,7 @@ Nothing here is a surprise on demo day if it is read first.
 
 **Legend** — 🔴 blocks the demo · 🟡 weakens the demo · 🟢 tracked, not urgent
 
-Last reviewed: 2026-09-01 (after Phase 8 — all phases complete)
+Last reviewed: 2026-09-01 (after the SIH-spec audit)
 
 ---
 
@@ -558,3 +558,6 @@ README, and open it on a cheap handset away from office wifi.
 | OI-49 | The `PARTNERS_ROUTED` audit row was written by the HTTP route rather than by `routing.find_partners`, so the anti-misrouting KPI counted only decisions that arrived over HTTP. The demo seeder calls the service directly, and the ministry dashboard reported "shown a partner: 0" beside 39 applications. The audit now lives with the decision; the route audits only the cache-hit path it alone can see. | 2026-09-01 |
 | OI-50 | `Notification.attempts` has a Python-side column default, which is applied at flush — so `attempts += 1` inside `notify()` raised `NoneType + int`. The fail-open guard caught it and the application transition stood, which is exactly why it went unnoticed: the citizen's message was silently dropped. Found by seeding 39 journeys at once. | 2026-09-01 |
 | OI-51 | The WhatsApp simulator seeded `useState` with `Math.random()`. A `"use client"` component is still server-rendered, so the initialiser ran twice with different values and React threw a hydration error in the browser — while `tsc`, ESLint, `next build` and all 46 TypeScript tests passed, because the bug only existed at runtime. The sender is now generated in a `useEffect`, and `check:hydration` fails the build on the whole class, including when the randomness hides behind a helper function. | 2026-09-01 |
+| OI-52 | Scheme ranking was a deterministic sort key with no account given to the citizen: they saw a rank and a confidence but no reason scheme A beat scheme B, while partner routing already showed a full component breakdown. Five weighted components now drive the order and are shown in six languages. | 2026-09-01 |
+| OI-53 | Python's `round()` is half-to-even and JavaScript's `Math.round` is half-up. The fit score produced an exact halfway case (96.7 x 0.15 scales to 1450.5), so the two engines disagreed — 14.5 against 14.51. Caught by the conformance suite. Rounding is now defined explicitly in both rather than inherited from either language. | 2026-09-01 |
+| OI-54 | `make demo` was not idempotent: the reference seeder wholesale-replaced the partner registry, which the demo seeder's applications then referenced, so the second run died on a foreign key. Re-running the seed is the documented way to recover a broken demo, so it had to survive being run twice. The registry is now kept when it is already referenced — the generator is deterministic, so what is there is what would be rebuilt. | 2026-09-01 |

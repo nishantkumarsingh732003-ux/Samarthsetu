@@ -44,6 +44,23 @@ class ReasonOut(BaseModel):
     severity: str
 
 
+class FitComponentOut(BaseModel):
+    """One named reason a scheme ranked where it did."""
+
+    key: str
+    score: float
+    weight: float
+    contribution: float
+    # The sentence a citizen reads. A number with no words beside it is the opaque
+    # score this whole structure exists to replace.
+    detail: str
+
+
+class FitOut(BaseModel):
+    total: float
+    components: list[FitComponentOut]
+
+
 class MatchResultOut(BaseModel):
     scheme_code: str
     official_name: str
@@ -61,6 +78,9 @@ class MatchResultOut(BaseModel):
     needs_verification: bool
     provenance: dict[str, Any] | None
     rank: int | None
+    # Why this scheme ranked here. Presentational — the order comes from the
+    # engine's lexicographic key, never from this total.
+    fit: FitOut | None = None
     # "verified" | "draft" | "fallback" — whether a speaker of the requested language
     # has read this copy. A UI must be able to badge unreviewed eligibility reasons.
     translation_status: str = "verified"

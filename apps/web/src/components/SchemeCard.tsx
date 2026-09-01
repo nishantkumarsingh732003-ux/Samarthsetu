@@ -36,6 +36,7 @@ export function SchemeCard({
   const t = useTranslations("results");
   const a11y = useTranslations("a11y");
   const [open, setOpen] = useState(false);
+  const [fitOpen, setFitOpen] = useState(false);
 
   const blocked = result.verdict === "INELIGIBLE";
   const verdictLabel = {
@@ -105,11 +106,68 @@ export function SchemeCard({
         </p>
       ) : null}
 
+      {/* Why this scheme sits where it does. The engine decides the order; this
+          explains it. A citizen who disagrees with a component can point at the one
+          they disagree with, which a single opaque score never allows. */}
+      {result.fit ? (
+        <section className="mt-4" aria-labelledby={`fit-${result.scheme_code}`}>
+          <button
+            type="button"
+            onClick={() => setFitOpen((value) => !value)}
+            aria-expanded={fitOpen}
+            className="flex w-full items-center justify-between gap-3 rounded-card border-2 border-line px-4 py-3 text-left"
+          >
+            <span id={`fit-${result.scheme_code}`} className="text-base">
+              {t("fitHeading")}
+            </span>
+            <span className="shrink-0 text-lg font-semibold tabular-nums">
+              {Math.round(result.fit.total)}
+              <span className="text-sm font-normal text-ink-faint">/100</span>
+            </span>
+          </button>
+
+          {fitOpen ? (
+            <ul className="mt-3 space-y-3">
+              {result.fit.components.map((component) => (
+                <li key={component.key}>
+                  <div className="flex items-baseline justify-between gap-3 text-base">
+                    <span>{t(`fit.${component.key}` as "fit.purpose_fit")}</span>
+                    <span className="shrink-0 tabular-nums text-ink-muted">
+                      {Math.round(component.score)}
+                      <span className="text-sm text-ink-faint">
+                        {" "}
+                        × {component.weight.toFixed(2)}
+                      </span>
+                    </span>
+                  </div>
+                  <div
+                    role="meter"
+                    aria-valuenow={Math.round(component.score)}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-label={t(`fit.${component.key}` as "fit.purpose_fit")}
+                    className="mt-1 h-2 w-full rounded-full bg-line"
+                  >
+                    <div
+                      className={`h-2 rounded-full ${
+                        component.score >= 50 ? "bg-accent-600" : "bg-warn-line"
+                      }`}
+                      style={{ width: `${Math.round(component.score)}%` }}
+                    />
+                  </div>
+                  <p className="mt-1 text-sm text-ink-muted">{component.detail}</p>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </section>
+      ) : null}
+
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
-        className="btn-secondary mt-4 w-full text-base"
+        className="btn-secondary mt-3 w-full text-base"
       >
         {open ? t("hideWhy") : blocked ? t("whyNotThis") : t("whyThis")}
       </button>

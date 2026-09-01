@@ -71,14 +71,20 @@ Devanagari, Bengali, Tamil and Telugu digits; Indian comma grouping; `lakh`, `cr
 Reasons, warnings, redirects and the next action shown separately. Ineligible schemes are
 displayed greyed with the blocking reason rather than hidden.
 
-### FR-7 Transparent scheme ranking — **GAP**
-Ranking today is a deterministic sort key — tightest fit, then cheapest, then most
-generous, with the scheme code as a tiebreak for total order. It is correct and
-reproducible. It is **not visible to the citizen**, who sees a rank and a confidence with
-no account of why Scheme A beat Scheme B.
+### FR-7 Transparent scheme ranking — built
+Five weighted components, each with a score, a weight, a contribution and a **sentence**:
+purpose fit (0.30), amount fit (0.25), category fit (0.20), cost of credit (0.15),
+information (0.10). Shown on every scheme card in all six languages.
 
-Required: a per-component score with the components shown, following the pattern already
-proven for partner routing.
+The score **drives** the ranking, after the verdict — a number that did not order the
+list would explain nothing. Determinism is preserved underneath it: the sort key is
+`(verdict, -fit.total, *_rank_key, scheme_code)`, so a tie on a rounded float falls
+through to rule-derived facts and finally to the scheme code, never to filesystem order.
+
+Partner availability is deliberately **not** a component. The engine is pure and its
+output is stamped into `match_runs`; a score that moved when a branch paused intake would
+make a stored decision unreplayable. Partner availability is answered per partner on the
+routing screen, with its own breakdown.
 
 ### FR-8 Channel Partner routing — built
 Hard-filter first (authorisation, ticket size, service area, capacity), then rank on a

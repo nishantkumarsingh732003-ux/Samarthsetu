@@ -51,7 +51,15 @@
     "unreviewedTranslation": "This text has not yet been checked by a {language} speaker.",
     "indicativeOnly": "Amounts are indicative. A Channel Partner decides your loan.",
     "noResults": "No schemes to show yet. Answer a few questions first.",
-    "empty": "Start by telling us about yourself."
+    "empty": "Start by telling us about yourself.",
+    "fitHeading": "Why this ranking?",
+    "fit": {
+      "purpose_fit": "Funds what you need",
+      "amount_fit": "Amount fits the scheme",
+      "category_fit": "You meet the rules",
+      "cost_of_credit": "Cost of the loan",
+      "information": "How much we know"
+    }
   },
   "partners": {
     "heading": "Offices that can process this",

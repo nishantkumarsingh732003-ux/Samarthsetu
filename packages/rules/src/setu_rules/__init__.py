@@ -21,9 +21,13 @@ from setu_rules.engine import (
     rule_messages,
     run,
 )
+from setu_rules.fit import WEIGHTS as FIT_WEIGHTS
+from setu_rules.fit import fit_score
 from setu_rules.loader import RuleLoadError, load_schemes, rules_digest
 from setu_rules.models import (
     Family,
+    FitComponent,
+    FitScore,
     MatchResult,
     MatchRun,
     NextQuestion,
@@ -57,7 +61,10 @@ __all__ = [
     "Bundle",
     "DocumentLoadError",
     "DocumentSpec",
+    "FIT_WEIGHTS",
     "Family",
+    "FitComponent",
+    "FitScore",
     "MatchResult",
     "MatchRun",
     "NextQuestion",
@@ -72,6 +79,7 @@ __all__ = [
     "Verdict",
     "compile_expression",
     "evaluate",
+    "fit_score",
     "bundle_for",
     "checklist_digest",
     "checklist_provenance",
