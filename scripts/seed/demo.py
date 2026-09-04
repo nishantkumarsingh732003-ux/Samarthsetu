@@ -203,17 +203,47 @@ class DemoSeedError(RuntimeError):
 
 
 async def reset(session: AsyncSession) -> None:
-    """Clear everything a citizen generated. Reference data is left alone."""
-    # Order matters only where there is no cascade; TRUNCATE ... CASCADE handles it.
-    await session.execute(
-        text(
-            "TRUNCATE notifications, documents, applications, citizen_profiles, "
-            "citizens, consents, match_runs, audit_log RESTART IDENTITY CASCADE"
-        )
-    )
+    """Clear everything a citizen generated. Reference data and logins are left alone.
+
+    Ordered DELETEs rather than `TRUNCATE ... CASCADE`, and that is the whole point of
+    this function's shape. TRUNCATE's CASCADE is **schema-level**: it truncates every
+    table holding a foreign key to a named table, whether or not any row currently points
+    there. Once citizen accounts added `users.citizen_id`, the old TRUNCATE reached
+    `users` through that key and emptied it — `make demo` silently destroyed all three
+    logins, both consoles and the judge console stopped working, and nothing anywhere
+    reported an error. Detaching the column first does not help; only not using CASCADE
+    does.
+
+    DELETE respects the actual references, so the two `RESTRICT` edges into `citizens`
+    (`applications` and `users`) have to be cleared before it: applications are deleted,
+    and the citizen login is detached and then re-attached to a fresh consent record
+    through the same path a real signup takes.
+    """
+    from scripts.seed.users import repair_citizen_logins
+
+    # Detach the citizen login so the RESTRICT edge into `citizens` is clear. The row it
+    # pointed at is about to be deleted; a fresh one is created below.
+    await session.execute(text("UPDATE users SET citizen_id = NULL"))
+
+    # Children first, then parents. `documents` and `citizen_profiles` are absent on
+    # purpose — both are ON DELETE CASCADE and go with their parent.
+    for statement in (
+        "DELETE FROM notifications",
+        "DELETE FROM applications",
+        "DELETE FROM citizens",
+        "DELETE FROM consents",
+        "DELETE FROM match_runs",
+        "DELETE FROM audit_log",
+    ):
+        await session.execute(text(statement))
     await session.commit()
+
+    repaired = await repair_citizen_logins(session)
+    await session.commit()
+
     print("  reset: applications, documents, notifications, citizens, consents, "
           "match_runs and audit_log cleared")
+    print(f"  logins kept: 3, citizen record re-attached ({repaired})")
 
 
 async def _require_reference_data(session: AsyncSession) -> None:

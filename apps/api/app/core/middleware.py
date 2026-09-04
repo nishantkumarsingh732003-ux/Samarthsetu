@@ -94,6 +94,14 @@ class RejectNullBytes(BaseHTTPMiddleware):
         if "\x00" in request.url.path:
             return self._refuse("the web address")
 
+        # The third door, and the one this guard originally missed: a query parameter.
+        # `GET /partners/directory?q=%00x` reached an ILIKE and died inside asyncpg as a
+        # 500 on a public endpoint — the same bug as the path case, through a door nobody
+        # had shut. `query_params` is decoded, so this catches the percent-encoded form.
+        for value in request.query_params.values():
+            if "\x00" in value:
+                return self._refuse("the search you sent")
+
         if request.method in {"POST", "PUT", "PATCH"}:
             # Caching the body here is safe: Starlette memoises it, so the route's own
             # `await request.json()` reuses these bytes rather than re-reading a

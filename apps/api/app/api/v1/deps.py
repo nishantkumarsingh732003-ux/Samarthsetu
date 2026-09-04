@@ -81,3 +81,6 @@ def require_role(*roles: UserRole):
 AdminUser = Annotated[User, Depends(require_role(UserRole.ADMIN))]
 PartnerUser = Annotated[User, Depends(require_role(UserRole.PARTNER))]
 ConsoleUser = Annotated[User, Depends(require_role(UserRole.PARTNER, UserRole.ADMIN))]
+# A citizen account is optional and grants nothing a signed-out citizen cannot do; it
+# only identifies whose stored profile and whose applications are being read.
+CitizenUser = Annotated[User, Depends(require_role(UserRole.CITIZEN))]

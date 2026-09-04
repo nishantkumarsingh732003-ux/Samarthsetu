@@ -1,4 +1,17 @@
-"""Channel Partner routing and lookup."""
+"""Channel Partner routing, coverage and lookup.
+
+Three different questions, deliberately three different endpoints:
+
+- `POST /route` — *which partner should this citizen go to?* Scored on distance, ticket
+  size, load and authorisation. This is the anti-misrouting answer.
+- `GET /coverage` and `GET /coverage/{state}` — *where does the Channel Finance System
+  actually reach?* Aggregate counts, drillable from state to district.
+- `GET /directory` — the flat, unranked list behind a map or a search box.
+
+Only the first is a recommendation. Keeping the other two unranked matters: a directory
+sorted by anything starts being read as advice, and advice about which lender to
+approach has to come from the scored route that can explain itself.
+"""
 
 from __future__ import annotations
 

@@ -5,9 +5,12 @@ through `partner_id`, and every partner-side query filters on it — so the cons
 cannot show one partner another's queue even if a route forgets to check, because the
 filter lives in the query rather than in a permission test someone can omit.
 
-`citizen` exists as a role for completeness, but the citizen journey requires no login:
-an application is tracked by its reference number alone (Phase 5). Nobody should have
-to create an account to find out which scheme fits them.
+A `citizen` user is optional, and that is the whole point. The anonymous journey still
+works end to end — an application is tracked by its reference number alone (Phase 5),
+and nobody has to create an account to find out which scheme fits them. Signing in only
+adds persistence: a profile that survives the walk home, and a list of your own
+applications instead of a reference number on a scrap of paper. `citizen_id` is the link
+to that stored profile, and it is NULL for the two console roles.
 """
 
 import uuid
@@ -37,9 +40,16 @@ class User(UUIDPrimaryKey, Timestamps, Base):
         UUID(as_uuid=True), ForeignKey("channel_partners.id", ondelete="CASCADE")
     )
 
+    # Set for role=CITIZEN, null otherwise. The citizen row carries the consent record
+    # and the eligibility profile; this column is only the link from a login to it.
+    citizen_id: Mapped[uuid.UUID | None] = mapped_column(
+        UUID(as_uuid=True), ForeignKey("citizens.id", ondelete="RESTRICT"), unique=True
+    )
+
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
     partner = relationship("ChannelPartner")
+    citizen = relationship("Citizen")
 
     __table_args__ = (
         # A partner login with no partner is a console showing nothing; an admin login
@@ -48,6 +58,12 @@ class User(UUIDPrimaryKey, Timestamps, Base):
             "(role = 'PARTNER' AND partner_id IS NOT NULL) "
             "OR (role <> 'PARTNER' AND partner_id IS NULL)",
             name="partner_role_has_a_partner",
+        ),
+        # A console login pointing at a citizen profile is an ambiguous scope in the
+        # other direction. Only a CITIZEN may carry one; the role does not have to.
+        CheckConstraint(
+            "citizen_id IS NULL OR role = 'CITIZEN'",
+            name="only_a_citizen_role_has_a_citizen",
         ),
         Index("ix_users_role", "role"),
         Index("ix_users_partner_id", "partner_id"),

@@ -242,6 +242,37 @@ curl -s -X POST http://localhost:8000/api/v1/match   -H 'Content-Type: applicati
 An unknown profile field is rejected with `422` naming the field, rather than silently
 ignored.
 
+### `GET /api/v1/schemes` — the published catalogue
+
+Unauthenticated, because a citizen should be able to read the terms before handing over
+any data. Served from the versioned rule pack rather than the `schemes` table: the YAML
+carries the provenance, including the questions still open against figures nobody could
+source, and the table is a projection that would drop them.
+
+```bash
+curl -s localhost:8000/api/v1/schemes | jq '.schemes[] | {code, max: .limits.max_loan_amount, partners: .authorised_partner_count}'
+# -> {"code": "NSFDC_MICRO_FINANCE", "max": 125000, "partners": 82}
+```
+
+`GET /api/v1/schemes/{code}` adds every rule with its **expression verbatim** —
+`profile.annual_family_income > 500000` and the rest. That is what makes the
+explainability claim checkable: a verdict elsewhere cites `MF_INCOME_CEILING`, and anyone
+can read the rule carrying that id without database access.
+
+### `GET /api/v1/partners/coverage` — where the system actually reaches
+
+State, then district, then branch. The interesting cell is the empty one: a district with
+five banks and no State Channelising Agency cannot process the schemes that route only
+through an SCA, and an applicant who learns that after a bus journey has been misrouted.
+
+```bash
+curl -s localhost:8000/api/v1/partners/coverage/Bihar | jq '.districts[] | {district, by_type}'
+# -> {"district": "Gaya", "by_type": {"NBFC_MFI": 1, "RRB": 1}}   # no SCA here
+```
+
+`GET /api/v1/partners/directory` is the flat list behind a map or a search box, filterable
+by state, district, scheme and free text. Deliberately unranked — ranking is `/route`.
+
 ### `POST /api/v1/partners/route` — who can actually process it
 
 ```bash
@@ -488,20 +519,64 @@ every routing response so the ranking can be argued with rather than reverse-eng
 Designed for a 5-inch screen, one hand, bright sunlight, and someone who may not read
 fluently.
 
+### The anonymous journey — no account, ever
+
 | Route | What it is |
 |---|---|
 | `/` | Language picker — six large targets, native script, no locale guessed |
-| `/[locale]` | One primary action, named rather than "Start" |
+| `/[locale]` | Landing: one primary action, and the live scheme/partner counts |
 | `/[locale]/assist` | Voice or typed conversation; answers shown as chips to correct |
-| `/[locale]/results` | Ranked scheme cards, ineligible ones shown greyed with the blocking reason |
+| `/[locale]/results` | Ranked scheme cards, ineligible ones shown with the blocking reason |
 | `/[locale]/results/[scheme]/partners` | Map + list, score-breakdown bars, "nearby but cannot help" |
-| `/[locale]/apply/[scheme]` | Consent, optional applicant details, and the document checklist before you submit |
-| `/[locale]/track/[ref]` | Status timeline plus document upload — no login, the reference number is the key |
+| `/[locale]/apply/[scheme]` | Consent, optional applicant details, and the document checklist |
+| `/[locale]/track/[ref]` | Status timeline plus document upload — the reference number is the key |
+
+### The optional account — persistence, never privilege
+
+| Route | What it is |
+|---|---|
+| `/[locale]/signin` | Sign in or sign up; consent is an unticked box that signup is refused without |
+| `/[locale]/dashboard` | Four tiles and the strongest match, with its reasons attached |
+| `/[locale]/onboarding` | Four steps, **saved as you leave each one** — a dead spot costs one screen |
+| `/[locale]/matches` | Every scheme in engine order, blocked ones included, with rule ids |
+| `/[locale]/schemes` · `/schemes/[code]` | The published catalogue: terms, every rule expression, documents, sources |
+| `/[locale]/compare` | Up to three side by side, with *your* verdict as the first row |
+| `/[locale]/calculator` | EMI, tenure and moratorium, pre-filled from your best match |
+| `/[locale]/partners` | Coverage by state → district → branch, with the gaps called out |
+| `/[locale]/applications` | Your own applications; each row links to the anonymous tracking page |
+| `/[locale]/documents` | What each scheme asks for and why, from the versioned checklist |
+| `/[locale]/profile` | What is stored — and the exact dictionary the rule engine is given |
+
+### The consoles and the demo tools
+
+| Route | What it is |
+|---|---|
 | `/console/login` | One sign-in form; the role in the response decides where you land |
 | `/console/partner` | Branch officer's queue, capacity toggle, SLA clock |
 | `/console/admin` | Ministry dashboard — funnel, misrouting KPI, underserved districts |
 | `/demo` | Judge console — nine scenarios, one click each, nothing external |
 | `/demo/whatsapp` | Feature-phone simulator — same orchestrator, plain text, segment costs |
+
+### Why the account is optional, and what that costs
+
+An account adds exactly two things: the profile survives the walk home, and "my
+applications" replaces remembering `SETU-2026-RJ-000031`. It grants nothing. A signed-in
+citizen and an anonymous one with the same facts get the same verdict from the same
+engine — asserted over the wire in `test_a_signed_in_citizen_gets_the_same_verdict_as_an_anonymous_one`.
+
+Signing up writes a `consents` row **before** the citizen row, because
+`citizens.consent_id` is `NOT NULL`. The consent checkbox is unticked by default and the
+API returns 400 without it, with a message saying eligibility can still be checked
+without an account.
+
+**The wall between the account and the engine.** The onboarding collects things the rules
+must never read — a business name, a description an officer reads, the amount an applicant
+*says* they need. `services/citizen_accounts.engine_profile()` projects the stored profile
+down to `setu_rules.profile.FIELDS` and nothing else, and `/[locale]/profile` prints that
+projection on screen so a citizen can see their business description is not among the
+things deciding their verdict. `test_citizen_accounts.py` asserts the projection is an
+allowlist rather than a blocklist, and that changing `loan_required` by a factor of two
+hundred moves no verdict and no amount.
 
 ```bash
 pnpm --filter @setu/web dev     # http://localhost:3000
@@ -521,9 +596,19 @@ FCP 0.8s · LCP 1.8s · TBT 0ms · CLS 0, under Lighthouse's mobile throttling.
 
 ### The budget is enforced, not hoped for
 
-Worst citizen route is **114.4 KB gzipped of a 200 KB budget**. `check-bundle.mjs` reads
-the real build manifest and fails the build if a route crosses the line. Leaflet is ~150KB,
-so the map is behind a dynamic import — a citizen who never opens it never downloads it.
+Worst anonymous route is **114.5 KB gzipped of a 200 KB budget**; worst account route is
+**123.0 KB**. `check-bundle.mjs` reads the real build manifest, measures all nineteen
+routes, and fails the build if any crosses the line — or if a route it names has vanished
+from the manifest, because a renamed route silently dropping out is a budget that quietly
+stopped being enforced.
+
+Leaflet is ~150KB, so the map is behind a dynamic import — a citizen who never opens it
+never downloads it. Two libraries the design drop assumed were **not** adopted for the
+same reason: shadcn/Radix (~90KB gzipped for the handful of controls actually used, so the
+primitives are hand-rolled on native `<select>`, `<input type="range">` and `<dialog>`)
+and Recharts (~95KB for one stacked bar chart, which is ~200 lines of SVG instead). Fonts
+are named, not fetched: the drop pulled ~180KB of render-blocking webfonts from Google, and
+every stack here falls back to Noto Sans and then system-ui for zero bytes.
 
 ### Three checks that fail the build
 
@@ -842,12 +927,14 @@ not in the pixels.
 All eight phases are complete: 0 (foundation), 1 (eligibility engine), 2 (partner
 registry and geo routing), 3 (conversational intake), 4 (citizen frontend),
 5 (applications and documents), 6 (partner console and ministry analytics),
-7 (reach, notifications, hardening) and 8 (demo world, deployment, pitch). See [CLAUDE.md](CLAUDE.md) for the engineering contract every phase must satisfy.
+7 (reach, notifications, hardening) and 8 (demo world, deployment, pitch), plus the
+account surface and design system described under [The citizen app](#the-citizen-app).
+See [CLAUDE.md](CLAUDE.md) for the engineering contract every phase must satisfy.
 
 ```bash
-pytest packages/rules -q          # 116 tests — the eligibility engine and checklist
-pnpm -r test                      # 46 tests — TS conformance, message ICU parity, storage
-cd apps/api && pytest -q          # 339 tests — rules, redaction, auth, console, reach
+pytest packages/rules -q          # 152 tests — the eligibility engine and checklist
+pnpm -r test                      # 39 tests — ICU parity, storage, repayment arithmetic
+cd apps/api && pytest -q          # 503 tests — rules, redaction, auth, console, accounts
 pnpm --filter @setu/web check     # i18n parity, WCAG AA contrast, build, JS budget
 ```
 

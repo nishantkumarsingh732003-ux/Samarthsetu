@@ -2,6 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/**
+ * No @font-face and no Google Fonts import, on purpose.
+ *
+ * The design drop pulled Plus Jakarta Sans, Inter and JetBrains Mono from
+ * fonts.googleapis.com — roughly 180KB of render-blocking requests before a citizen on
+ * 2G sees a word. The typefaces are *named* in tailwind.config.ts so a device that
+ * already has them uses them, and every stack falls back to Noto Sans and then
+ * system-ui. Cost on the wire: zero bytes.
+ */
+
 @layer base {
   :root {
     color-scheme: light;
@@ -15,6 +25,13 @@
   body {
     @apply bg-canvas text-ink font-sans;
     text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display tracking-tight;
   }
 
   /* Visible focus everywhere. Keyboard and switch-control users need to see where
@@ -40,7 +57,8 @@
   /* Every interactive control is at least 48px tall. */
   .btn {
     @apply inline-flex min-h-touch items-center justify-center gap-2 rounded-card
-           px-5 text-lg font-medium transition-colors;
+           px-5 text-lg font-medium transition-colors disabled:opacity-50
+           disabled:cursor-not-allowed;
   }
   .btn-primary {
     @apply btn bg-accent-700 text-white hover:bg-accent-800 active:bg-accent-800;
@@ -48,11 +66,90 @@
   .btn-secondary {
     @apply btn border-2 border-line bg-surface text-ink hover:border-accent-600;
   }
+  /* Inside a dark panel, where the surface button would vanish. */
+  .btn-inverse {
+    @apply btn bg-white text-accent-700 hover:bg-accent-50;
+  }
+  .btn-quiet {
+    @apply btn px-3 text-base font-medium text-ink-muted hover:bg-accent-50
+           hover:text-accent-700;
+  }
+
   .card {
     @apply rounded-card border border-line bg-surface shadow-card;
   }
+  /* The raised variant used across the account surface. Hover lift is a hint that the
+     whole card is a target; it is only applied where that is actually true. */
+  .panel {
+    @apply rounded-panel border border-line bg-surface shadow-card;
+  }
+  .panel-link {
+    @apply panel block transition-shadow hover:border-accent-700/25 hover:shadow-lift;
+  }
+  /* The two dark display panels — the best-match hero and the EMI readout. The only
+     gradients in the system, and they carry no text below 16px. */
+  .panel-dark {
+    @apply rounded-panel text-white;
+    background: linear-gradient(135deg, #0f172a 0%, #173b6c 100%);
+  }
+
+  .chip {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-sm font-medium;
+  }
+
+  .field-label {
+    @apply block text-base font-medium text-ink-muted;
+  }
+  .field-hint {
+    @apply text-sm text-ink-faint;
+  }
+  .input {
+    @apply min-h-touch w-full rounded-card border-2 border-line bg-surface px-4
+           text-lg text-ink placeholder:text-ink-faint focus:border-accent-600;
+  }
+
   .skip-link {
     @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50
            focus:rounded-card focus:bg-accent-700 focus:px-4 focus:py-3 focus:text-white;
+  }
+
+  /* Numbers that get compared, quoted down a phone line, or read aloud: amounts, rule
+     ids, reference numbers. Tabular figures so columns of rupees line up. */
+  .numeric {
+    @apply font-mono tabular-nums;
+  }
+}
+
+@layer utilities {
+  /* A faint page wash. Two radial tints, no image request. */
+  .ground-wash {
+    background-image:
+      radial-gradient(circle at 18% 8%, rgba(23, 59, 108, 0.05) 0%, transparent 42%),
+      radial-gradient(circle at 88% 78%, rgba(15, 118, 110, 0.045) 0%, transparent 46%);
+  }
+}
+
+/* Printing an application summary or a repayment plan. The browser's own "Save as PDF"
+   is the most reliable export on a cheap Android phone: no library, no bytes, no server
+   round trip. Everything chrome-like is dropped so the sheet is the document. */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+  .panel,
+  .card {
+    border-color: #94a3b8;
+    box-shadow: none;
+  }
+  .panel-dark {
+    background: #fff !important;
+    color: #172033 !important;
+    border: 1px solid #94a3b8;
+  }
+  a[href]::after {
+    content: "";
   }
 }

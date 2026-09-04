@@ -7,11 +7,10 @@ Create Date: 2026-08-31 18:37:58.832907
 """
 from collections.abc import Sequence
 
-from alembic import op
 import sqlalchemy as sa
-import geoalchemy2
-import pgvector.sqlalchemy
 from sqlalchemy.dialects import postgresql
+
+from alembic import op
 
 revision: str = '9604dc45523d'
 down_revision: str | None = '57c50742b2d2'

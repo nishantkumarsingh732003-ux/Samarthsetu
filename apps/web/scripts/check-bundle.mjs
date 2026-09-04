@@ -22,8 +22,10 @@ const MANIFEST = join(ROOT, ".next", "app-build-manifest.json");
 
 const BUDGET_KB = 200; // gzipped
 
-// Routes a citizen actually walks. /track is included; the map chunk is deliberately
-// not, because it is dynamically imported and only downloaded if they open it.
+// The anonymous journey: what a first-time citizen on 2G downloads with no login. This
+// is the path the budget exists to protect, and /track is part of it. The Leaflet chunk
+// is deliberately absent because it is dynamically imported and only fetched if they
+// open the map.
 const CITIZEN_ROUTES = [
   "/page",
   "/[locale]/page",
@@ -32,6 +34,29 @@ const CITIZEN_ROUTES = [
   "/[locale]/results/[scheme]/partners/page",
   "/[locale]/apply/[scheme]/page",
   "/[locale]/track/[ref]/page",
+];
+
+// The optional signed-in surface. Strictly it sits outside the rule — someone who chose
+// to create an account has already loaded the anonymous path once — but it currently
+// comes in comfortably under the same ceiling, so it is measured against the same one.
+// Holding it here is what stops a chart library or a component kit being added later
+// without anyone noticing the cost. If a route genuinely needs to exceed this, raise it
+// deliberately with a reason rather than by deleting the line.
+// Manifest keys, not URLs: `(account)` is a route group, so it appears here and never
+// in an address bar.
+const ACCOUNT_ROUTES = [
+  "/[locale]/signin/page",
+  "/[locale]/(account)/dashboard/page",
+  "/[locale]/(account)/onboarding/page",
+  "/[locale]/(account)/matches/page",
+  "/[locale]/(account)/schemes/page",
+  "/[locale]/(account)/schemes/[code]/page",
+  "/[locale]/(account)/compare/page",
+  "/[locale]/(account)/calculator/page",
+  "/[locale]/(account)/partners/page",
+  "/[locale]/(account)/applications/page",
+  "/[locale]/(account)/documents/page",
+  "/[locale]/(account)/profile/page",
 ];
 
 if (!existsSync(MANIFEST)) {
@@ -53,23 +78,33 @@ function bytesFor(route) {
   return total;
 }
 
-console.log(`Citizen route JS budget — ${BUDGET_KB}KB gzipped per route\n`);
+console.log(`Route JS budget — ${BUDGET_KB}KB gzipped per route\n`);
 
 let worst = 0;
 let failed = false;
 
-for (const route of CITIZEN_ROUTES) {
-  const bytes = bytesFor(route);
-  if (bytes === null) {
-    console.log(`  ?  ${route} — not in manifest (skipped)`);
-    continue;
+function measure(heading, routes) {
+  console.log(heading);
+  for (const route of routes) {
+    const bytes = bytesFor(route);
+    if (bytes === null) {
+      // Not a skip. A renamed route that nobody updated here is a budget that stopped
+      // being enforced, which is exactly how a route quietly grows past the ceiling.
+      console.log(`  ✗  ${route} — not in the build manifest`);
+      failed = true;
+      continue;
+    }
+    const kb = bytes / 1024;
+    worst = Math.max(worst, kb);
+    const over = kb > BUDGET_KB;
+    if (over) failed = true;
+    console.log(`  ${over ? "✗" : "✓"}  ${route.padEnd(42)} ${kb.toFixed(1)} KB`);
   }
-  const kb = bytes / 1024;
-  worst = Math.max(worst, kb);
-  const over = kb > BUDGET_KB;
-  if (over) failed = true;
-  console.log(`  ${over ? "✗" : "✓"}  ${route.padEnd(42)} ${kb.toFixed(1)} KB`);
+  console.log("");
 }
+
+measure("anonymous journey — the path the budget exists for", CITIZEN_ROUTES);
+measure("optional account surface", ACCOUNT_ROUTES);
 
 console.log(`\nWorst route: ${worst.toFixed(1)} KB of ${BUDGET_KB} KB.`);
 

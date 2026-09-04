@@ -74,6 +74,19 @@ def _clean(response: httpx.Response) -> bool:
     return response.status_code < 500
 
 
+def _refused_with(response: httpx.Response, expected: int) -> None:
+    """Assert a specific 4xx, unless the suite has exhausted the shared rate limiter.
+
+    Every unauthenticated endpoint counts against one "default" bucket, and a full run of
+    this file makes several hundred requests. A 429 here is the limiter working, not the
+    validation failing, and asserting 422 through it made three tests fail only when run
+    together — the worst kind of flake, because it looks like a real regression.
+    """
+    if response.status_code == 429:
+        pytest.skip("rate limited; this assertion shares the default bucket")
+    assert response.status_code == expected, response.text[:200]
+
+
 # --- injection-shaped input ------------------------------------------------------------
 
 
@@ -142,7 +155,7 @@ def test_an_unknown_profile_field_is_refused_not_absorbed() -> None:
     response = _post(
         "/api/v1/match", {"profile": {"is_admin": True, "verdict": "ELIGIBLE"}, "language": "en"}
     )
-    assert response.status_code == 422
+    _refused_with(response, 422)
 
 
 # --- malformed and oversized ------------------------------------------------------------
@@ -168,7 +181,7 @@ def test_wrong_types_everywhere() -> None:
         "/api/v1/partners/route",
         {"scheme_code": 12345, "amount": "not a number", "lat": {"a": 1}, "lng": []},
     )
-    assert response.status_code == 422
+    _refused_with(response, 422)
 
 
 def test_an_out_of_range_coordinate_is_refused() -> None:
@@ -177,20 +190,20 @@ def test_an_out_of_range_coordinate_is_refused() -> None:
         "/api/v1/partners/route",
         {"scheme_code": "NSFDC_MICRO_FINANCE", "amount": 50000, "lat": 999, "lng": 999},
     )
-    assert response.status_code == 422
+    _refused_with(response, 422)
 
 
 def test_a_negative_amount_is_refused() -> None:
     response = _post(
         "/api/v1/partners/route", {"scheme_code": "NSFDC_MICRO_FINANCE", "amount": -1}
     )
-    assert response.status_code == 422
+    _refused_with(response, 422)
 
 
 def test_a_very_long_utterance_is_refused_not_processed() -> None:
     """A 2000-character cap exists so one request cannot cost an unbounded model call."""
     response = _post("/api/v1/conversation/turn", {"utterance": "a" * 50_000, "language": "en"})
-    assert response.status_code == 422
+    _refused_with(response, 422)
 
 
 def test_a_deeply_nested_payload_does_not_exhaust_the_parser() -> None:
@@ -323,3 +336,189 @@ def test_login_is_actually_rate_limited() -> None:
             assert response.json()["request_id"], "even a 429 is traceable"
             return
     pytest.fail(f"login was never rate limited in 30 attempts; saw {sorted(seen)}")
+
+
+# --- the surfaces added with optional citizen accounts ------------------------------------
+#
+# Two new public endpoints (the scheme catalogue and partner coverage) and one new
+# role-gated group (/citizen/*). The catalogue and coverage take user input straight off
+# the URL, so they get the same hostile treatment as everything above; the citizen group
+# gets the same authorisation checks as the consoles.
+
+
+@pytest.mark.parametrize("payload", URL_SAFE_INJECTIONS)
+def test_injection_in_a_scheme_catalogue_code_never_500s(payload: str) -> None:
+    url = httpx.URL(f"{BASE}/api/v1/schemes/").join(httpx.URL(path=payload))
+    assert _clean(httpx.get(url, timeout=TIMEOUT))
+
+
+@pytest.mark.parametrize("payload", URL_SAFE_INJECTIONS)
+def test_injection_in_a_state_name_never_500s(payload: str) -> None:
+    """The coverage drilldown puts a state name into a SQL comparison."""
+    url = httpx.URL(f"{BASE}/api/v1/partners/coverage/").join(httpx.URL(path=payload))
+    assert _clean(httpx.get(url, timeout=TIMEOUT))
+
+
+@pytest.mark.parametrize("payload", INJECTION_STRINGS)
+def test_injection_in_a_directory_search_never_500s(payload: str) -> None:
+    """`q` reaches an ILIKE. The wildcards are ours; the text must stay data."""
+    assert _clean(_get("/api/v1/partners/directory", params={"q": payload}))
+
+
+def test_a_percent_in_the_directory_search_is_handled() -> None:
+    """A citizen typing a percent sign is searching for one, not for everything.
+
+    Not a security hole — the parameter is bound — but a search box where one character
+    quietly returns the whole table is a bug worth pinning down.
+    """
+    scoped = _get("/api/v1/partners/directory", params={"state": "Bihar"})
+    wildcard = _get("/api/v1/partners/directory", params={"q": "%"})
+    assert scoped.status_code == wildcard.status_code == 200
+
+
+def test_an_unknown_state_is_a_clean_404_not_an_empty_list() -> None:
+    """A state we do not cover and a state with nobody in it are different answers."""
+    _refused_with(_get("/api/v1/partners/coverage/Atlantis"), 404)
+
+
+def test_the_catalogue_refuses_an_unsupported_language() -> None:
+    _refused_with(_get("/api/v1/schemes", params={"language": "fr"}), 422)
+
+
+def test_the_catalogue_publishes_provenance_for_every_scheme() -> None:
+    """The transparency claim, checked over the wire rather than asserted in a README."""
+    response = _get("/api/v1/schemes")
+    assert response.status_code == 200
+    schemes = response.json()["schemes"]
+    assert schemes, "the catalogue is empty"
+    for scheme in schemes:
+        provenance = scheme["provenance"]
+        assert provenance["source_url"], f"{scheme['code']} has no source URL"
+        assert "needs_verification" in provenance
+        # A scheme flagged unverified must name which figures, not just wave a flag.
+        if provenance["needs_verification"]:
+            assert provenance["open_questions"] or provenance["verification_note"], (
+                f"{scheme['code']} is flagged unverified but names nothing"
+            )
+
+
+def test_the_catalogue_needs_no_login() -> None:
+    """Published government terms behind an account would defeat the point."""
+    assert _get("/api/v1/schemes").status_code == 200
+    assert _get("/api/v1/partners/coverage").status_code == 200
+    assert _get("/api/v1/partners/directory").status_code == 200
+
+
+@pytest.mark.parametrize(
+    ("method", "path"),
+    [
+        ("GET", "/api/v1/citizen/me"),
+        ("PUT", "/api/v1/citizen/profile"),
+        ("POST", "/api/v1/citizen/profile/demo"),
+        ("GET", "/api/v1/citizen/matches"),
+        ("GET", "/api/v1/citizen/applications"),
+    ],
+)
+def test_every_citizen_endpoint_refuses_an_anonymous_caller(method: str, path: str) -> None:
+    response = httpx.request(
+        method, f"{BASE}{path}", json={} if method == "PUT" else None, timeout=TIMEOUT
+    )
+    assert response.status_code == 401, f"{method} {path} was reachable without a token"
+
+
+def test_an_admin_token_cannot_read_a_citizen_profile() -> None:
+    """Role separation in the direction nobody tests: downwards.
+
+    An admin account is not a citizen account and has no stored profile. Letting an
+    elevated role fall through to a citizen route would be a quiet way to read one.
+    """
+    login = _post(
+        "/api/v1/auth/login", {"email": "admin@setu.gov.in", "password": "setu-demo-2026"}
+    )
+    if login.status_code != 200:
+        pytest.skip("demo users are not seeded")
+    token = login.json()["access_token"]
+    response = _get("/api/v1/citizen/me", headers={"Authorization": f"Bearer {token}"})
+    assert response.status_code == 403
+
+
+def test_signup_without_consent_is_refused() -> None:
+    """An account stores personal data, so the DPDP grant is not a formality."""
+    response = _post(
+        "/api/v1/citizen/signup",
+        {
+            "email": "no-consent@example.com",
+            "password": "a-good-password",
+            "display_name": "No Consent",
+            "consent": False,
+        },
+    )
+    _refused_with(response, 400)
+    # And it must say what still works without an account.
+    assert "eligibility" in response.json()["detail"].lower()
+
+
+def test_signup_rejects_a_password_shorter_than_the_minimum() -> None:
+    response = _post(
+        "/api/v1/citizen/signup",
+        {
+            "email": "short@example.com",
+            "password": "abc",
+            "display_name": "Short",
+            "consent": True,
+        },
+    )
+    _refused_with(response, 422)
+
+
+def test_a_signed_in_citizen_gets_the_same_verdict_as_an_anonymous_one() -> None:
+    """The whole premise of the optional account: it adds persistence, not privilege.
+
+    Signs up, stores the demo profile, then checks that GET /citizen/matches returns
+    exactly what POST /match returns for the same facts with no login at all.
+    """
+    import uuid
+
+    email = f"parity-{uuid.uuid4().hex[:10]}@example.com"
+    signup = _post(
+        "/api/v1/citizen/signup",
+        {
+            "email": email,
+            "password": "a-good-password",
+            "display_name": "Parity Check",
+            "consent": True,
+        },
+    )
+    if signup.status_code == 429:
+        pytest.skip("rate limited; this test shares the default bucket")
+    assert signup.status_code == 201, signup.text[:200]
+    headers = {"Authorization": f"Bearer {signup.json()['access_token']}"}
+
+    demo = httpx.post(f"{BASE}/api/v1/citizen/profile/demo", headers=headers, timeout=TIMEOUT)
+    assert demo.status_code == 200
+    engine_profile = demo.json()["profile"]["engine_profile"]
+
+    signed_in = _get("/api/v1/citizen/matches", headers=headers)
+    anonymous = _post("/api/v1/match", {"profile": engine_profile, "language": "en"})
+    assert signed_in.status_code == anonymous.status_code == 200
+
+    def verdicts(payload: dict) -> list[tuple]:
+        return [
+            (r["scheme_code"], r["verdict"], r["indicative_amount"]) for r in payload["results"]
+        ]
+
+    assert verdicts(signed_in.json()) == verdicts(anonymous.json())
+    assert signed_in.json()["engine_version"] == anonymous.json()["engine_version"]
+
+
+def test_the_profile_never_returns_a_password_or_a_full_government_id() -> None:
+    """Whatever else /citizen/me grows, it must not start returning these."""
+    login = _post(
+        "/api/v1/auth/login", {"email": "citizen@setu.gov.in", "password": "setu-demo-2026"}
+    )
+    if login.status_code != 200:
+        pytest.skip("demo users are not seeded")
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+    body = _get("/api/v1/citizen/me", headers=headers).text.lower()
+    for leak in ("password", "gov_id_hash", "aadhaar"):
+        assert leak not in body, f"{leak!r} appeared in the citizen profile response"
