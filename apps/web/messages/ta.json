@@ -115,7 +115,8 @@
     "changeLanguage": "மொழியை மாற்று",
     "rupees": "Rs {amount}",
     "notApplicable": "—",
-    "print": "அச்சிடு"
+    "print": "அச்சிடு",
+    "draftLanguage": "வரைவு"
   },
   "a11y": {
     "skipToContent": "முதன்மை உள்ளடக்கத்திற்குச் செல்",

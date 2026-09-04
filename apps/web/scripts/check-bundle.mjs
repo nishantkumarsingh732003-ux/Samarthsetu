@@ -27,7 +27,8 @@ const BUDGET_KB = 200; // gzipped
 // is deliberately absent because it is dynamically imported and only fetched if they
 // open the map.
 const CITIZEN_ROUTES = [
-  "/page",
+  // "/page" is absent on purpose: "/" is a middleware redirect into a locale now, not a
+  // rendered page, so it has no entry in the manifest and nothing to weigh.
   "/[locale]/page",
   "/[locale]/assist/page",
   "/[locale]/results/page",

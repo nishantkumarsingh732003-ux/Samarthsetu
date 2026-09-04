@@ -115,7 +115,8 @@
     "changeLanguage": "ভাষা পরিবর্তন করুন",
     "rupees": "Rs {amount}",
     "notApplicable": "—",
-    "print": "প্রিন্ট"
+    "print": "প্রিন্ট",
+    "draftLanguage": "খসড়া"
   },
   "a11y": {
     "skipToContent": "মূল বিষয়বস্তুতে যান",

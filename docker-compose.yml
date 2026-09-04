@@ -60,7 +60,16 @@ services:
     depends_on: [api]
     volumes:
       - ./apps/web:/app
+      # Anonymous volumes so the container keeps its own copies of these two rather than
+      # sharing the host's. `node_modules` was always masked — a Linux container cannot
+      # use a Windows/macOS install. `.next` has to be masked for the same reason and was
+      # not: running `pnpm --filter @setu/web check` on the host writes a *production*
+      # build into the mounted directory, the container's `next dev` then serves its own
+      # dev manifest against those chunks, and the browser gets
+      # "TypeError: Cannot read properties of undefined (reading 'call')" out of
+      # webpack.js with no indication of why. Two build systems, one directory.
       - /app/node_modules
+      - /app/.next
 
 volumes:
   pgdata:

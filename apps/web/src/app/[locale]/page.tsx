@@ -10,6 +10,7 @@ import { getTranslations, unstable_setRequestLocale } from "next-intl/server";
 import Link from "next/link";
 
 import { LiveStats } from "@/components/account/LiveStats";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 
 import type { Locale } from "@/i18n/config";
 
@@ -62,10 +63,7 @@ export default async function Home({ params: { locale } }: { params: { locale: L
             <span className="block text-xs text-ink-faint">{t("app.ministryShort")}</span>
           </span>
         </span>
-        <Link href="/" className="btn-quiet text-sm">
-          <Languages className="h-4 w-4" aria-hidden="true" />
-          {t("common.changeLanguage")}
-        </Link>
+        <LanguageSwitcher locale={locale} />
       </header>
 
       <main className="mx-auto max-w-6xl px-5 pb-16">
@@ -130,13 +128,17 @@ export default async function Home({ params: { locale } }: { params: { locale: L
                 {t("landing.footerTitle")}
               </h2>
               <p className="mt-3 max-w-lg text-white/80">{t("landing.footerBody")}</p>
-              <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-                <Link href={`/${locale}/assist`} className="btn-inverse">
+              {/* Stacked at every width, unlike the hero pair above. This column is
+                  ~470px at its widest, and two buttons of Tamil or Telugu label do not
+                  fit side by side in it — they get crushed to three wrapped lines each.
+                  Two full-width buttons read the same in all six languages. */}
+              <div className="mt-6 flex max-w-sm flex-col gap-3">
+                <Link href={`/${locale}/assist`} className="btn-inverse text-center">
                   {t("landing.ctaCheck")}
                 </Link>
                 <Link
                   href={`/${locale}/signin`}
-                  className="btn border-2 border-white/30 text-white hover:bg-white/10"
+                  className="btn border-2 border-white/30 text-center text-white hover:bg-white/10"
                 >
                   {t("landing.ctaSignIn")}
                 </Link>

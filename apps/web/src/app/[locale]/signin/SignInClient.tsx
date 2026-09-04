@@ -25,6 +25,7 @@ import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button, Field, TextInput } from "@/components/ui/controls";
 import { signIn, signUp } from "@/lib/citizenApi";
 
@@ -116,9 +117,12 @@ export function SignInClient({ locale }: { locale: Locale }) {
 
       <main className="flex items-center justify-center px-5 py-10">
         <div className="w-full max-w-sm">
-          <Link href={`/${locale}`} className="btn-quiet -ml-3 text-sm">
-            {tCommon("back")}
-          </Link>
+          <div className="flex items-center justify-between gap-3">
+            <Link href={`/${locale}`} className="btn-quiet -ml-3 text-sm">
+              {tCommon("back")}
+            </Link>
+            <LanguageSwitcher locale={locale} />
+          </div>
 
           <h1 className="mt-4 font-display text-2xl font-extrabold">
             {t(mode === "signin" ? "signInTitle" : "signUpTitle")}

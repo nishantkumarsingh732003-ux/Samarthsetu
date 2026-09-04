@@ -98,10 +98,8 @@ const EXEMPT_DIRS = [join(SRC, "app", "console"), join(SRC, "app", "demo")];
 
 // Files exempt from the string check, with a reason each.
 const EXEMPT = new Set([
-  // The language picker runs before a locale exists, so its few strings are the
-  // language names themselves plus a bilingual heading.
-  join(SRC, "app", "page.tsx"),
-  // Locale metadata is data, not copy.
+  // Locale metadata is data, not copy. (The language picker at "/" used to be exempt
+  // too; it is gone — the choice now lives in a control on every page.)
   join(SRC, "i18n", "config.ts"),
 ]);
 

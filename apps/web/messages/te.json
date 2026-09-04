@@ -115,7 +115,8 @@
     "changeLanguage": "భాష మార్చు",
     "rupees": "Rs {amount}",
     "notApplicable": "—",
-    "print": "ప్రింట్"
+    "print": "ప్రింట్",
+    "draftLanguage": "ముసాయిదా"
   },
   "a11y": {
     "skipToContent": "ప్రధాన విషయానికి వెళ్ళు",

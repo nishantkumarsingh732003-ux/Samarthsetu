@@ -21,7 +21,6 @@ import {
   Calculator,
   FileText,
   FolderOpen,
-  Languages,
   LayoutDashboard,
   LogOut,
   MapPin,
@@ -33,6 +32,7 @@ import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 
 import { useAccount } from "@/components/account/AccountProvider";
+import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button } from "@/components/ui/controls";
 import { Link } from "@/i18n/navigation";
 
@@ -119,14 +119,9 @@ export function AppShell({
             <UserRound className="h-5 w-5" aria-hidden="true" />
             <span className="truncate">{account?.display_name ?? t("profile")}</span>
           </Link>
-          <a
-            href="/"
-            className="flex min-h-touch items-center gap-3 rounded-card px-3 text-base
-                       font-medium text-ink-muted hover:bg-accent-50 hover:text-accent-700"
-          >
-            <Languages className="h-5 w-5" aria-hidden="true" />
-            {t("changeLanguage")}
-          </a>
+          <div className="px-3 py-1">
+            <LanguageSwitcher locale={locale} />
+          </div>
           <Button
             variant="quiet"
             onClick={signOut}
@@ -141,9 +136,7 @@ export function AppShell({
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-20 flex min-h-touch items-center justify-between gap-3 border-b border-line bg-surface px-4 lg:hidden">
           <Brand compact />
-          <a href="/" className="btn-quiet min-h-0 px-2 py-1 text-sm">
-            {t("changeLanguage")}
-          </a>
+          <LanguageSwitcher locale={locale} />
         </header>
 
         <main id="main" className="ground-wash flex-1 px-4 pb-24 pt-6 lg:px-8 lg:pb-10">

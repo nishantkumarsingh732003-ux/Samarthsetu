@@ -115,7 +115,8 @@
     "changeLanguage": "भाषा बदला",
     "rupees": "Rs {amount}",
     "notApplicable": "—",
-    "print": "प्रिंट"
+    "print": "प्रिंट",
+    "draftLanguage": "मसुदा"
   },
   "a11y": {
     "skipToContent": "मुख्य मजकुरावर जा",

@@ -115,7 +115,8 @@
     "changeLanguage": "Change language",
     "rupees": "Rs {amount}",
     "notApplicable": "—",
-    "print": "Print"
+    "print": "Print",
+    "draftLanguage": "draft"
   },
   "a11y": {
     "skipToContent": "Skip to main content",

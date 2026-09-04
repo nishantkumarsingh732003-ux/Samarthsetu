@@ -523,7 +523,7 @@ fluently.
 
 | Route | What it is |
 |---|---|
-| `/` | Language picker — six large targets, native script, no locale guessed |
+| `/` | Redirects into a locale from `Accept-Language`, falling back to English |
 | `/[locale]` | Landing: one primary action, and the live scheme/partner counts |
 | `/[locale]/assist` | Voice or typed conversation; answers shown as chips to correct |
 | `/[locale]/results` | Ranked scheme cards, ineligible ones shown with the blocking reason |
@@ -619,6 +619,21 @@ every stack here falls back to Noto Sans and then system-ui for zero bytes.
   whether or not a page currently uses it. Lighthouse only sees the colours on the page
   it audited.
 - **`check:bundle`** — the JS budget above.
+
+### Changing language
+
+Every screen carries a language control — a native `<select>` in the header, the sidebar
+and the sign-in page — and it swaps the locale **in place**: `/ta/partners` becomes
+`/hi/partners`, not `/hi`. Options are written in their own script, because someone who
+cannot read the current language cannot read "Tamil" either, only "தமிழ்"; the four
+unreviewed catalogues are marked as drafts in that language's own word.
+
+This replaced a full-page picker at `/`. It was the first thing a citizen saw, asked for
+a decision before showing what the service was, and every "change language" link bounced
+back to it — so someone halfway down the partner list lost their place to change one
+setting. `/` now redirects on `Accept-Language`, which is only safe *because* the control
+exists on every page: a wrong guess is one tap from being corrected.
+
 
 ### Offline
 
