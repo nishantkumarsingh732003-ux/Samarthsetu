@@ -1,4 +1,4 @@
-# SETU — Scheme Eligibility & Transparent Uptake
+# SamarthSetu — Scheme Eligibility & Transparent Uptake
 
 **SIH 2026 — Problem Statement 26092: AI-Driven Scheme Matching for Marginalized Entrepreneurs**
 Ministry of Social Justice & Empowerment · Department of Social Justice & Empowerment · Software · Smart Automation
@@ -13,7 +13,8 @@ Ministry of Social Justice & Empowerment · Department of Social Justice & Empow
 > |---|---|
 > | Citizen app | **http://localhost:3000** |
 > | Staff console | **http://localhost:3000/console/login** |
-> | Judge console | **http://localhost:3000/demo** |
+> | Judge walkthrough | press **Judge mode · 3-min tour** in the header |
+> | Judge console (API) | **http://localhost:3000/demo** |
 > | Feature-phone demo | **http://localhost:3000/demo/whatsapp** |
 > | API docs | http://localhost:8000/docs |
 > | On a phone | `http://<your-lan-ip>:3000` — same wifi, no rebuild |
@@ -497,6 +498,19 @@ Allowed from here: PARTNER_ACKNOWLEDGED, REJECTED, WITHDRAWN.
 A partner cannot sanction an application it never acknowledged. The transition table is a
 model of the process, not a log of whatever happened.
 
+### `GET /api/v1/citizen/notifications` — what we told you, and when
+
+Signed in. The stored record of the messages this service sent to *this* citizen, newest
+first, capped at 50 however large a `?limit=` is asked for. Bodies are returned as they
+were sent — rendered at send time in the language they went out in — because a re-render
+through a template that has since been rewritten is not a record of anything.
+
+`notifications.recipient_hint` holds the four masked digits an officer uses in the console
+to confirm they have the right person, and `CitizenNotificationOut` deliberately does not
+project it: a citizen reading their own feed does not need to be told their own number,
+and a field that is never returned is a field that cannot leak. Asserted by
+`test_the_notification_feed_never_returns_a_dialable_address`.
+
 ### `GET /api/v1/documents/checklist` — what to actually bring
 
 Narrowed by scheme family, partner type and the facts already given, with a stated reason
@@ -524,12 +538,37 @@ fluently.
 | Route | What it is |
 |---|---|
 | `/` | Redirects into a locale from `Accept-Language`, falling back to English |
-| `/[locale]` | Landing: one primary action, and the live scheme/partner counts |
+| `/[locale]` | Landing: the worked example, live counts, the three schemes and three journeys |
 | `/[locale]/assist` | Voice or typed conversation; answers shown as chips to correct |
 | `/[locale]/results` | Ranked scheme cards, ineligible ones shown with the blocking reason |
 | `/[locale]/results/[scheme]/partners` | Map + list, score-breakdown bars, "nearby but cannot help" |
 | `/[locale]/apply/[scheme]` | Consent, optional applicant details, and the document checklist |
 | `/[locale]/track/[ref]` | Status timeline plus document upload — the reference number is the key |
+
+#### The landing page
+
+Nearly all of it is a server component, so a citizen on 2G reads the page and can act on
+it before any JavaScript arrives; only the counters and the story carousel are
+interactive islands, and both render something meaningful before they hydrate. The
+route weighs **162KB gzipped** of the 200KB budget — the shadcn primitives it uses are
+the largest line in that (see [docs/DESIGN_PORT.md](docs/DESIGN_PORT.md)).
+
+Nothing on it is written down. The card beside the headline is a worked example computed
+at build time from `packages/rules` and the same `repaymentPlan()` the calculator uses;
+the counters come from `/schemes` and `/partners/coverage`; the three journeys are the
+three personas `scripts/seed/demo.py` creates, so what a reviewer reads on the front page
+is what they will find in the database after `make demo`. The sentences those three
+people say *are* written, and the section says so — "Illustrative · Demo data" — in every
+language. Photographs are Wikimedia Commons, CC BY-SA 4.0, credited under the carousel;
+they are stock images of the trades, not of the people named.
+
+Every link on it stays on the page or goes to sign-in. The four navigation items are
+anchors into the sections below them — including `Eligibility`, which points at the
+four-step journey, and `Partners`, which points at the counter band carrying the Channel
+Partner total. The calls to action go to `/[locale]/signin`.
+
+[docs/DESIGN_PORT.md](docs/DESIGN_PORT.md) records what was taken from the design drop,
+what was changed, and why.
 
 ### The optional account — persistence, never privilege
 
@@ -540,12 +579,13 @@ fluently.
 | `/[locale]/onboarding` | Four steps, **saved as you leave each one** — a dead spot costs one screen |
 | `/[locale]/matches` | Every scheme in engine order, blocked ones included, with rule ids |
 | `/[locale]/schemes` · `/schemes/[code]` | The published catalogue: terms, every rule expression, documents, sources |
+| `/[locale]/shortlist` | Schemes you bookmarked, re-checked against the rules each time you open it |
+| `/[locale]/partners` | Coverage by state → district → branch, with the gaps called out |
 | `/[locale]/compare` | Up to three side by side, with *your* verdict as the first row |
 | `/[locale]/calculator` | EMI, tenure and moratorium, pre-filled from your best match |
-| `/[locale]/partners` | Coverage by state → district → branch, with the gaps called out |
 | `/[locale]/applications` | Your own applications; each row links to the anonymous tracking page |
 | `/[locale]/documents` | What each scheme asks for and why, from the versioned checklist |
-| `/[locale]/profile` | What is stored — and the exact dictionary the rule engine is given |
+| `/[locale]/profile` | What is stored, in six cards that each edit their own onboarding step; plus text size and contrast |
 
 ### The consoles and the demo tools
 
@@ -554,8 +594,167 @@ fluently.
 | `/console/login` | One sign-in form; the role in the response decides where you land |
 | `/console/partner` | Branch officer's queue, capacity toggle, SLA clock |
 | `/console/admin` | Ministry dashboard — funnel, misrouting KPI, underserved districts |
-| `/demo` | Judge console — nine scenarios, one click each, nothing external |
+| `/demo` | Judge console — nine API scenarios, one click each, nothing external |
 | `/demo/whatsapp` | Feature-phone simulator — same orchestrator, plain text, segment costs |
+
+### The signed-in frame
+
+The sidebar and the top bar are the design drop's, in full. Three of the things in them
+are worth saying out loud, because each was a decision and not a default.
+
+**The search box searches.** `GlobalSearch` filters the published scheme catalogue in the
+browser — fetched once, on the first focus of the box, so a citizen who never searches
+never pays for it — and sends partner queries to `GET /partners/directory?q=`, which
+already does name, district and state matching in Postgres. Debounced at 250ms, and every
+reply is checked against the query current when it lands, so a slow response for "jai"
+cannot overwrite the results for "jaipur". It is a WAI-ARIA combobox rather than a shadcn
+Popover or Command: both of those move focus into the panel, which is right for a menu and
+wrong for a box whose caret has to stay put while the arrow keys walk the results.
+
+**The bell shows what was actually sent.** `GET /citizen/notifications` reads the
+`notifications` table — the same rows the partner console reads, minus the four masked
+digits an officer needs and a citizen does not. Every entry is a message that really went
+out, stored rendered in the language it went out in, which is the point of keeping the row
+at all: a citizen who says "nobody told me" can be shown what was sent and when. Nothing is
+composed on read, so an empty bell says "nothing yet" rather than inventing a welcome
+message. The unread dot is a `localStorage` watermark, not a read receipt — a convenience
+must not widen the DPDP surface.
+
+**The shortlist lives on the device.** `lib/shortlist.ts` stores scheme *codes* and only
+codes. Nothing about a bookmark belongs in a government record, nobody should have to
+consent to it, and it is the only shape that also works for the anonymous journey. The
+page resolves every code against the published catalogue and the engine's own run on each
+load, so a saved scheme can never show a rate that was true when it was saved. A code the
+catalogue no longer publishes is listed as withdrawn rather than dropped.
+
+### The whole interface renders at 80%
+
+`html { font-size: 80% }` in `styles/globals.css`. Every length in this design system is a
+`rem` — the type scale, the spacing scale, the radii — so that one number sets the density
+of the entire app the way a browser zoom does, instead of two hundred utility classes
+being retuned by hand. At 1080p and above the 100% layout reads as oversized; this is the
+density the design was actually drawn at.
+
+Three things make it safe rather than a blunt shrink:
+
+- **A percentage, not a pixel value.** `80%` is 80% of whatever the reader set as their
+  browser default, so someone who raised their base font to 20px for a reason still gets
+  16px here. `font-size: 12.8px` would take that away from them.
+- **The phone gets 100% back.** `@media (pointer: coarse), (max-width: 1023px)` restores
+  it. `spacing.touch` is 3rem *because* 48px is the Android and iOS minimum for a
+  one-handed outdoor tap; scaling the root by 0.8 would quietly make every control 38px on
+  exactly the device where that number is load-bearing. A mouse does not need a 48px
+  target, a thumb does.
+- **The measure does not compact with the type.** Density is for type and spacing; a page
+  container that shrank by the same fifth would leave a fifth of a wide monitor empty. The
+  five container widths in the app are named in `tailwind.config.ts` under `maxWidth`
+  (`shell`, `console`, `form`, `column`, `landing`), each pre-divided by the 0.8, so the
+  rendered width is where it has always been. Change the 80% and those five move with it.
+
+### …and the citizen can override it
+
+The profile page carries three settings under **Accessibility and language**: language,
+text size (−A / A / +A) and high contrast. Text size and contrast are stored on the
+device (`lib/displayPrefs.ts`, `localStorage`) and applied to `<html>` as
+`data-text-scale` / `data-contrast`, so they change every screen and survive navigation.
+
+Two details that are the whole reason they work:
+
+- **Text size is a multiplier, not a second font-size.** `font-size: calc(80% *
+  var(--ss-text-scale))`, so the citizen's choice composes with the 80%/100% decision
+  above *and* with whatever they already set as their browser default, instead of
+  overriding either. `lg` is 1.25×, which is 16px on a desktop and 20px on a phone.
+- **It is applied before first paint.** `DISPLAY_PREFS_BOOT` is inlined into the document
+  by `[locale]/layout.tsx`. A `useEffect` would render the page at the wrong size and then
+  jump, on every navigation, for the one reader who needed the setting.
+
+High contrast is not a fix for a failing colour — the palette already clears AA, and
+`check-contrast.mjs` asserts 27 pairs. It is for a scratched screen in daylight: secondary
+text goes to full ink, every panel edge becomes 2px of ink, elevation shadows come off,
+and the tinted note blocks get a rule so they still read as blocks.
+
+### The three-minute walkthrough
+
+**Judge mode · 3-min tour** in either header starts a nine-step overlay that *navigates*:
+each step routes to the page it is about — landing, onboarding, dashboard, matches,
+calculator, partners, assistant, applications — and says what to look at there. State is
+one integer in `sessionStorage` (`lib/judgeTour.ts`), which is what lets it survive the
+route changes and what makes it end with the tab.
+
+Three decisions in it worth naming:
+
+- **The backdrop does not capture the pointer.** Half the steps end with "open View
+  eligibility on any scheme", so a modal that had to be dismissed before the judge could
+  do the thing it just asked for would make the tour an obstacle to the demo it exists to
+  give. It dims; it does not block. That is also why it is a `region` and not a `dialog`,
+  and why the heading is `aria-live` instead of stealing focus every step.
+- **Nothing but a storage read ships until it starts.** The card is behind
+  `next/dynamic`, so the anonymous journey under the 200KB budget never downloads it.
+- **The copy has to survive the judge pressing the thing it describes.** So it says a
+  deterministic rule engine decides, because it does; it does not say "AI-driven
+  matching", because the model is nowhere near a verdict. It names no model version,
+  because `LLM_PROVIDER=none` is a supported configuration and step 8 says so instead.
+
+### Responsive down to 320px, checked rather than assumed
+
+Every route is walked at 320, 390, 768 and 1280 and asserted to have no horizontal
+overflow — `documentElement.scrollWidth > clientWidth` is the one responsive failure a
+citizen cannot work around, because there is no gesture that undoes it. Four things it
+caught, none of which were visible on a laptop:
+
+- **`min-width: auto`, three times.** A grid or flex item will not shrink below its
+  widest unbreakable content. A `<pre>` holding a `curl` line made `/demo` 649px wide on
+  a 320px phone; an `<input>`'s intrinsic `size` width pushed the Send button off
+  `/assist`; and the word "recommendations" widened a landing-page column. `min-w-0`,
+  `min-w-0`, and `min-w-0` + `hyphens-auto`.
+- **The partner directory ran to 64,000px on a phone.** It scrolled inside a `lg:`-only
+  column, so the viewport without that column got the whole national directory as one
+  page — a few thousand DOM nodes on the Rs 6,000 Android of rule 5. Now paged twelve at
+  a time with a "Show more", on every viewport, and the map beside it is sticky.
+- **The apply bar clipped its own primary button** at 360px and 375px, the two commonest
+  widths in India. Below `sm` the duplicate "Calculate EMI" steps aside.
+- **Phone type was larger than desktop type.** The root is 100% on a phone and 80% on a
+  desktop pointer, so `text-3xl` on a phone renders bigger than `text-4xl` on a laptop.
+  The dashboard's display sizes now start a step lower and climb at `sm`.
+
+### Hover states are composited, not repainted
+
+Every raised surface deepens its shadow and lifts a pixel on hover. Animating `box-shadow`
+is the obvious way to get that and the reason hover states drop frames — the shadow is
+rasterised again every frame, over the element's whole area, on the main thread. The
+`.lift` class in `globals.css` paints the shadow once into a pseudo-element and animates
+only its `opacity`; the lift itself is a `transform`. Both are properties the compositor
+can move without touching layout or paint.
+
+`scripts/measure-frames.mjs` is the check, wired up as `pnpm --filter @setu/web
+check:frames`. It signs in as the demo citizen, then samples `requestAnimationFrame`
+deltas while scrolling the dashboard, hovering every card and button in turn, and opening
+the notification popover — and asserts both halves of the claim: that no interaction drops
+more than 5% of its frames, and that `box-shadow` appears in no element's
+`transition-property`. The second half matters because the first passes on any fast
+laptop; `--cpu 6` throttles the renderer to something like a mid-range Android.
+
+It is not part of `pnpm check`, because unlike the other four it needs the app running.
+Chrome comes from `chrome-launcher` and `puppeteer-core`, already in the tree behind
+`lighthouse` — resolved out of the pnpm store by path rather than added as dependencies of
+an app with a 200KB budget on its front door. It skips cleanly when either is missing or
+when nothing is serving `localhost:3000`.
+
+```
+frame check — http://localhost:3000, CPU throttled 6x
+
+  interaction                           fps     mean      p95    worst   janky
+  ✓ scroll the dashboard              120.1   8.33ms    8.5ms    9.6ms      0%
+  ✓ hover 14 cards and buttons        107.8   9.28ms   16.6ms   33.4ms    0.8%
+  ✓ open and close the bell           100.7   9.93ms    8.5ms  208.3ms    1.8%
+
+  animated on the element itself: background-color, border-color, color, fill, stroke,
+                                  text-decoration-color, transform
+```
+
+The 208ms worst frame on the bell is the popover's first mount — Radix portalling and
+React rendering a list that has never been rendered before — not the animation, and it
+happens once.
 
 ### Why the account is optional, and what that costs
 
@@ -572,11 +771,17 @@ without an account.
 **The wall between the account and the engine.** The onboarding collects things the rules
 must never read — a business name, a description an officer reads, the amount an applicant
 *says* they need. `services/citizen_accounts.engine_profile()` projects the stored profile
-down to `setu_rules.profile.FIELDS` and nothing else, and `/[locale]/profile` prints that
-projection on screen so a citizen can see their business description is not among the
-things deciding their verdict. `test_citizen_accounts.py` asserts the projection is an
-allowlist rather than a blocklist, and that changing `loan_required` by a factor of two
-hundred moves no verdict and no amount.
+down to `setu_rules.profile.FIELDS` and nothing else, and the field is still on the wire —
+`GET /api/v1/citizen/me` returns `profile.engine_profile`, so the projection is inspectable
+without taking anyone's word for it. `test_citizen_accounts.py` asserts it is an allowlist
+rather than a blocklist, and that changing `loan_required` by a factor of two hundred moves
+no verdict and no amount.
+
+On screen the guarantee is carried by the explanations rather than by a dump: every match
+returns `matched_because[]` and `blocked_because[]` with their rule ids, and the
+eligibility sheet lists them criterion by criterion with the citizen's own value beside the
+requirement. The profile page used to print the projection verbatim as well; that panel was
+cut on request.
 
 ```bash
 pnpm --filter @setu/web dev     # http://localhost:3000
@@ -788,7 +993,7 @@ Try it without a Meta account at **http://localhost:3000/demo/whatsapp**:
    - आप अनुसूचित जाति के आवेदक हैं।
    - आपकी वार्षिक पारिवारिक आय Rs 5,00,000 की सीमा के भीतर है।
    Indicative: up to Rs 72,000
-   SETU does not lend. A Channel Partner decides.        [DECIDED · 4 segments]
+   SamarthSetu does not lend. A Channel Partner decides.        [DECIDED · 4 segments]
 ```
 
 A complete eligibility journey in four keypad messages. Meta's real webhook contract is
@@ -804,11 +1009,11 @@ which needs no contact address, no network and no third party.
 
 ```
 event                  ch      lang  seg  body
-APPLICATION_SUBMITTED  IN_APP  ta     3   SETU: விண்ணப்பம் SETU-2026-MH-000001 …க்கு அனுப்பப்பட்டது…
-PARTNER_ACKNOWLEDGED   IN_APP  ta     2   SETU: … உங்கள் விண்ணப்பம் … பெற்று பரிசீலிக்கிறது.
-DOCS_REQUESTED         IN_APP  ta     3   SETU: …க்கு ஆவணம் தேவை. Caste certificate is not readable. …
-UNDER_APPRAISAL        IN_APP  ta     2   SETU: … இப்போது விண்ணப்பம் … ஆய்வு செய்கிறது.
-SANCTIONED             IN_APP  ta     2   SETU: … அனுமதித்தது. அடுத்த படிகளை அவர்கள் தெரிவிப்பார்கள்.
+APPLICATION_SUBMITTED  IN_APP  ta     3   SamarthSetu: விண்ணப்பம் SETU-2026-MH-000001 …க்கு அனுப்பப்பட்டது…
+PARTNER_ACKNOWLEDGED   IN_APP  ta     2   SamarthSetu: … உங்கள் விண்ணப்பம் … பெற்று பரிசீலிக்கிறது.
+DOCS_REQUESTED         IN_APP  ta     3   SamarthSetu: …க்கு ஆவணம் தேவை. Caste certificate is not readable. …
+UNDER_APPRAISAL        IN_APP  ta     2   SamarthSetu: … இப்போது விண்ணப்பம் … ஆய்வு செய்கிறது.
+SANCTIONED             IN_APP  ta     2   SamarthSetu: … அனுமதித்தது. அடுத்த படிகளை அவர்கள் தெரிவிப்பார்கள்.
 ```
 
 **That `seg` column is the point.** An SMS segment is 160 characters in GSM-7 and **70 in
