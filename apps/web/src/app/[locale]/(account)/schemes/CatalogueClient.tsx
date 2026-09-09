@@ -66,12 +66,26 @@ export function CatalogueClient({ locale }: { locale: Locale }) {
                   <p className="mt-0.5 text-ink-muted">{scheme.name_gloss}</p>
                 )}
 
+                {/* Two different quantities, both named.
+                    The loan is what NSFDC advances; the project cost is what the scheme
+                    covers, and it is the figure the problem statement quotes — ₹1,40,000
+                    for Micro Finance, ₹50,00,000 for the Term Loan. Printing only the
+                    loan under a bare "Up to" made the card look like it contradicted the
+                    scheme: Micro Finance read ₹1,25,000 where the PS says ₹1,40,000. It
+                    never did; 90% of ₹1,40,000 is the loan. Now the card says so. */}
                 <p className="numeric mt-3 text-lg font-semibold text-accent-700">
                   {scheme.limits.max_loan_amount !== null
-                    ? t("upTo", {
+                    ? t("loanUpTo", {
                         amount: formatRupees(scheme.limits.max_loan_amount, locale),
                       })
                     : tCommon("notApplicable")}
+                </p>
+                <p className="numeric mt-0.5 text-sm text-ink-muted">
+                  {scheme.limits.max_project_cost !== null
+                    ? t("projectUpTo", {
+                        amount: formatRupees(scheme.limits.max_project_cost, locale),
+                      })
+                    : t("projectAny")}
                 </p>
 
                 <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-faint">
