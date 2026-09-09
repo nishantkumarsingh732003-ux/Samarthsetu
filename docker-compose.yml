@@ -70,6 +70,30 @@ services:
       # webpack.js with no indication of why. Two build systems, one directory.
       - /app/node_modules
       - /app/.next
+    # `next dev` compiles each route on demand and re-reads its module graph across the
+    # bind mount on every request. Measured on this machine: 1-5s per page in dev against
+    # ~80ms for the same pages from a production build — the app is not slow, the dev
+    # server is. `WEB_CMD` exists so a demo does not have to be given at dev speed.
+    command: ${WEB_CMD:-pnpm dev}
+
+  # The same image, built and served rather than compiled per request. Use it when the
+  # speed of the thing is being judged:
+  #
+  #     docker compose --profile demo up web-prod
+  #
+  # It listens on 3001 so it can run beside the dev server rather than fighting it for
+  # port 3000, and it keeps its own `.next` for the reason the note above gives.
+  web-prod:
+    profiles: [demo]
+    build: ./apps/web
+    env_file: .env
+    ports: ["3001:3000"]
+    depends_on: [api]
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+      - /app/.next
+    command: sh -c "pnpm build && pnpm start"
 
 volumes:
   pgdata:
