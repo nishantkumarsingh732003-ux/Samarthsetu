@@ -141,7 +141,7 @@ export default function DemoConsole() {
     try {
       setPanel(await scenario.run());
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not reach the SETU API.");
+      setError(e instanceof Error ? e.message : "Could not reach the SamarthSetu API.");
     } finally {
       setActive(null);
     }
@@ -180,7 +180,7 @@ export default function DemoConsole() {
           note: `Engine ${d.engine_version}. No model was consulted for this verdict.`,
         };
       },
-      open: { href: "/en/assist", label: "Open the citizen app" },
+      open: { href: "/en/signin", label: "Open the citizen app" },
     },
     {
       id: "ineligible",
@@ -383,7 +383,7 @@ export default function DemoConsole() {
           title: `Reply in ${reply.sms_segments} SMS segment(s)`,
           lines: [
             { label: "Stage", value: reply.stage },
-            { label: "SETU says", value: reply.text },
+            { label: "SamarthSetu says", value: reply.text },
           ],
           note: "Indic scripts encode as UCS-2 — 70 characters a segment, not 160.",
         };
@@ -409,10 +409,10 @@ export default function DemoConsole() {
           : "text-ink";
 
   return (
-    <main className="mx-auto max-w-6xl px-5 py-8">
+    <main className="mx-auto max-w-shell px-5 py-8">
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-line pb-5">
         <div>
-          <h1 className="text-2xl font-semibold">SETU demo console</h1>
+          <h1 className="font-display text-2xl font-extrabold tracking-tight">SamarthSetu demo console</h1>
           <p className="mt-1 text-base text-ink-muted">
             Every scenario runs against the local API. Nothing external, nothing random,
             nothing destructive.
@@ -453,16 +453,22 @@ export default function DemoConsole() {
         command.
       </p>
 
+      {/* `min-w-0` on both columns is load-bearing, not tidying. A grid item defaults to
+          `min-width: auto`, which means it refuses to shrink below its widest content —
+          and the widest content here is a `<pre>` holding a full `curl` line, which does
+          not wrap. Without this the whole page was 649px wide on a 320px phone and
+          scrolled sideways, `overflow-x-auto` on the `<pre>` notwithstanding: that only
+          scrolls the block once something has already constrained it. */}
       <div className="mt-6 grid gap-4 lg:grid-cols-2">
-        <ol className="space-y-4">
+        <ol className="min-w-0 space-y-4">
           {scenarios.map((scenario, index) => (
             <li key={scenario.id}>
-              <article className="card p-5">
+              <article className="panel p-5">
                 <div className="flex items-baseline gap-3">
                   <span className="font-mono text-sm text-ink-faint">
                     {String(index + 1).padStart(2, "0")}
                   </span>
-                  <h2 className="text-lg font-semibold">{scenario.title}</h2>
+                  <h2 className="font-display text-lg font-bold">{scenario.title}</h2>
                 </div>
                 <p className="mt-1 text-base text-ink-muted">{scenario.proves}</p>
                 <blockquote className="mt-3 border-l-4 border-accent-600 pl-3 text-base">
@@ -497,9 +503,9 @@ export default function DemoConsole() {
           ))}
         </ol>
 
-        <div className="lg:sticky lg:top-6 lg:h-fit">
-          <div className="card p-5">
-            <h2 className="text-lg font-semibold">Result</h2>
+        <div className="min-w-0 lg:sticky lg:top-6 lg:h-fit">
+          <div className="panel p-5">
+            <h2 className="font-display text-lg font-bold">Result</h2>
             {error ? (
               <p role="alert" className="mt-3 text-base text-stop-fg">
                 {error}

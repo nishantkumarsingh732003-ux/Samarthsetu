@@ -16,7 +16,7 @@
  */
 
 import { useTranslations } from "next-intl";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 import { useAccount } from "@/components/account/AccountProvider";
@@ -73,7 +73,23 @@ export function OnboardingClient({ locale }: { locale: Locale }) {
   const router = useRouter();
 
   const profile = account?.profile;
-  const [step, setStep] = useState(0);
+
+  /**
+   * Which step to open on, from `?step=`.
+   *
+   * This is what the profile page's per-card "Edit" links point at. Sending someone who
+   * wants to correct their pincode to question one of four is a link they use once; the
+   * card that owns the field links to the step that owns the field. 1-based because it
+   * appears in a URL a citizen can read, and clamped rather than trusted — `?step=99`
+   * opens the first step, not a blank screen. After arrival the step is client state,
+   * because moving through a wizard is not a navigation.
+   */
+  const requestedStep = Number(useSearchParams().get("step"));
+  const [step, setStep] = useState(
+    Number.isInteger(requestedStep) && requestedStep >= 1 && requestedStep <= STEPS.length
+      ? requestedStep - 1
+      : 0,
+  );
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [draft, setDraft] = useState<Draft>({});
@@ -130,7 +146,7 @@ export function OnboardingClient({ locale }: { locale: Locale }) {
   );
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-form">
       <header>
         <h1 className="font-display text-2xl font-extrabold">{t("title")}</h1>
         <p className="mt-1 text-ink-muted">

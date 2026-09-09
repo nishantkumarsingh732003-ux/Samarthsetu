@@ -206,7 +206,7 @@ class SmsDriver:
     def send(self, body: str, recipient: str | None) -> Delivery:
         if not recipient or len(recipient) <= 4:
             raise ContactUnavailable(
-                "SMS needs a full mobile number. SETU stores only the last four digits, "
+                "SMS needs a full mobile number. SamarthSetu stores only the last four digits, "
                 "so this message cannot be sent until a delivery number is collected "
                 "under its own consent purpose (see OPEN_ITEMS OI-43)."
             )
@@ -229,7 +229,7 @@ class WhatsAppDriver:
         if not settings.WHATSAPP_TOKEN:
             raise ContactUnavailable(
                 "WhatsApp Business API needs a token and a pre-approved message template. "
-                "Neither is configured, and SETU holds no dialable number to send to."
+                "Neither is configured, and SamarthSetu holds no dialable number to send to."
             )
         raise NotificationError("WhatsApp delivery is not implemented in this build.")
 

@@ -1,4 +1,4 @@
-# Render blueprint for the SETU API, its database and its cache.
+# Render blueprint for the SamarthSetu API, its database and its cache.
 #
 # Not deployed. Checked in so the deploy is one deliberate action by whoever owns the
 # account, rather than something that happened quietly during a build.

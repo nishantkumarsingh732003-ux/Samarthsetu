@@ -240,6 +240,35 @@ export function getMyApplications(): Promise<AuthedResult<CitizenApplication[]>>
   return request<CitizenApplication[]>("/citizen/applications");
 }
 
+/**
+ * What this service has actually told the citizen, newest first.
+ *
+ * The bell in the top bar reads this and nothing else. It is a record of sent messages,
+ * not a generated to-do list: `body` is the text as it went out, in the language it went
+ * out in, so the feed can be shown to someone who says they were never told. The row
+ * carries a masked `recipient_hint` in the database and the API does not project it —
+ * see `CitizenNotificationOut`.
+ */
+export interface CitizenNotification {
+  id: string;
+  /** The trigger, e.g. `APPLICATION_SUBMITTED`. Stable across template rewrites, which
+   *  is what lets the UI choose an icon without parsing the body. */
+  event: string;
+  channel: string;
+  language: string;
+  body: string;
+  status: string;
+  /** Null while queued or after a failed send. The row still exists, and a citizen is
+   *  entitled to see that we tried. */
+  sent_at: string | null;
+  created_at: string;
+  application_reference: string | null;
+}
+
+export function getMyNotifications(): Promise<AuthedResult<CitizenNotification[]>> {
+  return request<CitizenNotification[]>("/citizen/notifications");
+}
+
 // --- public catalogue ----------------------------------------------------------------
 
 export interface OpenQuestion {
@@ -413,3 +442,45 @@ export function getDirectory(filters: {
 }
 
 export type { ApiResult };
+
+// --- the assistant ---------------------------------------------------------------
+
+/** What the assistant may suggest the citizen does next. The client turns each into a
+ *  button; an action it cannot render is dropped rather than shown as a dead control. */
+export type AssistantAction =
+  | "open_scheme"
+  | "find_partners"
+  | "start_application"
+  | "upload_documents"
+  | "plan_repayment";
+
+export interface AssistantAnswer {
+  answer: string;
+  /** Rule ids the answer leans on, so it stays checkable against /schemes. */
+  rule_ids: string[];
+  action: AssistantAction | null;
+  action_scheme_code: string | null;
+  /** False when no model was configured and the deterministic reply was used. */
+  grounded: boolean;
+}
+
+/**
+ * Ask a question against the rule pack and this citizen's own record.
+ *
+ * Distinct from `sendTurn`, which is the *intake*: it extracts facts and advances the
+ * profile one question at a time. This one answers. The model never decides
+ * eligibility — the verdicts it restates come from the deterministic engine and carry
+ * the rule ids that produced them.
+ */
+export function askAssistant(
+  question: string,
+  language: Locale,
+  /** Recent turns, oldest first, so a follow-up like "and the interest?" resolves. */
+  history: { role: "citizen" | "assistant"; text: string }[] = [],
+): Promise<AuthedResult<AssistantAnswer>> {
+  return request<AssistantAnswer>("/conversation/ask", {
+    method: "POST",
+    // The API caps this too; trimming here keeps the request small on a 2G connection.
+    body: JSON.stringify({ question, language, history: history.slice(-8) }),
+  });
+}

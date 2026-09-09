@@ -1,7 +1,7 @@
 """Request and response models for the partner console and the MoSJE dashboard.
 
 The queue models are where the privacy posture becomes visible. A Channel Partner
-processing a loan legitimately needs to know who the applicant is — but SETU never held
+processing a loan legitimately needs to know who the applicant is — but SamarthSetu never held
 the full Aadhaar to begin with, so the console shows a name, a masked ID and the last
 four digits of a phone number, and the real KYC happens at the branch with the document
 in hand. That is not a limitation we worked around; it is the design.

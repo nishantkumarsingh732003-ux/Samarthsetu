@@ -1,5 +1,5 @@
 /**
- * Offline shell for SETU.
+ * Offline shell for SamarthSetu.
  *
  * Hand-written rather than generated: the citizen route has a hard JS budget and a PWA
  * plugin would spend it.

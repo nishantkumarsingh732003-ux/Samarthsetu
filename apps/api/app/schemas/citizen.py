@@ -195,3 +195,34 @@ class CitizenApplicationSummary(BaseModel):
     amount_requested: float | None
     submitted_at: str | None
     documents_outstanding: int
+
+
+class CitizenNotificationOut(BaseModel):
+    """One message this service sent to the signed-in citizen, as it was sent.
+
+    The body is stored already rendered, in the language it went out in, so what a
+    citizen reads here is the message itself and not a re-render of a template that may
+    have been rewritten since. That is the whole point of keeping the row: someone who
+    says "nobody told me" can be shown exactly what was sent and when.
+
+    **There is no contact address on this shape, and there must never be one.** The row
+    carries `recipient_hint` — the four masked digits an officer uses in the console to
+    confirm they have the right person — and it is deliberately not projected here. A
+    citizen reading their own feed does not need to be told their own number, and a field
+    that is never returned is a field that cannot leak. `test_security_surface.py`
+    asserts it.
+    """
+
+    id: str
+    # The trigger, e.g. APPLICATION_SUBMITTED. Stable across template rewrites, which is
+    # what lets the UI pick an icon without parsing the body.
+    event: str
+    channel: str
+    language: str
+    body: str
+    status: str
+    # Null while a message is queued or has failed. The row still exists, and a citizen
+    # is entitled to see that we tried.
+    sent_at: str | None
+    created_at: str
+    application_reference: str | None

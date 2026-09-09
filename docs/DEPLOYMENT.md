@@ -1,4 +1,4 @@
-# Deploying SETU
+# Deploying SamarthSetu
 
 The repository carries working configuration for Vercel (web) and Render (API +
 Postgres). **Nothing here has been deployed** — pushing a public URL requires accounts and

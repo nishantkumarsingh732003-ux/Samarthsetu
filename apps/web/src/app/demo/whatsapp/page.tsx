@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { apiBase } from "@/lib/apiBase";
 
 /**
- * A text-only client for the SETU conversation, shaped like a chat thread.
+ * A text-only client for the SamarthSetu conversation, shaped like a chat thread.
  *
  * This exists to prove one architectural claim without needing a Meta account: the
  * conversation is not a property of the web app. Every message here goes to
@@ -103,7 +103,7 @@ export default function WhatsAppSimulator() {
         { from: "setu", text: reply.text, segments: reply.sms_segments, stage: reply.stage },
       ]);
     } catch {
-      setError("Could not reach the SETU API. Is `docker compose up` running?");
+      setError("Could not reach the SamarthSetu API. Is `docker compose up` running?");
     } finally {
       setBusy(false);
     }
@@ -121,7 +121,7 @@ export default function WhatsAppSimulator() {
   return (
     <main className="mx-auto max-w-lg px-4 py-6">
       <header>
-        <h1 className="text-2xl font-semibold">SETU on a feature phone</h1>
+        <h1 className="font-display text-2xl font-extrabold tracking-tight">SamarthSetu on a feature phone</h1>
         <p className="mt-1 text-base text-ink-muted">
           Every message below goes to the same <code>handle_turn</code> the citizen app
           uses. Same rule engine, same six languages, no smartphone.
@@ -156,7 +156,7 @@ export default function WhatsAppSimulator() {
         </button>
       </div>
 
-      <div className="card mt-4 flex h-[26rem] flex-col overflow-y-auto p-4">
+      <div className="panel mt-4 flex h-[26rem] flex-col overflow-y-auto p-4">
         {turns.length === 0 ? (
           <p className="m-auto max-w-xs text-center text-base text-ink-muted">
             Press &ldquo;Start the demo&rdquo;, or type anything a citizen might say.

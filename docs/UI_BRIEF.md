@@ -1,4 +1,4 @@
-# SETU — UI brief
+# SamarthSetu — UI brief
 
 A self-contained prompt for an AI UI builder (v0, Lovable, Bolt, Figma Make) or a
 designer. Paste the whole thing. Everything below describes a system that already works;
@@ -9,7 +9,7 @@ suggestions.
 
 ## The product
 
-**SETU** — a government scheme discovery, eligibility and routing service for India's
+**SamarthSetu** — a government scheme discovery, eligibility and routing service for India's
 Ministry of Social Justice & Empowerment (Smart India Hackathon 2026, PS 26092).
 
 A Scheduled Caste entrepreneur or student cannot answer two questions:
@@ -19,7 +19,7 @@ A Scheduled Caste entrepreneur or student cannot answer two questions:
 
 So they guess, walk into the wrong bank branch, and get turned away. Nobody queues twice.
 
-SETU answers both, explains every answer, and routes them to a branch that can actually
+SamarthSetu answers both, explains every answer, and routes them to a branch that can actually
 help. **It does not approve loans** — it matches and routes; a Channel Partner decides.
 Every screen must say so.
 
@@ -154,9 +154,9 @@ prominent, never hidden behind "advanced").
 
 Real exchange:
 
-> **SETU:** आपको कुल कितने पैसे की ज़रूरत है?
+> **SamarthSetu:** आपको कुल कितने पैसे की ज़रूरत है?
 > **Citizen:** 80 hazaar
-> **SETU:** आप किस सामाजिक श्रेणी से हैं?  [SC] [ST] [OBC] [GENERAL]
+> **SamarthSetu:** आप किस सामाजिक श्रेणी से हैं?  [SC] [ST] [OBC] [GENERAL]
 
 ---
 
@@ -245,7 +245,7 @@ Footer: *"Office details are demo data pending the official partner list."*
 
 **6. `/[locale]/apply/[scheme]` — submit**
 
-Says up front: *"SETU does not give loans. This sends your application to the office you
+Says up front: *"SamarthSetu does not give loans. This sends your application to the office you
 chose, and that office decides."*
 
 Every field **optional except consent**: name, phone, Aadhaar number. Under each, what

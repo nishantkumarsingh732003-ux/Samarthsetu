@@ -14,4 +14,4 @@ def test_health_returns_ok() -> None:
 def test_openapi_is_served() -> None:
     response = client.get("/openapi.json")
     assert response.status_code == 200
-    assert response.json()["info"]["title"] == "SETU API"
+    assert response.json()["info"]["title"] == "SamarthSetu API"

@@ -57,7 +57,7 @@ def _warn_on_model_mismatch(info: dict) -> None:
 async def main() -> int:
     info = llm.describe()
 
-    print("SETU language model check")
+    print("SamarthSetu language model check")
     print("-" * 52)
     for label, key in (
         ("LLM_PROVIDER setting", "configured"),

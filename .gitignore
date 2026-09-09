@@ -50,3 +50,10 @@ Thumbs.db
 # Logs
 *.log
 logs/
+
+# A stray package store. `npx shadcn@latest add …` runs its own install and can leave one
+# here rather than at the workspace root; it is a cache, not source.
+.pnpm-store/
+
+# Cygwin/MSYS crash dumps, left behind by shell tools on Windows.
+*.stackdump

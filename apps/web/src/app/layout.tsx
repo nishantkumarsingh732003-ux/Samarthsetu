@@ -3,7 +3,7 @@ import type { Metadata, Viewport } from "next";
 import "@/styles/globals.css";
 
 export const metadata: Metadata = {
-  title: "SETU",
+  title: "SamarthSetu",
   description:
     "Find the government credit scheme that fits you, and the nearest Channel Partner authorised to process it.",
   manifest: "/manifest.webmanifest",

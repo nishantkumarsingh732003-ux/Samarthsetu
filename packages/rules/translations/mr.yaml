@@ -90,6 +90,8 @@ ui:
   confirm_cost: "मला समजले की तुम्हाला सुमारे {value} हवे आहेत — हे बरोबर आहे का?"
   confirm_loans: "मला समजले की इतर कर्जांवर तुमच्यावर सुमारे {value} बाकी आहे — हे बरोबर आहे का?"
   confirm_generic: "मला समजले की {field} हे {value} आहे — हे बरोबर आहे का?"
+  assistant_offline: "तुमच्या उत्तरांनुसार {scheme} तुमच्यासाठी योग्य आहे. ते उघडून हा निर्णय घेणारा नियम आणि ते हाताळण्यास अधिकृत भागीदार पहा."
+  assistant_offline_none: "याचे उत्तर माझ्याकडे येथे नाही. तुमच्या योजना निकालांमध्ये हीच माहिती आहे, आणि प्रत्येक निर्णय घेणारा नियमही आहे."
 
 # Words asserting a decision this service never makes. Backstop for model prose.
 approval_claims:

@@ -16,12 +16,18 @@
 
 import { useCallback, useEffect, useState } from "react";
 
-import { getCatalogue, getMatches, getMyApplications } from "@/lib/citizenApi";
+import {
+  getCatalogue,
+  getMatches,
+  getMyApplications,
+  getMyNotifications,
+} from "@/lib/citizenApi";
 
 import type {
   AuthedResult,
   CitizenApplication,
   CitizenMatches,
+  CitizenNotification,
   SchemeCatalogue,
 } from "@/lib/citizenApi";
 import type { Locale } from "@/i18n/config";
@@ -80,4 +86,11 @@ export function useCatalogue(locale: Locale): LoadState<SchemeCatalogue> {
 
 export function useMyApplications(): LoadState<CitizenApplication[]> {
   return useAsync(() => getMyApplications(), []);
+}
+
+/** What the service has told this citizen. Read once per shell mount, which is once per
+ *  full page load — the bell is not a poller, because a message that arrives while
+ *  someone is reading is not urgent enough to spend their data plan on. */
+export function useMyNotifications(): LoadState<CitizenNotification[]> {
+  return useAsync(() => getMyNotifications(), []);
 }

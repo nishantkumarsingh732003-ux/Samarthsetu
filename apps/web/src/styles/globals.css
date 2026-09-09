@@ -3,23 +3,102 @@
 @tailwind utilities;
 
 /**
- * No @font-face and no Google Fonts import, on purpose.
+ * No @font-face and no Google Fonts @import here — the fonts are loaded, but through
+ * `next/font/google` in src/styles/fonts.ts, which is a better way to load exactly the
+ * same three faces.
  *
- * The design drop pulled Plus Jakarta Sans, Inter and JetBrains Mono from
- * fonts.googleapis.com — roughly 180KB of render-blocking requests before a citizen on
- * 2G sees a word. The typefaces are *named* in tailwind.config.ts so a device that
- * already has them uses them, and every stack falls back to Noto Sans and then
- * system-ui. Cost on the wire: zero bytes.
+ * The drop's `@import url('https://fonts.googleapis.com/…')` costs a DNS lookup, a TLS
+ * handshake and a render-blocking stylesheet to a third party before the first word
+ * appears. `next/font` fetches the files at build time and serves them from this origin,
+ * as variable fonts (one file per family, not four static cuts), with `display: swap` and
+ * size-adjusted fallback metrics so the swap does not shift the layout.
  */
 
 @layer base {
   :root {
     color-scheme: light;
+
+    /* The shadcn token contract. Every component under components/ui reads these, and
+     * `npx shadcn@latest add <name>` drops in stock source that expects them to exist.
+     *
+     * The VALUES are this project's audited palette, not shadcn's slate defaults —
+     * tailwind.config.ts is still the single source of truth and scripts/check-contrast.mjs
+     * still asserts the pairs. Two of shadcn's defaults are deliberately replaced:
+     * `--destructive` is #B3261E rather than #DC2626 (4.02:1, under the 4.5 body floor)
+     * and `--muted-foreground` is #55617A rather than #667085 (4.29:1, and it is the
+     * caption colour used on every screen).
+     */
+    --background: 216 45.5% 97.8%; /* canvas   #F7F9FC */
+    --foreground: 221 37.8% 14.5%; /* ink      #172033 */
+    --card: 0 0% 100%; /* surface  #FFFFFF */
+    --card-foreground: 221 37.8% 14.5%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 221 37.8% 14.5%;
+    --primary: 215 64.9% 25.7%; /* accent-700 #173B6C */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 213 52.4% 95.9%; /* accent-50  #EFF4FA */
+    --secondary-foreground: 216 64.6% 18.8%; /* accent-800 #112A4F */
+    --muted: 213 52.4% 95.9%;
+    --muted-foreground: 221 17.9% 40.6%; /* ink-faint  #55617A */
+    --accent: 213 52.4% 95.9%;
+    --accent-foreground: 216 64.6% 18.8%;
+    --destructive: 3 71.3% 41%; /* stop-fg    #B3261E */
+    --destructive-foreground: 0 0% 100%;
+    --border: 214 31.8% 91.4%; /* line       #E2E8F0 */
+    --input: 214 31.8% 91.4%;
+    --ring: 213 64.3% 32.9%; /* accent-600 #1E4F8A */
+    --radius: 0.75rem; /* borderRadius.card */
   }
 
   html {
-    /* Never below 100% — a citizen who has set a larger system font keeps it. */
     -webkit-text-size-adjust: 100%;
+
+    /* ------------------------------------------------------------------------------
+     * The whole interface at 80%.
+     *
+     * Everything in this design system is sized in `rem` — the type scale, the spacing
+     * scale, the radii — so one number here scales the entire app the way a browser
+     * zoom does, rather than 200 utility classes being edited one at a time. At 1080p
+     * and above the 100% layout reads as oversized; this is the density the design was
+     * actually drawn at.
+     *
+     * A *percentage*, never a pixel value. `font-size: 80%` is 80% of whatever the
+     * reader set as their browser default, so someone who has raised their base font to
+     * 20px for a reason still gets 16px here. `font-size: 12.8px` would take that away
+     * from them, which is the difference between a design decision and an accessibility
+     * regression.
+     * ---------------------------------------------------------------------------- */
+    font-size: calc(80% * var(--ss-text-scale));
+  }
+
+  /* The citizen's own choice, multiplied into whichever of the two roots below applies.
+   *
+   * A *multiplier* rather than a second font-size, so "larger text" composes with the
+   * 80%/100% decision instead of arguing with it — and so the reader who already raised
+   * their browser default keeps that as well. The attribute is written by
+   * lib/displayPrefs.ts and set before first paint by the locale layout; its absence is
+   * the default, which is why there is no `[data-text-scale="base"]` rule. */
+  :root {
+    --ss-text-scale: 1;
+  }
+  html[data-text-scale="sm"] {
+    --ss-text-scale: 0.875;
+  }
+  html[data-text-scale="lg"] {
+    --ss-text-scale: 1.25;
+  }
+
+  /* …but not on the phone this product is built for.
+   *
+   * `spacing.touch` is 3rem, and it is 3rem because 48px is the Android and iOS minimum
+   * for a one-handed outdoor tap. Scaling the root by 0.8 would quietly make every
+   * control in the app 38px on exactly the device where that number matters, so a coarse
+   * pointer or a narrow viewport gets the full 100% back. A mouse does not need a 48px
+   * target; a thumb does. */
+  @media (pointer: coarse), (max-width: 1023px) {
+    html {
+      font-size: calc(100% * var(--ss-text-scale));
+    }
   }
 
   body {
@@ -54,11 +133,54 @@
 }
 
 @layer components {
+  /* ------------------------------------------------------------------------------
+   * Hover feedback, and why it is built the way it is.
+   *
+   * Every raised surface wants the same thing on hover: a deeper shadow and a pixel of
+   * lift. Animating `box-shadow` directly is the obvious way to get it and the reason
+   * hover states drop frames — the shadow is rasterised again on every animation frame,
+   * for the full area of the element, on the main thread. On a card the size of the
+   * best-match panel that is a repaint of a third of the viewport, sixty times a second.
+   *
+   * So the shadow is painted once into a pseudo-element and only its `opacity` moves.
+   * Opacity and transform are the two properties a compositor can animate without
+   * touching layout or paint, which is what keeps this at the refresh rate on a cheap
+   * Android GPU as well as on a laptop. Measured before and after; see
+   * scripts/measure-frames.mjs.
+   *
+   * `isolation: isolate` rather than a stacking hack: the pseudo-element sits behind its
+   * own content at `z-index: -1`, and without a fresh stacking context that -1 escapes
+   * the card and lands behind the page background, where the shadow is invisible.
+   * ---------------------------------------------------------------------------------- */
+  .lift {
+    @apply relative isolate;
+  }
+  .lift::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    box-shadow: 0 12px 28px -12px rgba(23, 59, 108, 0.18),
+      0 4px 8px rgba(23, 32, 51, 0.04);
+    opacity: 0;
+    transition: opacity 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .lift:hover::after,
+  .lift:focus-visible::after {
+    opacity: 1;
+  }
+
   /* Every interactive control is at least 48px tall. */
   .btn {
-    @apply inline-flex min-h-touch items-center justify-center gap-2 rounded-card
-           px-5 text-lg font-medium transition-colors disabled:opacity-50
+    @apply lift inline-flex min-h-touch items-center justify-center gap-2 rounded-card
+           px-5 text-base font-medium transition-[color,background-color,border-color,transform]
+           duration-200 ease-out active:translate-y-px disabled:opacity-50
            disabled:cursor-not-allowed;
+  }
+  /* A disabled control is not a target, so it must not answer the pointer like one. */
+  .btn:disabled::after {
+    opacity: 0;
   }
   .btn-primary {
     @apply btn bg-accent-700 text-white hover:bg-accent-800 active:bg-accent-800;
@@ -84,7 +206,8 @@
     @apply rounded-panel border border-line bg-surface shadow-card;
   }
   .panel-link {
-    @apply panel block transition-shadow hover:border-accent-700/25 hover:shadow-lift;
+    @apply panel lift block transition-[border-color,transform] duration-200 ease-out
+           hover:-translate-y-0.5 hover:border-accent-700/25;
   }
   /* The two dark display panels — the best-match hero and the EMI readout. The only
      gradients in the system, and they carry no text below 16px. */
@@ -105,7 +228,7 @@
   }
   .input {
     @apply min-h-touch w-full rounded-card border-2 border-line bg-surface px-4
-           text-lg text-ink placeholder:text-ink-faint focus:border-accent-600;
+           text-base text-ink placeholder:text-ink-faint focus:border-accent-600;
   }
 
   .skip-link {
@@ -129,12 +252,314 @@
   }
 }
 
+/* ------------------------------------------------------------------------------------
+ * The design drop's own stylesheet, brought across.
+ *
+ * These are the `ss-*` primitives from the SamarthSetu drop: the token block, the reveal
+ * animations, the grain overlay, the card and chip treatments, the gradient headline, the
+ * chat bubbles and the scrollbar. They are additive — nothing above changes — and the
+ * `@layer components` ones cost zero bytes until a class is actually used, because
+ * Tailwind drops unused component rules from the build.
+ *
+ * Four things in the drop's file are not reproduced verbatim:
+ *
+ *   1. `@import url('https://fonts.googleapis.com/…')` for Plus Jakarta Sans, Inter and
+ *      JetBrains Mono. The faces ARE loaded — see src/styles/fonts.ts — but through
+ *      `next/font/google`, which self-hosts them instead of blocking the first paint on
+ *      a third-party stylesheet.
+ *   2. `html, body, #root { font-family: 'Inter' }`. `#root` is the CRA mount point and
+ *      does not exist here — but the real problem is Inter: it carries no Devanagari,
+ *      Bengali, Tamil or Telugu, so forcing it would break four of the six languages.
+ *      `font-sans` in tailwind.config.ts is the same stack with Noto behind it.
+ *   3. `button:focus-visible { outline: 2px solid }`. The base layer above already gives
+ *      every focusable element a 4px ring with an offset; this would make focus *less*
+ *      visible, which a government service cannot ship.
+ *   4. The `--background: 210 33% 98%` shadcn HSL block, at the drop's values. The block
+ *      IS here — it is in the base layer above, because components/ui is shadcn now —
+ *      but carrying this project's audited palette rather than the drop's slate defaults.
+ *
+ * Three token values are the audited ones rather than the drop's, because the drop's fail
+ * WCAG AA on white and scripts/check-contrast.mjs asserts all three:
+ * danger #DC2626 -> #B3261E, warning #D97706 -> #7A4E0A, muted #667085 -> #55617A.
+ * ---------------------------------------------------------------------------------- */
+
+:root {
+  --ss-bg: #f7f9fc;
+  --ss-surface: #ffffff;
+  --ss-navy: #173b6c;
+  --ss-navy-hover: #112a4f;
+  --ss-navy-light: #eff4fa;
+  --ss-teal: #0f766e;
+  --ss-success: #16803c;
+  --ss-success-light: #dcfce7;
+  --ss-warn: #7a4e0a; /* drop: #D97706 — 3.18:1, unreadable as text */
+  --ss-warn-light: #fef3c7;
+  --ss-danger: #b3261e; /* drop: #DC2626 — 4.02:1, under the 4.5 body floor */
+  --ss-danger-light: #fee2e2;
+  --ss-info: #1e4f8a;
+  --ss-info-light: #dbeafe;
+  --ss-saffron: #f59e0b; /* a background and a rule, never a text colour */
+  --ss-saffron-light: #fffbeb;
+  --ss-text: #172033;
+  --ss-text-secondary: #414d63;
+  --ss-muted: #55617a; /* drop: #667085 — 4.29:1, and it is the caption colour */
+  --ss-border: #e2e8f0;
+}
+
+/* Keyframes live outside the layer so a class that survives the purge still has its
+   animation. The base layer's `prefers-reduced-motion` rule switches every one of these
+   off, so none of them needs its own guard. */
+@keyframes ss-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@keyframes ss-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes ss-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@keyframes ss-shimmer {
+  0% {
+    background-position: -400px 0;
+  }
+  100% {
+    background-position: 400px 0;
+  }
+}
+@keyframes ss-pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(23, 59, 108, 0.35);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(23, 59, 108, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(23, 59, 108, 0);
+  }
+}
+@keyframes ss-check-in {
+  0% {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* The scrollbar is an element pseudo, not a class, so it cannot live in a layer. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+@layer components {
+  .ss-fade-up {
+    animation: ss-fade-up 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .ss-fade-in {
+    animation: ss-fade-in 0.6s ease-out both;
+  }
+  .ss-scale-in {
+    animation: ss-scale-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .ss-check-in {
+    animation: ss-check-in 0.5s ease-out both;
+  }
+  .ss-pulse-ring {
+    animation: ss-pulse-ring 2s infinite;
+  }
+  .ss-shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.55) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 800px 100%;
+    animation: ss-shimmer 2.2s infinite linear;
+  }
+
+  /* Aliases, not copies. `.panel`, `.panel-dark` and `.chip` above are the same shapes
+     the drop drew; defining these on top of them means one place to change a radius. */
+  .ss-card {
+    @apply panel lift transition-[border-color,transform] duration-200 ease-out;
+  }
+  .ss-card:hover {
+    @apply -translate-y-0.5 border-accent-700/20;
+  }
+  .ss-card-dark {
+    @apply panel-dark;
+  }
+  .ss-chip {
+    @apply chip;
+  }
+
+  .ss-cta-cursor {
+    cursor: pointer;
+  }
+
+  /* Navy to teal. Both ends pass AA on white (11.18:1 and 5.00:1), so the whole sweep
+     does — which is the only reason gradient text is allowed here at all. */
+  .ss-gradient-text {
+    background: linear-gradient(135deg, #173b6c 0%, #0f766e 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .ss-bubble-user {
+    background: linear-gradient(135deg, #173b6c 0%, #1e4a8a 100%);
+    color: #ffffff;
+    border-radius: 1.25rem 1.25rem 0.25rem 1.25rem;
+  }
+  .ss-bubble-ai {
+    @apply border border-line bg-surface text-ink;
+    border-radius: 1.25rem 1.25rem 1.25rem 0.25rem;
+  }
+}
+
+@layer utilities {
+  /* Paper grain. An inline SVG turbulence filter, so it is bytes in the stylesheet
+     rather than a request. Needs a positioned ancestor. */
+  .ss-grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+  }
+
+  /* The drop's `.ss-bg-pattern`. Same two radial tints as `.ground-wash` above, at the
+     drop's own stops. */
+  .ss-bg-pattern {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(23, 59, 108, 0.055) 0%, transparent 40%),
+      radial-gradient(circle at 90% 80%, rgba(15, 118, 110, 0.045) 0%, transparent 45%);
+  }
+}
+
+/* ----------------------------------------------------------------------------------
+ * High contrast, when the citizen asks for it.
+ *
+ * WHAT IT ACTUALLY CHANGES, and why these four things. The palette already clears WCAG
+ * AA everywhere — scripts/check-contrast.mjs asserts twenty-seven pairs — so this is not
+ * a fix for a failing colour. It is for reading a government form on a scratched screen
+ * in daylight, where the things that disappear first are not the headings:
+ *
+ *   1. Secondary text. `ink-muted` and `ink-faint` are 7.4:1 and 6.1:1, which is fine
+ *      indoors and gone outdoors. Both become full ink — 14.4:1.
+ *   2. Borders. A 1px #E2E8F0 hairline is what separates one card from the next, and it
+ *      is the first thing to vanish. Every panel edge becomes 2px of ink.
+ *   3. Shadows. With hard borders the soft elevation is noise, so it goes.
+ *   4. Tinted informational panels. The accent-50 wash behind the engine panel and the
+ *      hints is nearly white; it gets an ink rule so the block still reads as a block.
+ *
+ * Written against the utility classes rather than the tokens because this project's
+ * palette compiles to literal hex in tailwind.config.ts — there is no variable to swap.
+ * Outside `@layer` so it wins on order as well as on specificity.
+ * ---------------------------------------------------------------------------------- */
+html[data-contrast="high"] {
+  --ss-muted: #172033;
+  --ss-text-secondary: #172033;
+  --ss-border: #172033;
+}
+/* `:not([data-state="on"])` is load-bearing. A Radix toggle carries `text-ink-muted` in
+   its resting class list and swaps to white when pressed, and that swap is a Tailwind
+   variant with lower specificity than this rule — so without the exclusion, pressing
+   "A+" or "High contrast: On" left navy text on a navy button. The one control the
+   setting is about became the one control it broke. */
+html[data-contrast="high"] .text-ink-muted:not([data-state="on"]),
+html[data-contrast="high"] .text-ink-faint:not([data-state="on"]),
+html[data-contrast="high"] .field-hint,
+html[data-contrast="high"] .field-label {
+  color: #172033;
+}
+html[data-contrast="high"] .panel,
+html[data-contrast="high"] .card,
+html[data-contrast="high"] .ss-card,
+html[data-contrast="high"] .input,
+html[data-contrast="high"] .btn-secondary {
+  border-width: 2px;
+  border-color: #172033;
+  box-shadow: none;
+}
+html[data-contrast="high"] .border-line:not([data-state="on"]),
+html[data-contrast="high"] .border-line\/70 {
+  border-color: #172033;
+}
+/* The tinted note blocks: accent-50 and the semantic backgrounds are all near-white at
+   this size, so each gets an edge rather than a stronger fill. Darkening the fill would
+   have taken the ink on top back below AA. */
+html[data-contrast="high"] .bg-accent-50,
+html[data-contrast="high"] .bg-good-bg,
+html[data-contrast="high"] .bg-warn-bg,
+html[data-contrast="high"] .bg-stop-bg,
+html[data-contrast="high"] .bg-saffron-bg,
+html[data-contrast="high"] .bg-teal-50 {
+  border: 2px solid currentColor;
+}
+/* The lift shadow is the one hover affordance that is pure shadow, so hover needs to say
+   something else. */
+html[data-contrast="high"] .lift::after {
+  box-shadow: none;
+}
+html[data-contrast="high"] .lift:hover,
+html[data-contrast="high"] .lift:focus-visible {
+  outline: 3px solid #173b6c;
+  outline-offset: 2px;
+}
+
 /* Printing an application summary or a repayment plan. The browser's own "Save as PDF"
    is the most reliable export on a cheap Android phone: no library, no bytes, no server
    round trip. Everything chrome-like is dropped so the sheet is the document. */
 @media print {
+  /* A4 with a real margin. The document below is the page, not a screenshot of one. */
+  @page {
+    size: A4;
+    margin: 12mm;
+  }
   .no-print {
     display: none !important;
+  }
+  /* The mirror of `.no-print`: rendered into the page, invisible until it is printed.
+     Used by RepaymentPlanSheet, which is the document "download repayment plan"
+     produces — the browser's own Save as PDF does the generating, so the citizen route
+     pays nothing in bundle for it. */
+  .print-only {
+    display: block !important;
   }
   body {
     background: #fff;
@@ -144,7 +569,8 @@
     border-color: #94a3b8;
     box-shadow: none;
   }
-  .panel-dark {
+  .panel-dark,
+  .ss-card-dark {
     background: #fff !important;
     color: #172033 !important;
     border: 1px solid #94a3b8;
@@ -152,4 +578,19 @@
   a[href]::after {
     content: "";
   }
+  /* A table that breaks mid-row across a page is unreadable, and a heading orphaned at
+     the foot of one is nearly as bad. */
+  tr,
+  th,
+  td {
+    break-inside: avoid;
+  }
+  thead {
+    display: table-header-group;
+  }
+}
+
+/* Hidden on screen. The print block above is what reveals it. */
+.print-only {
+  display: none;
 }

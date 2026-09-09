@@ -132,11 +132,11 @@ def measure(label: str, call: Callable[[], Any], n: int, warmup: int = 20) -> di
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Measure SETU eligibility latency.")
+    parser = argparse.ArgumentParser(description="Measure SamarthSetu eligibility latency.")
     parser.add_argument("--n", type=int, default=300, help="samples per stage")
     args = parser.parse_args()
 
-    print("SETU latency — milliseconds, percentiles not means")
+    print("SamarthSetu latency — milliseconds, percentiles not means")
     print()
 
     from setu_rules import ENGINE_VERSION, run

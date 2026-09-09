@@ -1,4 +1,4 @@
-# SETU — test strategy
+# SamarthSetu — test strategy
 
 **632 tests.** What they cover, what they deliberately do not, and where the gaps are.
 

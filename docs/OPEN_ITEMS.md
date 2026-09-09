@@ -7,7 +7,7 @@ Nothing here is a surprise on demo day if it is read first.
 
 **Legend** — 🔴 blocks the demo · 🟡 weakens the demo · 🟢 tracked, not urgent
 
-Last reviewed: 2026-09-04 (after the account surface and design port)
+Last reviewed: 2026-09-05 (after the landing page port and the rename to SamarthSetu)
 
 ---
 
@@ -517,6 +517,34 @@ mobile data. Lighthouse's throttling is a model of a bad connection, not a bad c
 
 **To close:** run the DEPLOYMENT.md checklist, deploy, put the URL at the top of the
 README, and open it on a cheap handset away from office wifi.
+
+---
+
+## 🟡 OI-65 — the landing page's story photographs come from another domain
+
+**Status:** open, deliberate · **Owner:** repo owner · **Since:** the landing page port
+
+The three photographs in the "Entrepreneurs who found their scheme" carousel are
+hotlinked from `upload.wikimedia.org` (CC BY-SA 4.0, credited under the carousel). That
+was chosen over a photo-free treatment, and it is the only thing on the citizen route
+that depends on a host we do not control.
+
+What it costs:
+
+- **The first view is not offline-capable.** `next/image` resizes and re-encodes each
+  file — the originals are 200-450KB of JPEG — and the service worker caches the
+  optimised result at `/_next/image?…` on the way past, so the *second* view works
+  offline. The first one, in a dead spot, shows the alt text.
+- **A hotlink can rot.** If a file is renamed or deleted on Commons the card falls back
+  to alt text; nothing else on the page breaks, and `stories.test.ts` asserts the URLs
+  are well-formed but cannot assert they still resolve.
+- **Wikimedia asks large sites not to hotlink.** A hackathon demo is not a large site,
+  but a deployed public service would be.
+
+**To close:** either license three photographs and serve them from `public/`, or drop to
+the photo-free treatment — the panel already sits on `bg-accent-800` behind the
+scrim and the caption, so deleting the `<Image>` in
+`components/landing/StoryCarousel.tsx` leaves a working card rather than a hole.
 
 ---
 

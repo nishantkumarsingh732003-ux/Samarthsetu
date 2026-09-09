@@ -1,6 +1,6 @@
 {
-  "name": "SETU — Scheme Eligibility & Transparent Uptake",
-  "short_name": "SETU",
+  "name": "SamarthSetu — Scheme Eligibility & Transparent Uptake",
+  "short_name": "SamarthSetu",
   "description": "Find the government credit scheme that fits you, and the office that can process it.",
   "start_url": "/",
   "display": "standalone",

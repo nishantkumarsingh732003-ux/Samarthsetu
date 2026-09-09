@@ -26,11 +26,20 @@ from app.api.v1.deps import CitizenUser, SessionDep
 from app.core import cache
 from app.core.config import settings
 from app.core.security import PasswordTooLong, create_access_token
-from app.models import Application, ChannelPartner, Citizen, CitizenProfile, Scheme, User
+from app.models import (
+    Application,
+    ChannelPartner,
+    Citizen,
+    CitizenProfile,
+    Notification,
+    Scheme,
+    User,
+)
 from app.schemas.citizen import (
     CitizenAccountOut,
     CitizenApplicationSummary,
     CitizenMatchResponse,
+    CitizenNotificationOut,
     CitizenProfileIn,
     CitizenProfileOut,
     SignupRequest,
@@ -107,7 +116,14 @@ def _account_out(user: User, citizen: Citizen, profile: CitizenProfile) -> Citiz
     return CitizenAccountOut(
         id=str(user.id),
         email=user.email,
-        display_name=user.display_name,
+        # The citizen's own name wins over the login's label, and only falls back when
+        # the citizen record has none. They are different things: `users.display_name` is
+        # what the account was created as, `citizens.display_name` is what the person
+        # says their name is — and the profile page writes the second one. Reading the
+        # first meant editing your name on the profile page changed nothing in the header
+        # or the greeting, and meant the demo account was greeted as "Demo" after loading
+        # a persona called Rahul Kumar.
+        display_name=citizen.display_name or user.display_name,
         role=str(user.role),
         citizen_id=str(citizen.id),
         profile=_profile_out(citizen, profile),
@@ -366,6 +382,64 @@ async def applications(
         session,
         actor=user.email,
         action="CITIZEN_APPLICATIONS_LISTED",
+        entity="citizen",
+        entity_id=str(citizen.id),
+        meta={"count": len(out)},
+    )
+    await session.commit()
+    return out
+
+
+@router.get(
+    "/notifications",
+    response_model=list[CitizenNotificationOut],
+    summary="Messages this service sent to the signed-in citizen, newest first",
+    description=(
+        "The stored record of what was sent, rendered in the language it went out in. "
+        "Nothing here is generated on read: a message a citizen has not been sent does "
+        "not appear."
+    ),
+)
+async def notifications(
+    user: CitizenUser, session: SessionDep, limit: int = 20
+) -> list[CitizenNotificationOut]:
+    citizen, _ = await _load(session, user)
+
+    # A feed, not a search. The cap is here rather than in the query string alone so a
+    # crafted `?limit=100000` cannot turn one bell into a table scan.
+    limit = max(1, min(limit, 50))
+
+    rows = (
+        await session.execute(
+            select(Notification, Application.reference_no)
+            .outerjoin(Application, Application.id == Notification.application_id)
+            .where(Notification.citizen_id == citizen.id)
+            .order_by(Notification.created_at.desc())
+            .limit(limit)
+        )
+    ).all()
+
+    out = [
+        CitizenNotificationOut(
+            id=str(notification.id),
+            event=notification.event,
+            channel=str(notification.channel),
+            language=notification.language,
+            body=notification.body,
+            status=str(notification.status),
+            sent_at=notification.sent_at.isoformat() if notification.sent_at else None,
+            created_at=notification.created_at.isoformat(),
+            application_reference=reference_no,
+        )
+        for notification, reference_no in rows
+    ]
+
+    # CLAUDE.md rule 4: a full audit log of who read what. A citizen reading their own
+    # feed is still a read of personal data and is recorded like any other.
+    await audit.record(
+        session,
+        actor=user.email,
+        action="CITIZEN_NOTIFICATIONS_LISTED",
         entity="citizen",
         entity_id=str(citizen.id),
         meta={"count": len(out)},

@@ -1,4 +1,4 @@
-# SETU — architecture
+# SamarthSetu — architecture
 
 > AI understands the citizen. Rules decide eligibility. Data routes the citizen.
 > Evidence explains the decision.

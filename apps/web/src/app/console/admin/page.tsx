@@ -58,7 +58,7 @@ export default function AdminConsole() {
 
   if (!data) {
     return (
-      <main className="mx-auto max-w-5xl px-5 py-10">
+      <main className="mx-auto max-w-console px-5 py-10">
         <p role="status" className="text-lg">
           {error ?? "Loading…"}
         </p>
@@ -70,10 +70,10 @@ export default function AdminConsole() {
   const m = data.misrouting;
 
   return (
-    <main className="mx-auto max-w-5xl px-5 py-8">
+    <main className="mx-auto max-w-console px-5 py-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">Scheme uptake</h1>
+          <h1 className="font-display text-2xl font-extrabold tracking-tight">Scheme uptake</h1>
           <p className="mt-1 text-base text-ink-muted">
             Ministry of Social Justice &amp; Empowerment · rule engine{" "}
             {data.engine_version}
@@ -104,8 +104,8 @@ export default function AdminConsole() {
 
       {/* The primary KPI, stated first because it is the thing this service exists to
           change: applications that would have walked into the wrong counter. */}
-      <section aria-labelledby="kpi-heading" className="card mt-6 border-2 border-accent-600 p-5">
-        <h2 id="kpi-heading" className="text-lg font-semibold">
+      <section aria-labelledby="kpi-heading" className="panel mt-6 border-2 border-accent-600 p-5">
+        <h2 id="kpi-heading" className="font-display text-lg font-bold">
           Misrouting prevented
         </h2>
         <p className="mt-2 text-4xl font-semibold text-accent-800">{m.total_prevented}</p>
@@ -121,15 +121,15 @@ export default function AdminConsole() {
           ].map(([label, value]) => (
             <div key={String(label)} className="border-t border-line pt-2">
               <dt className="text-base text-ink-muted">{label}</dt>
-              <dd className="text-xl font-semibold">{value}</dd>
+              <dd className="font-display text-xl font-bold tracking-tight">{value}</dd>
             </div>
           ))}
         </dl>
       </section>
 
-      <section aria-labelledby="funnel-heading" className="card mt-6 p-5">
+      <section aria-labelledby="funnel-heading" className="panel mt-6 p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="funnel-heading" className="text-lg font-semibold">
+          <h2 id="funnel-heading" className="font-display text-lg font-bold">
             From first question to sanction
           </h2>
           <button
@@ -164,9 +164,9 @@ export default function AdminConsole() {
         </ul>
       </section>
 
-      <section aria-labelledby="coverage-heading" className="card mt-6 p-5">
+      <section aria-labelledby="coverage-heading" className="panel mt-6 p-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="coverage-heading" className="text-lg font-semibold">
+          <h2 id="coverage-heading" className="font-display text-lg font-bold">
             Underserved districts
           </h2>
           <button
@@ -227,9 +227,9 @@ export default function AdminConsole() {
             ["Application status", data.status_mix, "status_mix"],
           ] as const
         ).map(([title, rows, section]) => (
-          <section key={section} className="card p-5" aria-label={title}>
+          <section key={section} className="panel p-5" aria-label={title}>
             <div className="flex items-center justify-between gap-3">
-              <h2 className="text-lg font-semibold">{title}</h2>
+              <h2 className="font-display text-lg font-bold">{title}</h2>
               <button
                 type="button"
                 onClick={() => void downloadCsv(section)}
@@ -258,9 +258,9 @@ export default function AdminConsole() {
           </section>
         ))}
 
-        <section className="card p-5" aria-label="Turnaround by partner type">
+        <section className="panel p-5" aria-label="Turnaround by partner type">
           <div className="flex items-center justify-between gap-3">
-            <h2 className="text-lg font-semibold">Turnaround by partner type</h2>
+            <h2 className="font-display text-lg font-bold">Turnaround by partner type</h2>
             <button
               type="button"
               onClick={() => void downloadCsv("turnaround")}

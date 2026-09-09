@@ -1,9 +1,10 @@
 "use client";
 
+import { Square, Volume2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
-import { SPEECH_TAGS, type Locale } from "@/i18n/config";
+import { LOCALE_NAMES, SPEECH_TAGS, type Locale } from "@/i18n/config";
 
 /**
  * Text-to-speech on every result card.
@@ -12,8 +13,22 @@ import { SPEECH_TAGS, type Locale } from "@/i18n/config";
  * explanation alone does not reach them. Uses the platform speech synthesiser — no
  * network, no bundle cost — and hides itself entirely where that is unavailable rather
  * than offering a button that does nothing.
+ *
+ * Two shapes, one implementation. `icon` is the square button that sits in a row of card
+ * actions. `full` is the labelled pill the scheme page uses, and it names the language it
+ * will speak in — "Listen (हिन्दी)" — because the synthesiser reads in the page's
+ * language, not the device's, and someone who has switched language needs to know that
+ * before they tap. The name is always in its own script (`LOCALE_NAMES`).
  */
-export function ReadAloud({ text, locale }: { text: string; locale: Locale }) {
+export function ReadAloud({
+  text,
+  locale,
+  variant = "icon",
+}: {
+  text: string;
+  locale: Locale;
+  variant?: "icon" | "full";
+}) {
   const t = useTranslations("results");
   const [supported, setSupported] = useState(false);
   const [speaking, setSpeaking] = useState(false);
@@ -38,6 +53,26 @@ export function ReadAloud({ text, locale }: { text: string; locale: Locale }) {
     setSpeaking(true);
     window.speechSynthesis.speak(utterance);
   };
+
+  if (variant === "full") {
+    return (
+      <button
+        type="button"
+        onClick={toggle}
+        aria-pressed={speaking}
+        className="btn-secondary shrink-0 rounded-full text-base"
+      >
+        {speaking ? (
+          <Square className="h-4 w-4 fill-current" aria-hidden="true" />
+        ) : (
+          <Volume2 className="h-4 w-4" aria-hidden="true" />
+        )}
+        {speaking
+          ? t("stopReading")
+          : t("listenIn", { language: LOCALE_NAMES[locale] })}
+      </button>
+    );
+  }
 
   return (
     <button

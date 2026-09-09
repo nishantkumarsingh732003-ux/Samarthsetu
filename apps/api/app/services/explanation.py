@@ -109,6 +109,17 @@ UI_STRINGS: dict[str, dict[str, str]] = {
         "amount": "Under this scheme a loan of up to about Rs {amount} may be possible.",
         "redirect": "You may want to ask about the {scheme} instead.",
         "still_need": "We still need to know: {fields}.",
+        # The assistant's reply when no model is configured or the call failed. It
+        # points at the screen that holds the answer rather than apologising, because
+        # `LLM_PROVIDER=none` is a supported configuration and not an outage.
+        "assistant_offline": (
+            "From your answers the {scheme} fits. Open it to see the rule that decided "
+            "and the partners authorised to process it."
+        ),
+        "assistant_offline_none": (
+            "I do not have that answer here. Your scheme results carry the same "
+            "information, with the rule that decided each one."
+        ),
     },
     "hi": {
         "eligible": "आप {scheme} के लिए पात्र हैं।",
@@ -117,6 +128,14 @@ UI_STRINGS: dict[str, dict[str, str]] = {
         "amount": "इस योजना के तहत अधिकतम लगभग Rs {amount} तक का ऋण संभव है।",
         "redirect": "आप {scheme} के बारे में पूछ सकते हैं।",
         "still_need": "हमें यह जानना है: {fields}।",
+        "assistant_offline": (
+            "आपके उत्तरों के अनुसार {scheme} आपके लिए उपयुक्त है। इसे खोलकर वह नियम देखें "
+            "जिसने यह तय किया, और वे साझेदार जो इसे संसाधित कर सकते हैं।"
+        ),
+        "assistant_offline_none": (
+            "इसका उत्तर मेरे पास यहाँ नहीं है। आपके योजना परिणामों में यही जानकारी है, "
+            "और साथ में वह नियम भी जिसने हर एक को तय किया।"
+        ),
     },
 }
 

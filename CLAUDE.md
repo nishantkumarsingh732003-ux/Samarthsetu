@@ -1,4 +1,4 @@
-# Project: SETU — Scheme Eligibility & Transparent Uptake
+# Project: SamarthSetu — Scheme Eligibility & Transparent Uptake
 
 ## What we are building
 A multilingual, low-literacy-friendly platform for Smart India Hackathon 2026,
@@ -38,8 +38,14 @@ geo-aware partner routing engine, and a conversational multilingual front door.
 4. **Privacy by default (DPDP Act 2023).** Aadhaar and any government ID is masked at
    ingestion — store only last 4 digits plus a salted hash. Explicit consent record
    before any data is stored. Full audit log of who read what.
-5. **Assume 2G and a Rs 6,000 phone.** Offline-first PWA, budget < 200KB JS on the
+5. **Assume 4G and a budget Android phone.** Offline-first PWA, budget < 300KB JS on the
    citizen route, works without JS for the core flow where possible.
+   Revised from "2G / Rs 6,000 phone / 200KB": 4G reaches the great majority of India
+   now, including the citizens this service is for. The budget is raised, not removed —
+   `apps/web/scripts/check-bundle.mjs` still fails the build over the ceiling, because a
+   budget nobody enforces is a wish. Offline-first still holds: connectivity is better
+   than it was, not uniform, and a citizen mid-application in a dead spot must still see
+   what they were told.
 6. **No mock data in the demo path.** Seed realistic data via scripts so every screen
    is populated from the real database.
 

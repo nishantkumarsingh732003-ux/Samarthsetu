@@ -18,13 +18,16 @@
  * stylesheet in globals.css drops the navigation so the sheet is the document.
  */
 
-import { Printer } from "lucide-react";
+import { Download } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 
-import { RepaymentChart } from "@/components/charts/RepaymentChart";
+import { RepaymentPlanSheet } from "@/components/account/RepaymentPlanSheet";
 import { useMatches } from "@/components/account/useCitizenData";
-import { Button, RangeField } from "@/components/ui/controls";
+import { RepaymentChart } from "@/components/charts/RepaymentChart";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { RangeField } from "@/components/ui/controls";
 import { amortisationByYear, repaymentPlan } from "@/lib/emi";
 import { formatRupees } from "@/lib/format";
 
@@ -39,6 +42,7 @@ const LIMITS = {
 
 export function CalculatorClient({ locale }: { locale: Locale }) {
   const t = useTranslations("calculator");
+  const tCommon = useTranslations("common");
   const { data } = useMatches(locale);
 
   const [amount, setAmount] = useState(500000);
@@ -67,32 +71,46 @@ export function CalculatorClient({ locale }: { locale: Locale }) {
   );
   const schedule = useMemo(() => amortisationByYear(plan, rate), [plan, rate]);
 
+  const money = (value: number) =>
+    tCommon("rupees", { amount: formatRupees(value, locale) });
+
+  /**
+   * Stamped after mount, never during render. A `new Date()` in the render path makes the
+   * server HTML and the first client HTML disagree, which is the exact class of bug
+   * scripts/check-hydration.mjs fails the build for — and it is only wanted on the
+   * printed sheet, which nobody sees before hydration anyway.
+   */
+  const [generatedAt, setGeneratedAt] = useState("");
+  useEffect(() => {
+    setGeneratedAt(
+      new Intl.DateTimeFormat(locale === "en" ? "en-IN" : `${locale}-IN`, {
+        dateStyle: "medium",
+        timeStyle: "short",
+      }).format(new Date()),
+    );
+  }, [locale]);
+
   return (
     <div className="space-y-6">
-      <header className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="font-display text-2xl font-extrabold lg:text-3xl">{t("title")}</h1>
-          <p className="mt-1 text-ink-muted">{t("sub")}</p>
-          {prefilledFrom && (
-            <p className="mt-1 text-sm text-teal-700">
-              {t("prefill", { scheme: prefilledFrom })}
-            </p>
-          )}
-        </div>
-        <Button variant="secondary" className="no-print" onClick={() => window.print()}>
-          <Printer className="h-4 w-4" aria-hidden="true" />
-          {t("print")}
-        </Button>
+      <header className="no-print">
+        <h1 className="font-display text-2xl font-extrabold lg:text-3xl">{t("title")}</h1>
+        <p className="mt-1 text-ink-muted">{t("sub")}</p>
+        {prefilledFrom && (
+          <p className="mt-1 text-sm text-teal-700">
+            {t("prefill", { scheme: prefilledFrom })}
+          </p>
+        )}
       </header>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
-        <section className="panel space-y-6 p-5">
+      <div className="no-print grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.2fr)]">
+        <Card>
+          <CardContent className="space-y-6 p-5 lg:p-6">
           <RangeField
             label={t("amount")}
             numberLabel={t("amountBox")}
             value={amount}
             onChange={setAmount}
-            display={formatRupees(amount, locale)}
+            display={money(amount)}
             {...LIMITS.amount}
           />
           <RangeField
@@ -122,54 +140,87 @@ export function CalculatorClient({ locale }: { locale: Locale }) {
             />
             <p className="field-hint mt-2">{t("moratoriumHint")}</p>
           </div>
-        </section>
+          </CardContent>
+        </Card>
 
         <div className="space-y-5">
-          <section className="panel-dark p-6">
-            <p className="text-sm font-semibold uppercase tracking-wide text-saffron">
+          <section className="panel-dark p-6 lg:p-7">
+            <p className="text-xs font-bold uppercase tracking-widest text-saffron">
               {t("monthlyEmi")}
             </p>
             <p className="numeric mt-2 font-display text-4xl font-extrabold">
-              {formatRupees(plan.emi, locale)}
+              {money(plan.emi)}
             </p>
-            <dl className="mt-5 grid grid-cols-3 gap-3">
-              <div>
-                <dt className="text-sm text-white/60">{t("principal")}</dt>
-                <dd className="numeric mt-0.5 font-semibold">
-                  {formatRupees(amount, locale)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-sm text-white/60">{t("totalInterest")}</dt>
-                <dd className="numeric mt-0.5 font-semibold">
-                  {formatRupees(plan.totalInterest, locale)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-sm text-white/60">{t("totalPayment")}</dt>
-                <dd className="numeric mt-0.5 font-semibold">
-                  {formatRupees(plan.totalPayment, locale)}
-                </dd>
-              </div>
+            <dl className="mt-6 grid grid-cols-3 gap-3">
+              {[
+                { label: t("principal"), value: money(amount), tone: "" },
+                {
+                  label: t("totalInterest"),
+                  value: money(plan.totalInterest),
+                  // The one figure a borrower most needs to notice is what the credit
+                  // costs on top of what they receive, so it is the one that is coloured.
+                  tone: "text-saffron",
+                },
+                { label: t("totalPayment"), value: money(plan.totalPayment), tone: "" },
+              ].map((stat) => (
+                <div key={stat.label}>
+                  <dt className="text-xs font-bold uppercase leading-snug tracking-widest text-white/60">
+                    {stat.label}
+                  </dt>
+                  <dd className={`numeric mt-1 font-semibold ${stat.tone}`}>
+                    {stat.value}
+                  </dd>
+                </div>
+              ))}
             </dl>
             {plan.moratoriumInterest > 0 && (
               <p className="numeric mt-4 border-t border-white/15 pt-3 text-sm text-white/75">
                 {t("moratoriumInterest")}{" "}
-                {formatRupees(plan.moratoriumInterest, locale)}
+                {money(plan.moratoriumInterest)}
               </p>
             )}
           </section>
 
-          <section className="panel p-5">
-            <h2 className="text-sm font-semibold text-ink-faint">{t("chartTitle")}</h2>
-            <div className="mt-3">
-              <RepaymentChart years={schedule} locale={locale} />
-            </div>
-          </section>
+          <Card>
+            <CardContent className="p-5 lg:p-6">
+              <h2 className="text-xs font-bold uppercase tracking-widest text-ink-faint">
+                {t("chartTitle")}
+              </h2>
+              <div className="mt-4">
+                <RepaymentChart years={schedule} locale={locale} />
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
 
-      <p className="text-sm text-ink-faint">{t("disclaimer")}</p>
+      <Card className="no-print">
+        <CardContent className="flex flex-wrap items-center justify-between gap-4 p-5 lg:p-6">
+          <p className="max-w-2xl text-sm text-ink-faint">{t("disclaimer")}</p>
+          {/* `window.print()` and not a PDF library — see RepaymentPlanSheet for why.
+              The sheet below is what comes out. */}
+          <Button
+            variant="primary"
+            onClick={() => window.print()}
+            className="shrink-0 rounded-full"
+          >
+            <Download className="h-4 w-4" aria-hidden="true" />
+            {t("download")}
+          </Button>
+        </CardContent>
+      </Card>
+
+      <RepaymentPlanSheet
+        locale={locale}
+        scheme={prefilledFrom}
+        amount={amount}
+        rate={rate}
+        years={years}
+        moratorium={moratorium}
+        plan={plan}
+        schedule={schedule}
+        generatedAt={generatedAt}
+      />
     </div>
   );
 }

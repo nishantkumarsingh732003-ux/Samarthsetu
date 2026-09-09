@@ -41,7 +41,7 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="SETU API",
+    title="SamarthSetu API",
     description="Scheme Eligibility & Transparent Uptake — SIH 2026 PS 26092 (MoSJE)",
     version="0.1.0",
     lifespan=lifespan,

@@ -1,3 +1,5 @@
+
+import { fontVariables } from "@/styles/fonts";
 /**
  * The staff console shell.
  *
@@ -13,7 +15,7 @@
  */
 export default function ConsoleLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={fontVariables}>
       <body className="min-h-screen bg-canvas antialiased">{children}</body>
     </html>
   );

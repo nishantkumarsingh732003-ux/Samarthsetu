@@ -1,5 +1,5 @@
 /**
- * Thin client for the SETU API.
+ * Thin client for the SamarthSetu API.
  *
  * Every call is wrapped so a network failure surfaces as a typed result rather than a
  * thrown error the UI has to guess at. On a 2G connection and a Rs 6,000 phone, requests

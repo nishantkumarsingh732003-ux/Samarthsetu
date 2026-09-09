@@ -1,4 +1,4 @@
-# SETU — SIH competition strategy
+# SamarthSetu — SIH competition strategy
 
 How to win the room, in the order the room decides.
 
@@ -119,7 +119,7 @@ maturity, and it is the last thing in their memory when they score.
 | "Is the partner data real?" | No. 120 synthetic partners pending the official MoSJE master, disclosed in the README and on the routing screen. Scheme figures are verified against nsfdc.nic.in; no circular number yet, tracked as OI-3 |
 | "What happens when the rules change next April?" | Edit the YAML, bump `engine_version`, re-run the golden tests. No code deploy. Past decisions stay replayable because each application snapshots its `match_run_id` and engine version |
 | "How do you know the AI isn't hallucinating eligibility?" | It is never asked. The verdict is computed before the model is consulted, and the model is never handed the rupee figure. 36 tests, plus `make chaos` |
-| "Does it approve loans?" | No, and every screen says so. SETU matches and routes; a Channel Partner decides |
+| "Does it approve loans?" | No, and every screen says so. SamarthSetu matches and routes; a Channel Partner decides |
 | "Is it accessible?" | WCAG AA on every palette pair as a build gate, 100/100/100/100 Lighthouse, 114 KB of a 200 KB budget, works offline. Not yet walked on a real low-end handset — OI-29 |
 | "What's not finished?" | Hand them `docs/OPEN_ITEMS.md`. 51 entries, open ones first |
 

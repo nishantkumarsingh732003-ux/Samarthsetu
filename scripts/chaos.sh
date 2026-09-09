@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Prove that SETU degrades rather than dies.
+# Prove that SamarthSetu degrades rather than dies.
 #
 # The claim under test is CLAUDE.md rule 1, stated as an operational property rather
 # than an architectural intention: eligibility is decided by a deterministic rule
@@ -42,7 +42,7 @@ api() {
 
 jqp() { python3 -c "import json,sys; d=json.load(sys.stdin); print($1)"; }
 
-bold "SETU chaos drill — does the service survive losing its language model?"
+bold "SamarthSetu chaos drill — does the service survive losing its language model?"
 printf 'API: %s\n' "$API"
 
 # --- 0. the service must be up before we can meaningfully break it -----------------

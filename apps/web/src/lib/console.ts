@@ -90,7 +90,7 @@ async function request<T>(path: string, init: RequestInit = {}): Promise<Result<
     }
     return { ok: true, data: (await response.json()) as T };
   } catch {
-    return { ok: false, error: "Could not reach the SETU API." };
+    return { ok: false, error: "Could not reach the SamarthSetu API." };
   }
 }
 
@@ -273,6 +273,6 @@ export async function downloadCsv(section: string): Promise<string | null> {
     URL.revokeObjectURL(url);
     return null;
   } catch {
-    return "Could not reach the SETU API.";
+    return "Could not reach the SamarthSetu API.";
   }
 }

@@ -107,7 +107,7 @@ export default function PartnerConsole() {
 
   if (!queue) {
     return (
-      <main className="mx-auto max-w-5xl px-5 py-10">
+      <main className="mx-auto max-w-console px-5 py-10">
         <p role="status" className="text-lg">
           {error ?? "Loading…"}
         </p>
@@ -116,10 +116,10 @@ export default function PartnerConsole() {
   }
 
   return (
-    <main className="mx-auto max-w-5xl px-5 py-8">
+    <main className="mx-auto max-w-console px-5 py-8">
       <header className="flex flex-wrap items-start justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold">{queue.partner_name}</h1>
+          <h1 className="font-display text-2xl font-extrabold tracking-tight">{queue.partner_name}</h1>
           <p className="mt-1 text-base text-ink-muted">
             {queue.total} application{queue.total === 1 ? "" : "s"} routed here
           </p>
@@ -145,8 +145,8 @@ export default function PartnerConsole() {
       {/* Capacity. Writes to the same table the routing engine filters on, so pausing
           here removes this branch from citizen routing on the next call. */}
       {capacity ? (
-        <section aria-labelledby="capacity-heading" className="card mt-6 p-5">
-          <h2 id="capacity-heading" className="text-lg font-semibold">
+        <section aria-labelledby="capacity-heading" className="panel mt-6 p-5">
+          <h2 id="capacity-heading" className="font-display text-lg font-bold">
             Intake capacity
           </h2>
           <p className="mt-1 text-base text-ink-muted">
@@ -187,7 +187,7 @@ export default function PartnerConsole() {
 
       <section aria-labelledby="queue-heading" className="mt-8">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 id="queue-heading" className="text-lg font-semibold">
+          <h2 id="queue-heading" className="font-display text-lg font-bold">
             Queue
           </h2>
           <label className="text-base">
@@ -208,12 +208,12 @@ export default function PartnerConsole() {
         </div>
 
         {queue.items.length === 0 ? (
-          <p className="card mt-4 p-5 text-lg">Nothing in this view.</p>
+          <p className="panel mt-4 p-5 text-lg">Nothing in this view.</p>
         ) : (
           <ul className="mt-4 space-y-4">
             {queue.items.map((item) => (
               <li key={item.reference_no}>
-                <article className="card p-5">
+                <article className="panel p-5">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <p className="font-mono text-base font-semibold">{item.reference_no}</p>
@@ -236,7 +236,7 @@ export default function PartnerConsole() {
                     </div>
                   </div>
 
-                  {/* The privacy posture, visible at the counter: SETU never held the
+                  {/* The privacy posture, visible at the counter: SamarthSetu never held the
                       full number, so the branch does KYC with the document in hand. */}
                   <p className="mt-3 text-sm text-ink-faint">
                     {item.applicant.gov_id_type ?? "ID"} ····{" "}

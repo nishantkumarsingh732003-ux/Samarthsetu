@@ -1,4 +1,4 @@
-# SETU — six-minute demo run sheet
+# SamarthSetu — six-minute demo run sheet
 
 Exact clicks, and the sentence to say at each one. Timings are cumulative.
 
@@ -208,7 +208,7 @@ them renders an Aadhaar-like card, confirms OCR can read the number, runs the re
 pipeline, then OCRs the *stored bytes* to prove the digits are gone from the pixels.
 
 **"Does it approve loans?"**
-No, and it says so on every screen. SETU matches and routes. A Channel Partner decides.
+No, and it says so on every screen. SamarthSetu matches and routes. A Channel Partner decides.
 
 **"What is not finished?"**
 `docs/OPEN_ITEMS.md`, 47 entries, open ones first. The two we would fix next: notifications

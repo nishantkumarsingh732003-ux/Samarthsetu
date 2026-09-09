@@ -6,7 +6,7 @@
  * visited screen can ship broken. This checks every foreground/background pair the
  * design system actually pairs, whether or not a page currently uses it.
  *
- * It has already earned its keep: the SETU design drop specified #DC2626 for errors
+ * It has already earned its keep: the SamarthSetu design drop specified #DC2626 for errors
  * (4.02:1 on white), #D97706 for warnings (3.18:1) and #667085 for captions (4.29:1).
  * All three read fine on a designer's monitor and none of them passes. They are darkened
  * in tailwind.config.ts, and this is what would catch a future revert.
@@ -38,6 +38,10 @@ const COLOR = {
   "warn-bg": "#FEF3C7",
   "warn-fg": "#7A4E0A",
   "stop-bg": "#FEE2E2",
+  // The score ring on the navy hero, and the darkest stop of the gradient it sits on.
+  // Not text — see the 3.0 pair below.
+  "good-ring": "#34D399",
+  "panel-dark": "#0F172A",
   "stop-fg": "#B3261E",
   white: "#FFFFFF",
 };
@@ -72,6 +76,10 @@ const PAIRS = [
   ["warn-fg", "surface", 4.5, "warning text on a card"],
   ["stop-fg", "stop-bg", 4.5, "errors"],
   ["stop-fg", "surface", 4.5, "blocked reasons on a card"],
+  // Non-text. WCAG 1.4.11 asks 3:1 for a graphic that carries meaning, which the score
+  // ring does — its arc length is the number.
+  ["good-ring", "panel-dark", 3.0, "score ring on the dark hero"],
+  ["white", "panel-dark", 4.5, "hero text on the dark panel"],
 ];
 
 function channel(value) {

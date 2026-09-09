@@ -1,4 +1,4 @@
-# SETU — security and privacy model
+# SamarthSetu — security and privacy model
 
 What the system defends, how, and — as importantly — what it does not defend and why.
 

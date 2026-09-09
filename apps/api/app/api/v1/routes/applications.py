@@ -162,7 +162,7 @@ async def _build_out(
     description=(
         "Records consent, stores the applicant with their government ID masked to the "
         "last four digits plus a salted hash, and issues a quotable reference number. "
-        "SETU never disburses; this is a routed introduction to a Channel Partner."
+        "SamarthSetu never disburses; this is a routed introduction to a Channel Partner."
     ),
 )
 async def submit(

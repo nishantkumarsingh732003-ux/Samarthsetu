@@ -1,4 +1,4 @@
-# SETU — pitch outline
+# SamarthSetu — pitch outline
 
 Ten slides. Every number on them is queryable from the running system; where a figure is
 synthetic or unverified it says so on the slide, not in a footnote.
@@ -25,7 +25,7 @@ authorised for that specific loan category."*
 
 ## 2 — Today's journey vs ours
 
-| | Today | With SETU |
+| | Today | With SamarthSetu |
 |---|---|---|
 | Which scheme? | Ask a neighbour, or a Google result about a different state | Deterministic rule engine, verdict in ~4 questions |
 | Why that scheme? | No reason given | `matched_because[]` with rule IDs and source URLs |
@@ -156,7 +156,7 @@ shape-of-the-answer numbers, not field results.*
 
 **Deliberately not done**
 
-- No loan approval. SETU matches and routes; a Channel Partner decides, and every screen says so.
+- No loan approval. SamarthSetu matches and routes; a Channel Partner decides, and every screen says so.
 - No full Aadhaar, anywhere. Last four digits plus a salted hash, enforced by a database CHECK — which is why SMS cannot send yet, and we would rather say that than store the number.
 - No eligibility figure without provenance. Where we could not find a source, the response carries `needs_verification: true` and the UI badges it.
 

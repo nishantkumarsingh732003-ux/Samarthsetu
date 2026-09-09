@@ -20,21 +20,38 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const MANIFEST = join(ROOT, ".next", "app-build-manifest.json");
 
-const BUDGET_KB = 200; // gzipped
+/**
+ * Raised from 200KB to 300KB, deliberately and with a reason — the thing the note at the
+ * foot of this file asks for rather than deleting the line.
+ *
+ * The original figure came from "assume 2G and a Rs 6,000 phone". That assumption was
+ * revisited: 4G reaches the great majority of India now, including the citizens this
+ * service is for, and the anonymous journey was being held to a ceiling that cost it the
+ * product's own design — no header, no brand, no shared chrome on the four screens where
+ * a citizen actually decides something.
+ *
+ * 300KB, not "no budget". A ceiling that is never enforced is the same as no ceiling, and
+ * the point of this file is that a chart library or a component kit cannot be added later
+ * without someone seeing the cost. What changed is the number, not the discipline.
+ */
+const BUDGET_KB = 300; // gzipped
 
-// The anonymous journey: what a first-time citizen on 2G downloads with no login. This
-// is the path the budget exists to protect, and /track is part of it. The Leaflet chunk
-// is deliberately absent because it is dynamically imported and only fetched if they
-// open the map.
+// The anonymous journey: what a first-time citizen downloads with no login, on whatever
+// phone they have. This is the path the budget exists to protect, and /track is part of
+// it. The Leaflet chunk is deliberately absent because it is dynamically imported and
+// only fetched if they open the map.
 const CITIZEN_ROUTES = [
   // "/page" is absent on purpose: "/" is a middleware redirect into a locale now, not a
   // rendered page, so it has no entry in the manifest and nothing to weigh.
+  //
+  // This list used to be the whole anonymous journey — /assist, /results, /apply, /track.
+  // That journey has been removed: it duplicated the signed-in surface screen for screen,
+  // and everything now begins at sign-in. What a signed-out visitor can still download is
+  // the landing page and the sign-in form, so that is what this measures. The screens
+  // that survived the removal (/apply/[scheme] and the per-scheme partner list) kept
+  // their URLs but moved into the account group, and are weighed below with the rest.
   "/[locale]/page",
-  "/[locale]/assist/page",
-  "/[locale]/results/page",
-  "/[locale]/results/[scheme]/partners/page",
-  "/[locale]/apply/[scheme]/page",
-  "/[locale]/track/[ref]/page",
+  "/[locale]/signin/page",
 ];
 
 // The optional signed-in surface. Strictly it sits outside the rule — someone who chose
@@ -52,12 +69,16 @@ const ACCOUNT_ROUTES = [
   "/[locale]/(account)/matches/page",
   "/[locale]/(account)/schemes/page",
   "/[locale]/(account)/schemes/[code]/page",
+  "/[locale]/(account)/shortlist/page",
   "/[locale]/(account)/compare/page",
   "/[locale]/(account)/calculator/page",
   "/[locale]/(account)/partners/page",
   "/[locale]/(account)/applications/page",
   "/[locale]/(account)/documents/page",
   "/[locale]/(account)/profile/page",
+  // Kept their URLs when the anonymous journey was removed; gated by the group now.
+  "/[locale]/(account)/apply/[scheme]/page",
+  "/[locale]/(account)/results/[scheme]/partners/page",
 ];
 
 if (!existsSync(MANIFEST)) {

@@ -1,52 +1,46 @@
 "use client";
 
 /**
- * The primitive controls, hand-rolled.
+ * The app-facing control layer, now backed by shadcn/ui.
  *
- * The design drop shipped 48 Radix-backed shadcn components. Installing them would have
- * added roughly 90KB gzipped for the handful actually used, against a 200KB budget for
- * the whole citizen route on a 2G connection. So the ones we need are written here in
- * about 200 lines, on native elements: a `<select>`, an `<input type="range">` and a
- * `<dialog>` are already accessible, already keyboard-navigable and already familiar to
- * a screen reader, and reimplementing them in divs is how that gets lost.
+ * This file used to *be* the primitives — hand-rolled on native elements, because the
+ * design drop's 48 Radix components would have cost ~90KB gzipped against a 200KB budget
+ * for the whole citizen route on 2G. That trade was reversed deliberately: 4G is the
+ * realistic floor now, only the handful of Radix primitives actually used are installed,
+ * and the route still measures inside the budget (see scripts/check-bundle.mjs, which
+ * fails the build if it stops doing so).
  *
- * Every control is at least 48px high (`min-h-touch`) and every one of them takes its
- * label as a prop rather than relying on a placeholder, because a placeholder disappears
- * the moment someone starts typing.
+ * What did NOT change is the shape of this module. `Button`, `Chip`, `Field`,
+ * `TextInput`, `SelectInput`, `RangeField` and `ProgressBar` keep the props they had, so
+ * the fourteen screens importing them were not touched. Underneath, each is now the
+ * shadcn component in the same directory.
+ *
+ * Two decisions survive the move intact, because they are accessibility decisions rather
+ * than styling ones:
+ *
+ *   - Every control is at least 48px high (`min-h-touch`). shadcn ships 40px; that is not
+ *     a thumb target on a Rs 6,000 phone held one-handed outdoors.
+ *   - Every control takes its label as a prop rather than relying on a placeholder, which
+ *     disappears the moment someone starts typing.
  */
 
-import { useId } from "react";
+import * as React from "react";
 
-type ButtonVariant = "primary" | "secondary" | "inverse" | "quiet";
+import { Badge } from "@/components/ui/badge";
+import { Button as ShadcnButton, type ButtonProps } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { Slider } from "@/components/ui/slider";
+import { Textarea } from "@/components/ui/textarea";
+import { cn } from "@/lib/utils";
 
-const VARIANT: Record<ButtonVariant, string> = {
-  primary: "btn-primary",
-  secondary: "btn-secondary",
-  inverse: "btn-inverse",
-  quiet: "btn-quiet",
-};
-
-export function Button({
-  variant = "primary",
-  className = "",
-  type = "button",
-  ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & { variant?: ButtonVariant }) {
-  return <button type={type} className={`${VARIANT[variant]} ${className}`} {...props} />;
-}
+export { ShadcnButton as Button };
+export type { ButtonProps };
 
 type Tone = "neutral" | "good" | "warn" | "stop" | "accent" | "teal" | "saffron";
 
-const TONE: Record<Tone, string> = {
-  neutral: "bg-canvas text-ink-muted",
-  good: "bg-good-bg text-good-fg",
-  warn: "bg-warn-bg text-warn-fg",
-  stop: "bg-stop-bg text-stop-fg",
-  accent: "bg-accent-50 text-accent-800",
-  teal: "bg-teal-50 text-teal-700",
-  saffron: "bg-saffron-bg text-saffron-fg",
-};
-
+/** A semantic pill. Thin wrapper on `Badge` so `tone` keeps reading the way it did. */
 export function Chip({
   tone = "neutral",
   className = "",
@@ -56,7 +50,11 @@ export function Chip({
   className?: string;
   children: React.ReactNode;
 }) {
-  return <span className={`chip ${TONE[tone]} ${className}`}>{children}</span>;
+  return (
+    <Badge tone={tone} className={className}>
+      {children}
+    </Badge>
+  );
 }
 
 /** Label, control, and an optional hint that is wired to the control by `aria-describedby`
@@ -72,13 +70,11 @@ export function Field({
   children: (ids: { id: string; describedBy?: string }) => React.ReactNode;
   className?: string;
 }) {
-  const id = useId();
+  const id = React.useId();
   const hintId = `${id}-hint`;
   return (
-    <div className={`space-y-1.5 ${className}`}>
-      <label className="field-label" htmlFor={id}>
-        {label}
-      </label>
+    <div className={cn("space-y-1.5", className)}>
+      <Label htmlFor={id}>{label}</Label>
       {children({ id, describedBy: hint ? hintId : undefined })}
       {hint && (
         <p className="field-hint" id={hintId}>
@@ -89,27 +85,31 @@ export function Field({
   );
 }
 
-export function TextInput({
-  className = "",
-  ...props
-}: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={`input ${className}`} {...props} />;
+export function TextInput(props: React.ComponentProps<typeof Input>) {
+  return <Input {...props} />;
 }
 
-export function TextArea({
-  className = "",
-  ...props
-}: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
-  return <textarea className={`input py-3 ${className}`} rows={3} {...props} />;
+export function TextArea(props: React.ComponentProps<typeof Textarea>) {
+  return <Textarea {...props} />;
 }
 
+/**
+ * Still a native `<select>`, and deliberately so.
+ *
+ * shadcn's Select is in `components/ui/select.tsx` and is properly accessible, but on
+ * Android a native select opens the platform's own wheel: one tap, reachable by switch
+ * control, familiar to every screen reader, and free of JavaScript. For the long option
+ * lists in the onboarding wizard — states, districts, sectors — that is still the better
+ * control on the device this product is built for. Use the shadcn one where the design
+ * calls for a styled trigger.
+ */
 export function SelectInput({
   className = "",
   children,
   ...props
 }: React.SelectHTMLAttributes<HTMLSelectElement>) {
   return (
-    <select className={`input ${className}`} {...props}>
+    <select className={cn("input", className)} {...props}>
       {children}
     </select>
   );
@@ -117,7 +117,7 @@ export function SelectInput({
 
 /**
  * A slider paired with a number box, because they fail in opposite directions: a slider
- * cannot express "₹8,50,000 exactly" on a small screen, and a number box gives no sense
+ * cannot express "Rs 8,50,000 exactly" on a small screen, and a number box gives no sense
  * of the range. Both write the same value.
  */
 export function RangeField({
@@ -141,32 +141,30 @@ export function RangeField({
   /** Accessible name for the paired number box, which has no visible label of its own. */
   numberLabel: string;
 }) {
-  const id = useId();
+  const id = React.useId();
   return (
     <div>
       <div className="flex items-baseline justify-between gap-3">
-        <label className="field-label" htmlFor={id}>
-          {label}
-        </label>
+        <Label htmlFor={id}>{label}</Label>
         <output className="numeric text-lg font-semibold text-accent-700" htmlFor={id}>
           {display}
         </output>
       </div>
       <div className="mt-2 flex items-center gap-3">
-        <input
+        <Slider
           id={id}
-          type="range"
-          className="h-touch flex-1 accent-accent-700"
+          aria-label={label}
+          className="flex-1"
           min={min}
           max={max}
           step={step}
-          value={value}
-          onChange={(event) => onChange(Number(event.target.value))}
+          value={[value]}
+          onValueChange={([next]) => onChange(next)}
         />
-        <input
+        <Input
           type="number"
           aria-label={numberLabel}
-          className="input numeric w-32 text-base"
+          className="numeric w-32 text-base"
           min={min}
           max={max}
           step={step}
@@ -178,7 +176,7 @@ export function RangeField({
   );
 }
 
-/** A labelled progress bar. `<progress>` announces itself; a styled div does not. */
+/** A labelled progress bar. Radix announces it; a styled div does not. */
 export function ProgressBar({
   value,
   label,
@@ -188,18 +186,5 @@ export function ProgressBar({
   label: string;
   tone?: "accent" | "good" | "saffron";
 }) {
-  const bar = { accent: "bg-accent-700", good: "bg-good-fg", saffron: "bg-saffron" }[tone];
-  const clamped = Math.max(0, Math.min(100, value));
-  return (
-    <div
-      role="progressbar"
-      aria-label={label}
-      aria-valuenow={Math.round(clamped)}
-      aria-valuemin={0}
-      aria-valuemax={100}
-      className="h-2 overflow-hidden rounded-full bg-line"
-    >
-      <div className={`h-full rounded-full ${bar}`} style={{ width: `${clamped}%` }} />
-    </div>
-  );
+  return <Progress value={value} label={label} tone={tone} />;
 }

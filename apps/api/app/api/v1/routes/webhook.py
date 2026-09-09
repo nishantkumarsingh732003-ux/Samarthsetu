@@ -139,7 +139,7 @@ def flatten(turn: dict[str, Any]) -> tuple[str, bool]:
             lines.append(f"Why not: {blocked[0]['message']}")
             lines.append("")
 
-    lines.append("SETU does not lend. A Channel Partner decides.")
+    lines.append("SamarthSetu does not lend. A Channel Partner decides.")
     lines.append(f"See partners near you: {settings.PUBLIC_WEB_URL}")
 
     message = "\n".join(lines).strip()

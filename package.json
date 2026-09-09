@@ -2,7 +2,7 @@
   "name": "setu",
   "version": "0.1.0",
   "private": true,
-  "description": "SETU — Scheme Eligibility & Transparent Uptake (SIH 2026, PS 26092)",
+  "description": "SamarthSetu — Scheme Eligibility & Transparent Uptake (SIH 2026, PS 26092)",
   "scripts": {
     "dev": "pnpm --filter @setu/web dev",
     "build": "pnpm -r build",

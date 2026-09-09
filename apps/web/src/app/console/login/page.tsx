@@ -45,12 +45,12 @@ export default function Login() {
 
   return (
     <main className="mx-auto flex min-h-screen max-w-md flex-col justify-center px-5 py-10">
-      <h1 className="text-2xl font-semibold">SETU console</h1>
+      <h1 className="font-display text-2xl font-extrabold tracking-tight">SamarthSetu console</h1>
       <p className="mt-1 text-base text-ink-muted">
         For Channel Partners and the Ministry. Citizens do not need an account.
       </p>
 
-      <form onSubmit={submit} className="card mt-6 space-y-4 p-5">
+      <form onSubmit={submit} className="panel mt-6 space-y-4 p-5">
         <label className="block">
           <span className="text-base">Email</span>
           <input

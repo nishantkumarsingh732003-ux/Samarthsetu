@@ -25,6 +25,14 @@ The three personas are the problem statement in miniature:
 One per scheme family, three states, three languages, and Ramesh is the one who proves
 the point: a citizen who would have walked into the wrong queue is told which scheme
 actually fits before he goes anywhere.
+
+A fourth journey is run for the seeded **login**, `citizen@setu.gov.in`, and it exists
+because of what a reviewer actually does: they sign in. Until this was added they landed
+on a dashboard with four empty tiles and an empty bell — every screen in the product was
+populated except the one behind the front door. The login now carries the same demo
+persona the "Load the sample profile" button writes (Rahul Kumar, a tailoring unit in
+Jaipur), plus one application walked to UNDER_APPRAISAL through the real lifecycle, which
+is what puts real rows in `notifications` for the bell to read.
 """
 
 from __future__ import annotations
@@ -49,10 +57,18 @@ from sqlalchemy import select, text  # noqa: E402
 from sqlalchemy.ext.asyncio import AsyncSession  # noqa: E402
 
 from app.db.session import SessionLocal, engine  # noqa: E402
-from app.models import Application, ChannelPartner, Scheme  # noqa: E402
+from app.models import (  # noqa: E402
+    Application,
+    ChannelPartner,
+    Citizen,
+    CitizenProfile,
+    Scheme,
+    User,
+)
 from app.models.enums import ApplicationStatus, DocumentValidationStatus  # noqa: E402
 from app.models.application import Document  # noqa: E402
 from app.services import applications as application_service  # noqa: E402
+from app.services import citizen_accounts  # noqa: E402
 from app.services import citizens as citizen_service  # noqa: E402
 from app.services import matching, routing  # noqa: E402
 
@@ -403,6 +419,110 @@ async def _backdate(session: AsyncSession, application: Application, days: int) 
     )
 
 
+DEMO_LOGIN_EMAIL = "citizen@setu.gov.in"
+
+# Far enough along that the dashboard has something to say and the partner console has
+# something to work on, and not so far that the reviewer has nothing left to advance.
+DEMO_LOGIN_ADVANCE_TO = ApplicationStatus.UNDER_APPRAISAL
+
+
+async def _seed_the_demo_login(session: AsyncSession, rng: random.Random) -> None:
+    """Give `citizen@setu.gov.in` the journey a reviewer expects to find behind sign-in.
+
+    Everything here goes through the same functions the API calls. The profile is written
+    by `citizen_accounts.load_demo` — the exact call the "Load the sample profile" button
+    makes — the verdict comes from `matching.run_match`, the office from
+    `routing.find_partners`, and the status from `application_service.transition`, which
+    is what emits the notification rows the bell reads. Nothing on that dashboard is
+    written by hand, which is the whole of CLAUDE.md rule 6.
+
+    Skips rather than fails when the login is absent: `demo.py --keep` can be run against
+    a database that was never seeded with users, and a missing demo login is a reason to
+    say so, not to abort a seed that is otherwise fine.
+    """
+    user = (
+        await session.execute(select(User).where(User.email == DEMO_LOGIN_EMAIL))
+    ).scalar_one_or_none()
+    if user is None or user.citizen_id is None:
+        print(f"    skipped: {DEMO_LOGIN_EMAIL} has no citizen record — run seed/run.py first")
+        return
+
+    citizen = await session.get(Citizen, user.citizen_id)
+    profile = (
+        await session.execute(
+            select(CitizenProfile).where(CitizenProfile.citizen_id == user.citizen_id)
+        )
+    ).scalar_one_or_none()
+    if citizen is None or profile is None:
+        print(f"    skipped: {DEMO_LOGIN_EMAIL} has no profile row")
+        return
+
+    # `demo.py --keep` adds to what is already there, and running it four times must not
+    # leave the demo dashboard showing four identical applications. One journey per
+    # login is the whole point of this function.
+    existing = (
+        await session.execute(
+            select(Application.reference_no).where(Application.citizen_id == citizen.id)
+        )
+    ).scalars().first()
+    if existing is not None:
+        print(f"    kept: {DEMO_LOGIN_EMAIL} already has {existing}")
+        return
+
+    await citizen_accounts.load_demo(
+        session, citizen=citizen, profile=profile, actor="demo-seed"
+    )
+    await session.flush()
+
+    engine_input = citizen_accounts.engine_profile(citizen, profile)
+    payload = await matching.run_match(
+        session,
+        profile=engine_input,
+        language=citizen.preferred_language,
+        citizen_id=citizen.id,
+        actor="demo-seed",
+    )
+    top = payload["results"][0]
+
+    # What the citizen says they need, not what the engine offers — the same number the
+    # dashboard's "funding required" tile reads, and the same one an officer appraises.
+    amount = float(profile.loan_required or top["indicative_amount"] or 0)
+
+    route = await routing.find_partners(
+        session,
+        scheme_code=top["scheme_code"],
+        amount=amount,
+        district=citizen.district,
+        actor="demo-seed",
+        match_run_id=payload["match_run_id"],
+    )
+    if not route["partners"]:
+        raise DemoSeedError(
+            f"No authorised partner for {top['scheme_code']} in {citizen.district}; the "
+            "signed-in demo dashboard would have a hole in it."
+        )
+
+    application = await application_service.create_application(
+        session,
+        citizen_id=citizen.id,
+        scheme_code=top["scheme_code"],
+        partner_id=uuid.UUID(route["partners"][0]["partner_id"]),
+        amount_requested=amount,
+        match_run_id=uuid.UUID(payload["match_run_id"]),
+        engine_version=payload["engine_version"],
+        actor="demo-seed",
+    )
+    await _attach_documents(session, application, ["CASTE_CERTIFICATE", "AADHAAR"], rng)
+    await _advance(session, application, DEMO_LOGIN_ADVANCE_TO, rng)
+    await _backdate(session, application, 6)
+    await session.commit()
+
+    print(
+        f"    {DEMO_LOGIN_EMAIL:<22} {citizen.district:<10} {top['scheme_code']:<24} "
+        f"{application.reference_no}  {application.status}"
+    )
+
+
 async def seed_demo(session: AsyncSession, *, keep: bool = False) -> None:
     rng = random.Random(RANDOM_SEED)
 
@@ -459,6 +579,10 @@ async def seed_demo(session: AsyncSession, *, keep: bool = False) -> None:
             f"{top['scheme_code']:<24} {application.reference_no}  "
             f"{application.status}{redirect_note}"
         )
+
+    # --- the account a reviewer actually signs into ------------------------------------
+    print("\n  signed-in demo account")
+    await _seed_the_demo_login(session, rng)
 
     # --- the background population -----------------------------------------------------
     wanted = [status for status, count in STATUS_MIX for _ in range(count)]
@@ -589,7 +713,7 @@ async def main() -> None:
     )
     args = parser.parse_args()
 
-    print("Building the SETU demo world")
+    print("Building the SamarthSetu demo world")
     started = datetime.now(UTC)
     async with SessionLocal() as session:
         try:

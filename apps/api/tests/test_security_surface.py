@@ -27,7 +27,17 @@ import httpx
 import pytest
 
 BASE = "http://localhost:8000"
-TIMEOUT = 10.0
+
+# Comfortably above `LLM_TIMEOUT_SECONDS` (20 by default) plus request overhead.
+#
+# These tests post to real endpoints, and `/webhook/whatsapp` runs extraction — which on
+# a machine with a provider key configured is a live model call. At the previous 10s this
+# file failed for eight of its own inputs against a server that was answering every one
+# of them 200, just slowly: a timeout is raised as `httpx.ReadTimeout` before `_clean`
+# ever sees the status code, so a latency artifact was reported as a security failure.
+# The check here is "hostile input never 500s", and that has to be decided by the
+# response, not by whether a model was fast that afternoon.
+TIMEOUT = 45.0
 
 
 def _api_is_up() -> bool:
@@ -417,6 +427,7 @@ def test_the_catalogue_needs_no_login() -> None:
         ("POST", "/api/v1/citizen/profile/demo"),
         ("GET", "/api/v1/citizen/matches"),
         ("GET", "/api/v1/citizen/applications"),
+        ("GET", "/api/v1/citizen/notifications"),
     ],
 )
 def test_every_citizen_endpoint_refuses_an_anonymous_caller(method: str, path: str) -> None:
@@ -522,3 +533,71 @@ def test_the_profile_never_returns_a_password_or_a_full_government_id() -> None:
     body = _get("/api/v1/citizen/me", headers=headers).text.lower()
     for leak in ("password", "gov_id_hash", "aadhaar"):
         assert leak not in body, f"{leak!r} appeared in the citizen profile response"
+
+
+def test_the_notification_feed_never_returns_a_dialable_address() -> None:
+    """The bell reads the same rows the console reads, minus the way to reach someone.
+
+    `notifications.recipient_hint` holds four masked digits so an officer can confirm
+    they have the right person. `CitizenNotificationOut` does not project it, and this is
+    what would catch someone widening the shape later — the same guard
+    `test_the_profile_never_returns_a_password_or_a_full_government_id` puts on
+    /citizen/me, on the other endpoint that reads personal rows.
+    """
+    login = _post(
+        "/api/v1/auth/login", {"email": "citizen@setu.gov.in", "password": "setu-demo-2026"}
+    )
+    if login.status_code != 200:
+        pytest.skip("demo users are not seeded")
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+
+    response = _get("/api/v1/citizen/notifications", headers=headers)
+    assert response.status_code == 200, response.text[:200]
+
+    payload = response.json()
+    assert isinstance(payload, list)
+    for row in payload:
+        for leak in ("recipient_hint", "phone", "msisdn", "recipient"):
+            assert leak not in row, f"{leak!r} is projected onto the citizen notification feed"
+        # Rendered at send time and kept verbatim — a body is the record, so an empty one
+        # would mean the record is of nothing.
+        assert row["body"].strip(), "a notification row carries no body"
+
+
+def test_the_notification_feed_is_capped_however_much_is_asked_for() -> None:
+    """One bell must not be able to ask for the whole table."""
+    login = _post(
+        "/api/v1/auth/login", {"email": "citizen@setu.gov.in", "password": "setu-demo-2026"}
+    )
+    if login.status_code != 200:
+        pytest.skip("demo users are not seeded")
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+
+    response = _get("/api/v1/citizen/notifications?limit=100000", headers=headers)
+    assert response.status_code == 200, response.text[:200]
+    assert len(response.json()) <= 50
+
+
+def test_the_account_is_named_by_the_citizen_not_by_the_login() -> None:
+    """The header, the greeting and the avatar all read `display_name` off this payload.
+
+    `users.display_name` is what the account was created as; `citizens.display_name` is
+    what the person says their name is, and the profile page writes the second one. When
+    this returned the first, editing your name changed nothing anywhere it is shown, and
+    the demo login stayed "Demo Citizen" after loading a persona called Rahul Kumar.
+    """
+    login = _post(
+        "/api/v1/auth/login", {"email": "citizen@setu.gov.in", "password": "setu-demo-2026"}
+    )
+    if login.status_code != 200:
+        pytest.skip("demo users are not seeded")
+    headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
+
+    demo = httpx.post(f"{BASE}/api/v1/citizen/profile/demo", headers=headers, timeout=TIMEOUT)
+    assert demo.status_code == 200, demo.text[:200]
+
+    body = demo.json()
+    assert body["profile"]["display_name"] == body["display_name"], (
+        "the account name and the profile name disagree; the header would show one and "
+        "the profile page the other"
+    )

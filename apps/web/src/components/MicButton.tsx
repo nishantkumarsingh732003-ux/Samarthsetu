@@ -1,5 +1,6 @@
 "use client";
 
+import { Mic, Square } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -38,10 +39,18 @@ export function MicButton({
   locale,
   disabled,
   onTranscript,
+  variant = "full",
 }: {
   locale: Locale;
   disabled?: boolean;
   onTranscript: (text: string) => void;
+  /**
+   * `full` is the wide labelled control on the anonymous intake, where speaking is the
+   * primary way in and the button has the screen to say so. `icon` is the round one that
+   * sits beside a chat composer, where the text field is the primary control and a
+   * full-width bar would crush it.
+   */
+  variant?: "full" | "icon";
 }) {
   const t = useTranslations("assist");
   const a11y = useTranslations("a11y");
@@ -77,6 +86,9 @@ export function MicButton({
   }, []);
 
   if (supported === false) {
+    // Beside a composer there is nothing to explain — the text field is right there, and
+    // a sentence about a missing microphone would push it off the row.
+    if (variant === "icon") return null;
     return (
       <p className="rounded-card bg-accent-50 px-4 py-3 text-base text-ink-muted">
         {t("micUnavailable")}
@@ -91,16 +103,34 @@ export function MicButton({
       disabled={disabled || supported === null}
       aria-pressed={listening}
       aria-label={listening ? a11y("micButtonStop") : a11y("micButton")}
-      className={`btn w-full text-xl ${
+      className={`btn disabled:opacity-50 ${
+        variant === "icon"
+          ? "w-touch shrink-0 rounded-full px-0 text-xl"
+          : "w-full text-xl"
+      } ${
         listening
           ? "bg-stop-bg text-stop-fg ring-4 ring-stop-line"
-          : "bg-accent-700 text-white hover:bg-accent-800"
-      } disabled:opacity-50`}
+          : variant === "icon"
+            ? "border-2 border-line bg-surface text-ink hover:border-accent-600"
+            : "bg-accent-700 text-white hover:bg-accent-800"
+      }`}
     >
-      <span aria-hidden="true" className="text-2xl">
-        {listening ? "■" : "🎤"}
-      </span>
-      {listening ? t("listening") : t("speak")}
+      {/* Lucide, not the 🎤 and ■ characters this used to draw. An emoji renders in the
+          system's own font — a different shape, weight and colour on every phone, and on
+          Android often a full-colour cartoon next to a page of flat navy icons. The rest
+          of the app is lucide; so is this. */}
+      {listening ? (
+        <Square
+          className={variant === "icon" ? "h-4 w-4 fill-current" : "h-5 w-5 fill-current"}
+          aria-hidden="true"
+        />
+      ) : (
+        <Mic
+          className={variant === "icon" ? "h-4 w-4" : "h-5 w-5"}
+          aria-hidden="true"
+        />
+      )}
+      {variant === "full" && (listening ? t("listening") : t("speak"))}
     </button>
   );
 }

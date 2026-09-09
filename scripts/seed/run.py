@@ -100,7 +100,7 @@ async def run(selected: list[str] | None = None) -> int:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Load SETU reference and demo data.")
+    parser = argparse.ArgumentParser(description="Load SamarthSetu reference and demo data.")
     parser.add_argument("seeders", nargs="*", help="Seeder names to run (default: all).")
     parser.add_argument("--list", action="store_true", help="List registered seeders and exit.")
     args = parser.parse_args()

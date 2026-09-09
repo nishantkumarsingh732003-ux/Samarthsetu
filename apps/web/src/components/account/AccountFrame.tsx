@@ -48,12 +48,15 @@ export function AccountFrame({
         <div className="panel w-full max-w-md p-7">
           <h1 className="font-display text-2xl font-bold">{t("signInRequired")}</h1>
           <p className="mt-3 text-ink-muted">{t("signInPrompt")}</p>
+          {/* One way out, not two. The second button offered an anonymous eligibility
+              check; that journey has been removed in favour of a single signed-in path,
+              and a button to a route that no longer exists is worse than no button. */}
           <div className="mt-6 flex flex-col gap-3">
             <Link href={`/${locale}/signin`} className="btn-primary">
               {t("goToSignIn")}
             </Link>
-            <Link href={`/${locale}/assist`} className="btn-secondary">
-              {t("checkAnonymously")}
+            <Link href={`/${locale}`} className="btn-secondary">
+              {t("backToHome")}
             </Link>
           </div>
         </div>

@@ -1,4 +1,4 @@
-# SETU — product requirements
+# SamarthSetu — product requirements
 
 **SIH 2026 · PS 26092 · Ministry of Social Justice & Empowerment**
 
@@ -171,7 +171,7 @@ URL. `/demo` is on the removal checklist in `DEPLOYMENT.md`.
 
 ## Explicit non-goals
 
-- SETU does **not** approve loans. It matches and routes; a Channel Partner decides, and
+- SamarthSetu does **not** approve loans. It matches and routes; a Channel Partner decides, and
   every screen says so.
 - No autonomous agents, no multi-agent orchestration, no blockchain, no opaque ML
   scoring. Each adds surface area without answering any of the six questions.

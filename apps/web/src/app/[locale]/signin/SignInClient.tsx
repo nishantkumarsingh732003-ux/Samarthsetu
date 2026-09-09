@@ -9,17 +9,22 @@
  *
  * Three things worth noticing:
  *
- * - **The escape hatch is always visible.** "Check your eligibility without signing in"
- *   sits under the form, not buried. An account is a convenience here, and a sign-in
- *   wall in front of a scheme-eligibility check would be the exact barrier this project
- *   exists to remove.
- * - **Consent is a real checkbox with a real consequence.** Signup is refused without it,
- *   by the API, because the account stores personal data. It is unticked by default; a
- *   pre-ticked consent box is not consent.
+ * - **Consent is a real checkbox with a real consequence.** The design drop's signup form
+ *   has three fields and no consent control. It cannot be built that way: CLAUDE.md rule 4
+ *   requires an explicit consent record before anything personal is stored, and the API
+ *   refuses the signup with a 400 without one, so a form without the box would simply not
+ *   work. It is unticked by default; a pre-ticked consent box is not consent.
+ * - **The demo block names a citizen who is really there.** "Rahul Kumar — SC entrepreneur
+ *   · Tailoring unit · Jaipur" is not invented copy: it is `DEMO_CITIZEN` / `DEMO_PROFILE`
+ *   in `apps/api/app/services/citizen_accounts.py`, and `lib/demoAccount.test.ts` fails if
+ *   the two drift apart. He is a set of answers chosen to sit inside the published
+ *   ceilings, so a reviewer watches the engine separate the scheme families rather than
+ *   agree with everything.
  * - **The demo credentials block is for a hackathon laptop and must not be deployed.**
  *   It is listed in docs/DEPLOYMENT.md beside /demo for the same reason.
  */
 
+import { ArrowRight, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
@@ -27,7 +32,9 @@ import Link from "next/link";
 
 import { LanguageSwitcher } from "@/components/LanguageSwitcher";
 import { Button, Field, TextInput } from "@/components/ui/controls";
+import { toast } from "@/components/ui/sonner";
 import { signIn, signUp } from "@/lib/citizenApi";
+import { DEMO_ACCOUNT } from "@/lib/demoAccount";
 
 import type { Locale } from "@/i18n/config";
 
@@ -55,6 +62,11 @@ export function SignInClient({ locale }: { locale: Locale }) {
 
   const go = (path: string) => router.push(`/${locale}${path}`);
 
+  /** A finished profile goes to the dashboard; an empty one goes where it can be filled
+   *  in. Landing an account with nothing in it on an empty dashboard is a dead end. */
+  const land = (completed: boolean) =>
+    go(completed ? "/dashboard" : "/onboarding");
+
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     setError(null);
@@ -68,13 +80,19 @@ export function SignInClient({ locale }: { locale: Locale }) {
     const result =
       mode === "signin"
         ? await signIn(email.trim(), password)
-        : await signUp({ email: email.trim(), password, displayName: displayName.trim(), language: locale });
+        : await signUp({
+            email: email.trim(),
+            password,
+            displayName: displayName.trim(),
+            language: locale,
+          });
     setBusy(false);
 
     if (result.ok) {
-      // A finished profile goes to the dashboard; an empty one goes where it can be
-      // filled in. Landing a new account on an empty dashboard is a dead end.
-      go(result.data.profile.completed ? "/dashboard" : "/onboarding");
+      toast.success(
+        t(mode === "signin" ? "toastSignedIn" : "toastAccountCreated"),
+      );
+      land(result.data.profile.completed);
       return;
     }
     if (result.error === "conflict") setError(t("duplicate"));
@@ -88,147 +106,211 @@ export function SignInClient({ locale }: { locale: Locale }) {
     setError(null);
     const result = await signIn(DEMO_EMAIL, DEMO_PASSWORD);
     setBusy(false);
-    if (result.ok) go("/dashboard");
-    else setError(t("failed"));
+    // Was hardcoded to /dashboard, which is where the seeded demo account has nothing to
+    // show — its profile is empty until someone fills it in.
+    if (result.ok) {
+      toast.success(t("toastDemoLoaded"));
+      land(result.data.profile.completed);
+    } else {
+      setError(t("failed"));
+    }
   }
 
+  // The audiences the profile contract actually recognises and the rule pack actually
+  // serves. The drop had "SC · SC/ST/OBC" here; every scheme in `packages/rules` is
+  // Scheduled Caste only, so an OBC applicant reading that chip would have been told
+  // they qualify for something they do not.
+  const audiences = [t("chipSc"), t("chipSafai"), t("chipPwd"), t("chipWomen")];
+
   return (
-    <div className="ground-wash grid min-h-screen lg:grid-cols-2">
-      <aside className="panel-dark hidden flex-col justify-between rounded-none p-12 lg:flex">
+    <div className="grid min-h-screen lg:h-screen lg:grid-cols-2 lg:overflow-hidden">
+      <aside className="panel-dark relative hidden flex-col justify-between overflow-y-auto rounded-none p-10 lg:flex xl:p-12">
         <span className="flex items-center gap-2.5">
           <span
             aria-hidden="true"
             className="grid h-10 w-10 place-items-center rounded-card bg-white/15 font-display text-lg font-bold"
           >
-            से
+            स
           </span>
-          <span className="font-display text-lg font-bold">{tApp("title")}</span>
+          <span className="leading-tight">
+            <span className="block font-display text-base font-bold">
+              {tApp("title")}
+            </span>
+            <span className="block text-xs text-white/60">
+              {tApp("ministryShort")}
+            </span>
+          </span>
         </span>
+
         <div>
-          <p className="font-display text-3xl font-extrabold leading-tight">
-            {t(mode === "signin" ? "signInTitle" : "signUpTitle")}
+          <p className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-saffron">
+            <Sparkles className="h-4 w-4 shrink-0" aria-hidden="true" />
+            {t("brandEyebrow")}
           </p>
-          <p className="mt-4 max-w-md text-white/80">
-            {t(mode === "signin" ? "signInSub" : "signUpSub")}
+          <p className="mt-4 max-w-lg font-display text-3xl font-extrabold leading-[1.15] xl:text-4xl">
+            {t("brandTitle")}
           </p>
+          <p className="mt-4 max-w-md text-white/75">{t("brandSub")}</p>
+
+          <ul className="mt-7 flex flex-wrap gap-2.5">
+            {audiences.map((audience) => (
+              <li
+                key={audience}
+                className="rounded-full border border-white/20 bg-white/10 px-3.5 py-1.5 text-sm"
+              >
+                {audience}
+              </li>
+            ))}
+          </ul>
         </div>
-        <p className="text-sm text-white/60">{t("consentHint")}</p>
+
+        <p className="text-sm text-white/55">{t("consentHint")}</p>
       </aside>
 
-      <main className="flex items-center justify-center px-5 py-10">
-        <div className="w-full max-w-sm">
-          <div className="flex items-center justify-between gap-3">
-            <Link href={`/${locale}`} className="btn-quiet -ml-3 text-sm">
-              {tCommon("back")}
-            </Link>
-            <LanguageSwitcher locale={locale} />
-          </div>
+      <main className="overflow-y-auto bg-surface">
+        <div className="flex min-h-full items-center justify-center px-5 py-4">
+          <div className="w-full max-w-sm">
+            <div className="flex items-center justify-between gap-3">
+              <Link
+                href={`/${locale}`}
+                className="inline-flex min-h-touch items-center gap-1.5 rounded-card text-ink-muted
+                         hover:text-accent-700"
+              >
+                <ArrowRight className="h-4 w-4 rotate-180" aria-hidden="true" />
+                {tCommon("back")}
+              </Link>
+              <LanguageSwitcher locale={locale} />
+            </div>
 
-          <h1 className="mt-4 font-display text-2xl font-extrabold">
-            {t(mode === "signin" ? "signInTitle" : "signUpTitle")}
-          </h1>
-          <p className="mt-1.5 text-ink-muted">
-            {t(mode === "signin" ? "signInSub" : "signUpSub")}
-          </p>
+            <h1 className="mt-3 font-display text-2xl font-extrabold">
+              {t(mode === "signin" ? "signInTitle" : "signUpTitle")}
+            </h1>
+            <p className="mt-1 text-ink-muted">
+              {t(mode === "signin" ? "signInSub" : "signUpSub")}
+            </p>
 
-          <form onSubmit={submit} className="mt-7 space-y-4">
-            {mode === "signup" && (
-              <Field label={t("fullName")}>
+            <form onSubmit={submit} className="mt-4 space-y-2.5">
+              {mode === "signup" && (
+                <Field label={t("fullName")}>
+                  {({ id }) => (
+                    <TextInput
+                      id={id}
+                      required
+                      autoComplete="name"
+                      placeholder={t("fullNamePlaceholder")}
+                      value={displayName}
+                      onChange={(event) => setDisplayName(event.target.value)}
+                    />
+                  )}
+                </Field>
+              )}
+
+              <Field label={t("email")}>
                 {({ id }) => (
                   <TextInput
                     id={id}
                     required
-                    autoComplete="name"
-                    value={displayName}
-                    onChange={(event) => setDisplayName(event.target.value)}
+                    type="email"
+                    autoComplete="email"
+                    inputMode="email"
+                    placeholder={t("emailPlaceholder")}
+                    value={email}
+                    onChange={(event) => setEmail(event.target.value)}
                   />
                 )}
               </Field>
-            )}
 
-            <Field label={t("email")}>
-              {({ id }) => (
-                <TextInput
-                  id={id}
-                  required
-                  type="email"
-                  autoComplete="email"
-                  inputMode="email"
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                />
+              <Field label={t("password")}>
+                {({ id }) => (
+                  <TextInput
+                    id={id}
+                    required
+                    type="password"
+                    minLength={mode === "signup" ? 8 : undefined}
+                    autoComplete={
+                      mode === "signup" ? "new-password" : "current-password"
+                    }
+                    placeholder={
+                      mode === "signup" ? t("passwordHint") : undefined
+                    }
+                    value={password}
+                    onChange={(event) => setPassword(event.target.value)}
+                  />
+                )}
+              </Field>
+
+              {mode === "signup" && (
+                <label className="flex items-start gap-2.5 rounded-card border border-line bg-canvas p-2.5">
+                  <input
+                    type="checkbox"
+                    className="mt-0.5 h-5 w-5 shrink-0 accent-accent-700"
+                    checked={consent}
+                    onChange={(event) => setConsent(event.target.checked)}
+                  />
+                  <span className="text-sm">{t("consentLabel")}</span>
+                </label>
               )}
-            </Field>
 
-            <Field label={t("password")} hint={mode === "signup" ? t("passwordHint") : undefined}>
-              {({ id, describedBy }) => (
-                <TextInput
-                  id={id}
-                  required
-                  type="password"
-                  minLength={mode === "signup" ? 8 : undefined}
-                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                  aria-describedby={describedBy}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                />
+              {error && (
+                <p
+                  role="alert"
+                  className="rounded-card bg-stop-bg px-4 py-3 text-stop-fg"
+                >
+                  {error}
+                </p>
               )}
-            </Field>
 
-            {mode === "signup" && (
-              <label className="flex items-start gap-3 rounded-card border border-line bg-surface p-3">
-                <input
-                  type="checkbox"
-                  className="mt-1 h-5 w-5 shrink-0 accent-accent-700"
-                  checked={consent}
-                  onChange={(event) => setConsent(event.target.checked)}
-                />
-                <span className="text-base">
-                  {t("consentLabel")}
-                  <span className="mt-1 block field-hint">{t("consentHint")}</span>
-                </span>
-              </label>
-            )}
+              <Button type="submit" disabled={busy} className="w-full">
+                {busy
+                  ? t("working")
+                  : t(mode === "signin" ? "submitSignIn" : "submitSignUp")}
+                {busy ? null : (
+                  <ArrowRight className="h-5 w-5" aria-hidden="true" />
+                )}
+              </Button>
+            </form>
 
-            {error && (
-              <p role="alert" className="rounded-card bg-stop-bg px-4 py-3 text-stop-fg">
-                {error}
-              </p>
-            )}
+            <p className="mt-4 text-center text-ink-muted">
+              {mode === "signin"
+                ? t("newHerePrompt", { app: tApp("title") })
+                : t("alreadyPrompt")}{" "}
+              <button
+                type="button"
+                className="font-semibold text-accent-700 underline-offset-4 hover:underline"
+                onClick={() => {
+                  setMode(mode === "signin" ? "signup" : "signin");
+                  setError(null);
+                }}
+              >
+                {t(mode === "signin" ? "submitSignUp" : "submitSignIn")}
+              </button>
+            </p>
 
-            <Button type="submit" disabled={busy} className="w-full">
-              {busy ? t("working") : t(mode === "signin" ? "submitSignIn" : "submitSignUp")}
-            </Button>
-          </form>
+            <div className="mt-5 flex items-center gap-3">
+              <span aria-hidden="true" className="h-px flex-1 bg-line" />
+              <span className="text-xs font-bold uppercase tracking-widest text-ink-faint">
+                {t("quickDemo")}
+              </span>
+              <span aria-hidden="true" className="h-px flex-1 bg-line" />
+            </div>
 
-          <Button
-            variant="quiet"
-            className="mt-3 w-full"
-            onClick={() => {
-              setMode(mode === "signin" ? "signup" : "signin");
-              setError(null);
-            }}
-          >
-            {t(mode === "signin" ? "toSignUp" : "toSignIn")}
-          </Button>
-
-          <p className="mt-6 border-t border-line pt-6 text-center">
-            <Link href={`/${locale}/assist`} className="text-accent-700 underline">
-              {t("orAnonymous")}
-            </Link>
-          </p>
-
-          <div className="mt-6 rounded-card border border-saffron-line bg-saffron-bg p-4">
-            <p className="text-sm font-semibold text-saffron-fg">{t("demoTitle")}</p>
             <Button
               variant="secondary"
               disabled={busy}
               onClick={signInAsDemo}
-              className="mt-2 w-full text-base"
+              className="mt-3 w-full border-saffron-line bg-saffron-bg text-saffron-fg
+                       hover:border-saffron"
             >
-              {t("demoButton")}
+              <Sparkles className="h-5 w-5" aria-hidden="true" />
+              {t("demoButton", { name: DEMO_ACCOUNT.name })}
             </Button>
-            <p className="mt-2 text-sm text-saffron-fg">{t("demoHint")}</p>
+            <p className="mt-1.5 text-center text-sm text-ink-faint">
+              {t("demoHint", {
+                category: DEMO_ACCOUNT.category,
+                trade: t("demoTrade"),
+                district: DEMO_ACCOUNT.district,
+              })}
+            </p>
           </div>
         </div>
       </main>
