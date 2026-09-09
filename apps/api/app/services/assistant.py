@@ -44,7 +44,13 @@ logger = logging.getLogger(__name__)
 # What the assistant may suggest the citizen does next. Each maps to a screen that
 # already exists; the client turns it into a button. Deliberately small — an action the
 # UI cannot render is a promise the citizen cannot act on.
-ACTIONS = ("open_scheme", "find_partners", "start_application", "upload_documents", "plan_repayment")
+ACTIONS = (
+    "open_scheme",
+    "find_partners",
+    "start_application",
+    "upload_documents",
+    "plan_repayment",
+)
 
 ANSWER_TOOL = llm.ToolSpec(
     name="answer",

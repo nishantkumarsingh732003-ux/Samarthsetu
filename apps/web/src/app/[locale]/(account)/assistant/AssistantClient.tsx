@@ -26,10 +26,11 @@
  * not from anything the model said.
  */
 
-import { ArrowRight, Bot, FileUp, Plus, Send, Sparkles, User } from "lucide-react";
+import { ArrowRight, Bot, Check, FileUp, Plus, Send, Sparkles, User } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
 
+import { criterionKey } from "@/components/account/criteriaLabels";
 import { useMyApplications } from "@/components/account/useCitizenData";
 import { MicButton } from "@/components/MicButton";
 import { Button } from "@/components/ui/button";
@@ -62,6 +63,9 @@ export function AssistantClient({ locale }: { locale: Locale }) {
   const tAssist = useTranslations("assist");
   const tCommon = useTranslations("common");
   const tDocs = useTranslations("docs");
+  // The criterion labels the match cards use, so a rule means the same thing wherever
+  // the citizen meets it.
+  const tMatches = useTranslations("matches");
 
   const applications = useMyApplications();
   const [thread, setThread] = useState<Entry[]>([]);
@@ -326,19 +330,33 @@ export function AssistantClient({ locale }: { locale: Locale }) {
                   }`}
                 >
                   <span className="whitespace-pre-line">{entry.text}</span>
-                  {/* The ids the answer leaned on. Printed, not hidden: they are what
-                      makes a sentence about a verdict checkable against /schemes. */}
+                  {/* What the answer leaned on.
+                      Previously this printed the raw ids — TL_CATEGORY_SC,
+                      TL_INCOME_CEILING — under every reply. That is the engine's
+                      vocabulary, not a citizen's: it is unreadable to the person the
+                      service is for, and on a low-literacy screen it reads as an error
+                      code. So each id is shown as the criterion it stands for, using the
+                      same mapping and the same words the match cards use, and the id
+                      itself rides along in the `title` for anyone checking. Nothing that
+                      was traceable stops being traceable — it stops being shouted. */}
                   {!mine && entry.ruleIds && entry.ruleIds.length > 0 && (
-                    <span className="mt-2 block">
-                      {entry.ruleIds.map((id) => (
-                        <Link
-                          key={id}
-                          href="/schemes"
-                          className="numeric mr-2 text-sm text-ink-faint underline"
-                        >
-                          {id}
-                        </Link>
-                      ))}
+                    <span className="mt-2.5 flex flex-wrap gap-1.5">
+                      {entry.ruleIds.map((id) => {
+                        const key = criterionKey(id);
+                        return (
+                          <Link
+                            key={id}
+                            href="/schemes"
+                            title={id}
+                            className="inline-flex items-center gap-1 rounded-full bg-good-bg
+                                       px-2.5 py-0.5 text-sm text-good-fg transition-colors
+                                       hover:bg-good-line"
+                          >
+                            <Check className="h-3 w-3 shrink-0" aria-hidden="true" />
+                            {key ? tMatches(`criteria.${key}`) : id}
+                          </Link>
+                        );
+                      })}
                     </span>
                   )}
                 </span>

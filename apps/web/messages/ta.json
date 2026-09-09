@@ -472,12 +472,16 @@
     "sub": "வெளியிடப்பட்ட நிபந்தனைகள், ஒவ்வொரு எண்ணும் எங்கிருந்து வந்தது.",
     "rules": "{count} விதிகள்",
     "partners": "{count} பங்குதாரர்கள் அங்கீகரிக்கப்பட்டுள்ளனர்",
-    "loanUpTo": "கடன் ₹{amount} வரை",
-    "projectUpTo": "₹{amount} வரையிலான திட்டத்திற்கு",
-    "projectAny": "படிப்பு சார்ந்தது — திட்டச் செலவு உச்சவரம்பு இல்லை",
+    "projectAny": "படிப்பு சார்ந்தது",
     "unverified": "சில எண்கள் சரிபார்க்கப்படவில்லை",
     "compare": "திட்டங்களை ஒப்பிடு",
-    "openScheme": "திற"
+    "openScheme": "திற",
+    "labelLoan": "அதிகபட்சக் கடன்",
+    "labelProject": "திட்டச் செலவு",
+    "labelInterest": "வட்டி",
+    "labelFunding": "நிதியளிக்கப்படும் பங்கு",
+    "interestFlat": "ஆண்டுக்கு {rate}%",
+    "interestBand": "ஆண்டுக்கு {min}–{max}%"
   },
   "schemeDetail": {
     "tabOverview": "மேலோட்டம்",

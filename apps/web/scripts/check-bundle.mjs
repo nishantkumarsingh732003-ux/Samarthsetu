@@ -1,7 +1,7 @@
 /**
  * Citizen-route JS budget.
  *
- * CLAUDE.md: assume 2G and a Rs 6,000 phone, budget < 200KB JS on the citizen route.
+ * CLAUDE.md rule 5: budget < 300KB JS on the citizen route.
  * A budget nobody measures is a wish, so this reads the real build output and fails the
  * build when First Load JS crosses the line.
  *
@@ -36,10 +36,9 @@ const MANIFEST = join(ROOT, ".next", "app-build-manifest.json");
  */
 const BUDGET_KB = 300; // gzipped
 
-// The anonymous journey: what a first-time citizen downloads with no login, on whatever
-// phone they have. This is the path the budget exists to protect, and /track is part of
-// it. The Leaflet chunk is deliberately absent because it is dynamically imported and
-// only fetched if they open the map.
+// What a signed-out visitor downloads: the landing page and the sign-in form. The
+// Leaflet chunk is deliberately absent everywhere below because it is dynamically
+// imported and only fetched if someone opens the map.
 const CITIZEN_ROUTES = [
   // "/page" is absent on purpose: "/" is a middleware redirect into a locale now, not a
   // rendered page, so it has no entry in the manifest and nothing to weigh.
@@ -54,16 +53,14 @@ const CITIZEN_ROUTES = [
   "/[locale]/signin/page",
 ];
 
-// The optional signed-in surface. Strictly it sits outside the rule — someone who chose
-// to create an account has already loaded the anonymous path once — but it currently
-// comes in comfortably under the same ceiling, so it is measured against the same one.
+// The signed-in surface, which is now the whole product past sign-in, so it is held to
+// the same ceiling rather than treated as a place the budget stops applying.
 // Holding it here is what stops a chart library or a component kit being added later
 // without anyone noticing the cost. If a route genuinely needs to exceed this, raise it
 // deliberately with a reason rather than by deleting the line.
 // Manifest keys, not URLs: `(account)` is a route group, so it appears here and never
 // in an address bar.
 const ACCOUNT_ROUTES = [
-  "/[locale]/signin/page",
   "/[locale]/(account)/dashboard/page",
   "/[locale]/(account)/onboarding/page",
   "/[locale]/(account)/matches/page",
@@ -125,7 +122,7 @@ function measure(heading, routes) {
   console.log("");
 }
 
-measure("anonymous journey — the path the budget exists for", CITIZEN_ROUTES);
+measure("signed out — everything before an account exists", CITIZEN_ROUTES);
 measure("optional account surface", ACCOUNT_ROUTES);
 
 console.log(`\nWorst route: ${worst.toFixed(1)} KB of ${BUDGET_KB} KB.`);

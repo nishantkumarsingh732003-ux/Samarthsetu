@@ -472,12 +472,16 @@
     "sub": "The published terms, and where each figure came from.",
     "rules": "{count} rules",
     "partners": "{count} partners authorised",
-    "loanUpTo": "Loan up to ₹{amount}",
-    "projectUpTo": "For a project up to ₹{amount}",
-    "projectAny": "Course-linked — no project cost ceiling",
+    "projectAny": "Course-linked",
     "unverified": "Some figures unverified",
     "compare": "Compare schemes",
-    "openScheme": "Open"
+    "openScheme": "Open",
+    "labelLoan": "Max loan",
+    "labelProject": "Project cost",
+    "labelInterest": "Interest",
+    "labelFunding": "Share funded",
+    "interestFlat": "{rate}% p.a.",
+    "interestBand": "{min}–{max}% p.a."
   },
   "schemeDetail": {
     "tabOverview": "Overview",

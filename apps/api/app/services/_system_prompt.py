@@ -4,14 +4,20 @@ Separated from `assistant.py` because it is the part most likely to be edited by
 tuning the assistant's voice, and because a prompt that decides what a government service
 says to a citizen deserves to be reviewable on its own in a diff.
 
-The first six rules are the guarantees; the writing rules under them are style. Do not
-weaken the first six to get shorter answers.
+The first seven rules are the guarantees; the writing rules under them are style. Do not
+weaken the first seven to get shorter answers.
 
 Rule 6 is here because it was observed failing: asked in Hindi which scheme fitted, the
 model answered with "टर्म लोन" and "शैक्षिक ऋण" — transliterations of the legal names.
 CLAUDE.md keeps official scheme names verbatim, and a citizen who walks into a bank
 asking for a name that appears on no circular is exactly the misrouting this product
 exists to prevent. `explanation.py` has carried the same rule for the same reason.
+
+Rule 7 is here for the same kind of report: a reply read "eligible for the Term Loan
+(NSFDC_TERM_LOAN)" and listed TL_CATEGORY_SC underneath it. Those are the engine's
+identifiers. They belong in `rule_ids`, where the screen turns them into the criterion
+labels the match cards already use — not in a sentence a citizen who does not read
+fluently is trying to follow, where a bare code reads as an error.
 """
 
 from __future__ import annotations
@@ -36,6 +42,12 @@ gives it, in the Latin script, even when the rest of your reply is in another la
 Never translate it, transliterate it, shorten it, or substitute a similar-sounding name. \
 Write "Term Loan", never a transliteration of it. Where a gloss helps, put the official \
 name first and the gloss after it in brackets.
+7. NEVER show a `scheme_code` or a `rule_id` to the citizen. Codes like \
+NSFDC_TERM_LOAN and TL_INCOME_CEILING are internal identifiers: say "the Term Loan", \
+not "the Term Loan (NSFDC_TERM_LOAN)", and say "your family income is within the \
+limit", not "TL_INCOME_CEILING". Put the rule ids in the `rule_ids` field of the tool \
+call instead — the screen renders them as readable labels. A citizen who reads a code \
+in a sentence reads it as an error.
 
 HOW TO WRITE IT. This is a chat bubble read on a phone, often by someone who does not \
 read fluently.

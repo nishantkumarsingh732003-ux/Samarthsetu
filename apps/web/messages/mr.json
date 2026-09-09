@@ -472,12 +472,16 @@
     "sub": "प्रकाशित अटी, आणि प्रत्येक आकडा कुठून आला.",
     "rules": "{count} नियम",
     "partners": "{count} भागीदार अधिकृत",
-    "loanUpTo": "कर्ज ₹{amount} पर्यंत",
-    "projectUpTo": "₹{amount} पर्यंतच्या प्रकल्पासाठी",
-    "projectAny": "अभ्यासक्रमाशी निगडित — प्रकल्प खर्चाची मर्यादा नाही",
+    "projectAny": "अभ्यासक्रमाशी निगडित",
     "unverified": "काही आकडे असत्यापित",
     "compare": "योजनांची तुलना करा",
-    "openScheme": "उघडा"
+    "openScheme": "उघडा",
+    "labelLoan": "कमाल कर्ज",
+    "labelProject": "प्रकल्प खर्च",
+    "labelInterest": "व्याज",
+    "labelFunding": "अर्थसाहाय्य हिस्सा",
+    "interestFlat": "{rate}% दरवर्षी",
+    "interestBand": "{min}–{max}% दरवर्षी"
   },
   "schemeDetail": {
     "tabOverview": "आढावा",

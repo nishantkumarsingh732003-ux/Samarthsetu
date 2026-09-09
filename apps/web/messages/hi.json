@@ -472,12 +472,16 @@
     "sub": "प्रकाशित शर्तें, और हर आँकड़ा कहाँ से आया।",
     "rules": "{count} नियम",
     "partners": "{count} भागीदार अधिकृत",
-    "loanUpTo": "ऋण ₹{amount} तक",
-    "projectUpTo": "₹{amount} तक की परियोजना के लिए",
-    "projectAny": "पाठ्यक्रम से जुड़ा — परियोजना लागत की कोई सीमा नहीं",
+    "projectAny": "पाठ्यक्रम से जुड़ा",
     "unverified": "कुछ आँकड़े असत्यापित",
     "compare": "योजनाओं की तुलना करें",
-    "openScheme": "खोलें"
+    "openScheme": "खोलें",
+    "labelLoan": "अधिकतम ऋण",
+    "labelProject": "परियोजना लागत",
+    "labelInterest": "ब्याज",
+    "labelFunding": "वित्त पोषित हिस्सा",
+    "interestFlat": "{rate}% प्रति वर्ष",
+    "interestBand": "{min}–{max}% प्रति वर्ष"
   },
   "schemeDetail": {
     "tabOverview": "अवलोकन",

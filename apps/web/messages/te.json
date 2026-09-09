@@ -472,12 +472,16 @@
     "sub": "ప్రచురించిన షరతులు, ప్రతి సంఖ్య ఎక్కడ నుండి వచ్చింది.",
     "rules": "{count} నియమాలు",
     "partners": "{count} భాగస్వాములకు అధికారం",
-    "loanUpTo": "రుణం ₹{amount} వరకు",
-    "projectUpTo": "₹{amount} వరకు ప్రాజెక్ట్ కోసం",
-    "projectAny": "కోర్సు ఆధారితం — ప్రాజెక్ట్ వ్యయ పరిమితి లేదు",
+    "projectAny": "కోర్సు ఆధారితం",
     "unverified": "కొన్ని సంఖ్యలు ధృవీకరించలేదు",
     "compare": "పథకాలను పోల్చండి",
-    "openScheme": "తెరువు"
+    "openScheme": "తెరువు",
+    "labelLoan": "గరిష్ట రుణం",
+    "labelProject": "ప్రాజెక్ట్ వ్యయం",
+    "labelInterest": "వడ్డీ",
+    "labelFunding": "ఆర్థిక సహాయ వాటా",
+    "interestFlat": "సంవత్సరానికి {rate}%",
+    "interestBand": "సంవత్సరానికి {min}–{max}%"
   },
   "schemeDetail": {
     "tabOverview": "అవలోకనం",

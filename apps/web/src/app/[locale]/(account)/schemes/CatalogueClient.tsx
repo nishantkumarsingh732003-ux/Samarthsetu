@@ -22,12 +22,54 @@ import { Chip } from "@/components/ui/controls";
 import { Link } from "@/i18n/navigation";
 import { formatRupees } from "@/lib/format";
 
+import type { SchemeSummary } from "@/lib/citizenApi";
+
 import type { Locale } from "@/i18n/config";
 
 export function CatalogueClient({ locale }: { locale: Locale }) {
   const t = useTranslations("schemeCatalogue");
   const tCommon = useTranslations("common");
   const { data, loading } = useCatalogue(locale);
+
+  /**
+   * The four figures a scheme card shows, in the shape the match cards use.
+   *
+   * Built here rather than inline so the card body stays a layout. Interest collapses to
+   * one number when the band has no width — every scheme currently quotes a single rate,
+   * and "6.5–6.5%" is noise.
+   */
+  const figuresFor = (scheme: SchemeSummary): { label: string; value: string }[] => {
+    const limits = scheme.limits;
+    const rupees = (amount: number) =>
+      tCommon("rupees", { amount: formatRupees(amount, locale) });
+
+    const figures: { label: string; value: string }[] = [];
+
+    if (limits.max_loan_amount !== null) {
+      figures.push({ label: t("labelLoan"), value: rupees(limits.max_loan_amount) });
+    }
+    figures.push({
+      label: t("labelProject"),
+      value:
+        limits.max_project_cost !== null
+          ? rupees(limits.max_project_cost)
+          : t("projectAny"),
+    });
+    if (limits.interest_rate_min !== null) {
+      const { interest_rate_min: lo, interest_rate_max: hi } = limits;
+      figures.push({
+        label: t("labelInterest"),
+        value:
+          hi !== null && hi !== lo
+            ? t("interestBand", { min: lo, max: hi })
+            : t("interestFlat", { rate: lo }),
+      });
+    }
+    if (limits.max_funding_pct !== null) {
+      figures.push({ label: t("labelFunding"), value: `${limits.max_funding_pct}%` });
+    }
+    return figures.slice(0, 4);
+  };
 
   return (
     <div className="space-y-6">
@@ -66,29 +108,29 @@ export function CatalogueClient({ locale }: { locale: Locale }) {
                   <p className="mt-0.5 text-ink-muted">{scheme.name_gloss}</p>
                 )}
 
-                {/* Two different quantities, both named.
-                    The loan is what NSFDC advances; the project cost is what the scheme
-                    covers, and it is the figure the problem statement quotes — ₹1,40,000
-                    for Micro Finance, ₹50,00,000 for the Term Loan. Printing only the
-                    loan under a bare "Up to" made the card look like it contradicted the
-                    scheme: Micro Finance read ₹1,25,000 where the PS says ₹1,40,000. It
-                    never did; 90% of ₹1,40,000 is the loan. Now the card says so. */}
-                <p className="numeric mt-3 text-lg font-semibold text-accent-700">
-                  {scheme.limits.max_loan_amount !== null
-                    ? t("loanUpTo", {
-                        amount: formatRupees(scheme.limits.max_loan_amount, locale),
-                      })
-                    : tCommon("notApplicable")}
-                </p>
-                <p className="numeric mt-0.5 text-sm text-ink-muted">
-                  {scheme.limits.max_project_cost !== null
-                    ? t("projectUpTo", {
-                        amount: formatRupees(scheme.limits.max_project_cost, locale),
-                      })
-                    : t("projectAny")}
-                </p>
+                {/* The same labelled stat grid the match cards use.
+                    Two things were wrong before. The figure was set in `numeric`, which
+                    is `font-mono` — reserved for reference numbers you read down a phone
+                    line — so a loan amount rendered as code. And it was a bare "Up to
+                    ₹1,25,000" with no noun, which read as the scheme's ceiling and so
+                    looked like it contradicted the problem statement's ₹1,40,000 for
+                    Micro Finance. They are different quantities: ₹1,40,000 is the project
+                    cost the scheme covers, ₹1,25,000 the loan advanced against it, and
+                    90% of the one is the other. Both are named and both are shown. */}
+                <dl className="mt-4 grid grid-cols-2 gap-x-4 gap-y-4">
+                  {figuresFor(scheme).map((figure) => (
+                    <div key={figure.label} className="flex flex-col">
+                      <dt className="text-xs font-bold uppercase leading-snug tracking-widest text-ink-faint">
+                        {figure.label}
+                      </dt>
+                      <dd className="mt-auto pt-1.5 font-semibold tabular-nums">
+                        {figure.value}
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
 
-                <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-faint">
+                <p className="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-faint">
                   <span>{t("rules", { count: scheme.rule_count })}</span>
                   <span aria-hidden="true">·</span>
                   <span>{t("partners", { count: scheme.authorised_partner_count })}</span>

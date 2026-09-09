@@ -126,8 +126,10 @@ async def ask(
     # Imported here rather than at module scope: the citizen routes own the profile
     # loading and the match cache, and importing them at the top would make this module
     # part of that cycle.
-    from app.api.v1.routes.citizen import _load, applications as my_applications, matches
-    from app.api.v1.routes.schemes import catalogue, detail as scheme_detail
+    from app.api.v1.routes.citizen import _load, matches
+    from app.api.v1.routes.citizen import applications as my_applications
+    from app.api.v1.routes.schemes import catalogue
+    from app.api.v1.routes.schemes import detail as scheme_detail
     from app.services import citizen_accounts
 
     citizen, profile = await _load(session, user)

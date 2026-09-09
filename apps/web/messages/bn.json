@@ -472,12 +472,16 @@
     "sub": "প্রকাশিত শর্ত, আর প্রতিটি সংখ্যা কোথা থেকে এল।",
     "rules": "{count}টি নিয়ম",
     "partners": "{count} অংশীদার অনুমোদিত",
-    "loanUpTo": "ঋণ ₹{amount} পর্যন্ত",
-    "projectUpTo": "₹{amount} পর্যন্ত প্রকল্পের জন্য",
-    "projectAny": "কোর্স-ভিত্তিক — প্রকল্প ব্যয়ের সীমা নেই",
+    "projectAny": "কোর্স-ভিত্তিক",
     "unverified": "কিছু সংখ্যা অযাচাই",
     "compare": "প্রকল্প তুলনা করুন",
-    "openScheme": "খুলুন"
+    "openScheme": "খুলুন",
+    "labelLoan": "সর্বোচ্চ ঋণ",
+    "labelProject": "প্রকল্প ব্যয়",
+    "labelInterest": "সুদ",
+    "labelFunding": "অর্থায়িত অংশ",
+    "interestFlat": "{rate}% বার্ষিক",
+    "interestBand": "{min}–{max}% বার্ষিক"
   },
   "schemeDetail": {
     "tabOverview": "সংক্ষিপ্ত বিবরণ",
