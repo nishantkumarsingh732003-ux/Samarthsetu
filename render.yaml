@@ -13,7 +13,9 @@ services:
     dockerfilePath: ./apps/api/Dockerfile
     dockerContext: .
     region: singapore          # closest Render region to the citizens this serves
-    plan: starter
+    # Free tier. It sleeps after ~15 minutes idle and cold-starts in roughly a minute, so
+    # warm it with a request before any demo — see docs/DEPLOYMENT.md.
+    plan: free
     healthCheckPath: /health
     envVars:
       - key: DATABASE_URL
@@ -43,24 +45,29 @@ services:
         value: database
       - key: LOG_JSON
         value: "true"
-      # Redacted document bytes. An ephemeral disk loses them on redeploy — mount a
-      # persistent one, or swap app/services/storage.py for object storage.
+      # Redacted document bytes, on the container filesystem. `storage.py` creates the
+      # directory, so this works with no disk attached — but the files are EPHEMERAL and
+      # vanish on every redeploy and every wake from sleep.
+      #
+      # A persistent disk is not available on the free plan. For anything beyond a demo,
+      # move to a paid plan and restore the `disk:` block, or swap
+      # app/services/storage.py for object storage — it is a four-function module behind
+      # exactly that seam.
       - key: STORAGE_DIR
         value: /data/uploads
-    disk:
-      name: setu-uploads
-      mountPath: /data/uploads
-      sizeGB: 1
 
   - type: redis
     name: setu-redis
     region: singapore
-    plan: starter
+    plan: free
     maxmemoryPolicy: allkeys-lru   # sessions and the routing cache are both disposable
     ipAllowList: []
 
 databases:
   - name: setu-postgres
     region: singapore
-    plan: basic-256mb
+    # Render's free database is time-limited — confirm the current expiry on their
+    # pricing page before relying on it past a demo. When it lapses the API keeps
+    # answering `/health` while every query fails, so check `/readyz`, not `/health`.
+    plan: free
     postgresMajorVersion: "16"

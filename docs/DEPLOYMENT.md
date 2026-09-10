@@ -100,6 +100,45 @@ citizen data, so never point it at anything real.
 
 ---
 
+## Running on Render's free tier
+
+`render.yaml` declares `plan: free` for all three services. Nothing in the product needs a
+paid plan, but three things change and one of them will embarrass you in front of a judge
+if you do not know about it:
+
+**The API sleeps.** A free web service spins down after roughly fifteen minutes idle and
+cold-starts in about a minute. The first person to open the app after a quiet spell waits,
+watching nothing happen. **Warm it before any demo:**
+
+```bash
+curl https://<api-host>/health     # ~1 minute cold, then instant
+```
+
+Open the web app only once that returns. A cron ping every ten minutes keeps it awake if
+you have somewhere to run one.
+
+**Uploaded documents do not survive.** A persistent disk is not available on the free
+plan, so `STORAGE_DIR` is ordinary container filesystem: redacted document bytes vanish on
+every redeploy and every wake from sleep. The application row survives; the file does not.
+Fine for a demo, wrong for anything real — move to a paid plan and restore the `disk:`
+block in `render.yaml`, or swap `app/services/storage.py` for object storage.
+
+**The free database is time-limited.** Confirm the current expiry on Render's pricing page.
+When it lapses the API still answers `/health` while every query fails, so monitor
+`/readyz`, which reports the database separately.
+
+### The dashboard will not let you change the plan
+
+The service is **Blueprint managed** — Render syncs plans from `render.yaml`, so the plan
+selector is disabled. Change the file and push; do not fight the dashboard.
+
+An existing **paid database usually cannot be downgraded in place.** If Render refuses the
+sync, delete `setu-postgres` and let the blueprint recreate it on the free plan. That
+destroys its contents, which costs nothing before seeding — but re-run
+`python /scripts/seed/run.py` afterwards, or the partner registry comes back empty.
+
+---
+
 ## Verifying a deployment
 
 ```bash
