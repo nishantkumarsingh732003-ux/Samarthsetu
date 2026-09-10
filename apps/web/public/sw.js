@@ -32,7 +32,7 @@
  * Bump VERSION when the caching rules change: `activate` deletes every cache that is not
  * the current one, which is what evicts a poisoned cache from a browser in the wild.
  */
-const VERSION = "setu-v2";
+const VERSION = "setu-v3";
 
 const SHELL = ["/", "/manifest.webmanifest", "/icons/icon-192.svg"];
 
@@ -85,10 +85,41 @@ self.addEventListener("fetch", (event) => {
   if (url.origin !== self.location.origin) return;
 
   if (request.mode === "navigate") {
+    // `respondWith` must be handed a Response. The previous version ended its offline
+    // chain with `caches.match("/")`, which resolves to *undefined* when "/" is not in
+    // the cache — and "/" is a middleware redirect into a locale, so `cache.add("/")` at
+    // install is unreliable and its failure is swallowed. The browser then reported
+    //
+    //     TypeError: Failed to convert value to 'Response'
+    //     The FetchEvent for "…" resulted in a network error response
+    //
+    // on every navigation, online as well as off, because the rejection happens after the
+    // network attempt either way. Every branch below now ends in a real Response.
     event.respondWith(
       fetch(request)
         .then((response) => cachePut(request, response))
-        .catch(() => caches.match(request).then((hit) => hit ?? caches.match("/"))),
+        .catch(async () => {
+          const exact = await caches.match(request);
+          if (exact) return exact;
+
+          // The locale shell this navigation belongs to, then the bare root, then any
+          // cached shell at all — a citizen offline on /hi/matches should still get the
+          // Hindi shell rather than nothing.
+          const url = new URL(request.url);
+          const locale = url.pathname.split("/")[1];
+          for (const path of [locale ? `/${locale}` : null, "/"]) {
+            if (!path) continue;
+            const shell = await caches.match(path);
+            if (shell) return shell;
+          }
+
+          return new Response(
+            "<!doctype html><meta charset=utf-8><title>Offline</title>" +
+              "<p style=\"font:16px system-ui;padding:2rem\">You are offline, and this " +
+              "page has not been opened on this device before. Reconnect and try again.</p>",
+            { status: 503, headers: { "Content-Type": "text/html; charset=utf-8" } },
+          );
+        }),
     );
     return;
   }
@@ -108,6 +139,12 @@ self.addEventListener("fetch", (event) => {
   event.respondWith(
     fetch(request)
       .then((response) => cachePut(request, response))
-      .catch(() => caches.match(request)),
+      .catch(async () => {
+        // Same rule as the navigation branch: a cache miss here resolves to `undefined`,
+        // and `respondWith(undefined)` is a TypeError rather than a failed request. An
+        // asset that was never cached and cannot be fetched is a plain 504.
+        const hit = await caches.match(request);
+        return hit ?? new Response("", { status: 504, statusText: "Offline" });
+      }),
   );
 });
