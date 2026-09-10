@@ -66,16 +66,28 @@ instance. In the Render dashboard: **New → Blueprint**, point it at the reposi
 
 Two things Render will not do for you:
 
-**PostGIS and pgvector.** Render's managed Postgres supports both, but the extensions must
-be created once:
+**PostGIS and pgvector** — now handled automatically. `entrypoint.sh` issues
+`CREATE EXTENSION IF NOT EXISTS` for both before running migrations, so a managed database
+works on the first deploy. Compose gets them from `docker-entrypoint-initdb.d`; a managed
+one starts empty and never runs that, which is why the step moved into the entrypoint.
+
+If the database user is not permitted to create extensions, the entrypoint warns and
+carries on, and the migration then fails naming the missing extension. Create them by hand
+in that case:
 
 ```sql
 CREATE EXTENSION IF NOT EXISTS postgis;
 CREATE EXTENSION IF NOT EXISTS vector;
 ```
 
-Without them `alembic upgrade head` fails on the first geometry column, which is the
-correct failure — a partner registry with no spatial index would not route.
+**The connection string.** Managed providers inject a plain `postgresql://…` with no
+driver. This application is async end to end and installs only `asyncpg`, so a bare URL
+made SQLAlchemy reach for psycopg2 and the deploy died with
+`ModuleNotFoundError: No module named 'psycopg2'`. `Settings.DATABASE_URL` now normalises
+any `postgres://` or `postgresql://` to `postgresql+asyncpg://` and drops the libpq-only
+`sslmode` parameter that asyncpg rejects. Nothing to configure — but if you see that error
+on another platform, this is where it is handled (`apps/api/app/core/config.py`, covered by
+`tests/test_database_url.py`).
 
 **Seeding.** Migrations run automatically from `entrypoint.sh`; data does not. Once:
 

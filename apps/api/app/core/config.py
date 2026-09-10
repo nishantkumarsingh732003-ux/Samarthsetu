@@ -1,5 +1,6 @@
 from functools import lru_cache
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -64,6 +65,53 @@ class Settings(BaseSettings):
     LLM_MODEL: str = ""
     LLM_TIMEOUT_SECONDS: float = 20.0
     EMBEDDING_MODEL: str = "intfloat/multilingual-e5-base"
+
+    @field_validator("DATABASE_URL")
+    @classmethod
+    def _use_asyncpg(cls, url: str) -> str:
+        """Force the asyncpg driver onto whatever URL the platform handed us.
+
+        Managed Postgres providers inject a plain libpq URL — Render's
+        `fromDatabase: connectionString` gives `postgresql://…`, Heroku-descended ones
+        still give the legacy `postgres://…`. Neither names a driver, so SQLAlchemy picks
+        its default for the `postgresql` dialect, which is psycopg2. This image installs
+        only `asyncpg`, so the first thing that touches the database dies with
+
+            ModuleNotFoundError: No module named 'psycopg2'
+
+        — during `alembic upgrade head` in the entrypoint, before the app ever starts.
+        The whole application is async, so the driver is not a preference to be configured
+        per environment; it is the only one that can work. Normalising here fixes every
+        consumer at once: the app engine, Alembic online, and Alembic offline (which
+        strips the suffix again to render plain SQL).
+
+        `sslmode` is a libpq parameter that asyncpg does not accept and raises on. Render
+        appends it to *external* connection strings. It is dropped rather than translated
+        because the internal URL these services use does not need TLS negotiation at this
+        layer, and silently rewriting someone's security parameter would be worse than
+        ignoring one that cannot apply.
+        """
+        if url.startswith("postgres://"):
+            url = "postgresql://" + url[len("postgres://"):]
+        if url.startswith("postgresql://"):
+            url = "postgresql+asyncpg://" + url[len("postgresql://"):]
+
+        if "sslmode=" in url:
+            from urllib.parse import urlencode, urlsplit, urlunsplit
+
+            parts = urlsplit(url)
+            kept = [
+                (k, v)
+                for k, v in (
+                    pair.split("=", 1) if "=" in pair else (pair, "")
+                    for pair in parts.query.split("&")
+                    if pair
+                )
+                if k != "sslmode"
+            ]
+            url = urlunsplit(parts._replace(query=urlencode(kept)))
+
+        return url
 
     @property
     def allowed_origins(self) -> list[str]:

@@ -296,7 +296,12 @@ async def notify(
             # Official names pass through verbatim; they are never translated.
             "scheme": scheme.official_name if scheme else "",
             "reason": (reason or "").strip(),
-            "link": f"{settings.PUBLIC_WEB_URL}/{language}/track/{application.reference_no}",
+            # `/applications/<ref>`, not the old `/track/<ref>`. Tracking by reference
+            # number with no login went with the anonymous journey; this link now lands on
+            # the signed-in application detail screen, which shows the same status and the
+            # same document checklist. A link to a route that no longer exists is a 404 in
+            # an SMS a citizen cannot retry.
+            "link": f"{settings.PUBLIC_WEB_URL}/{language}/applications/{application.reference_no}",
         }
         body = render(event, language, context)
 
