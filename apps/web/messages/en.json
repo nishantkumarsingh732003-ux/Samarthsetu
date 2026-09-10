@@ -133,7 +133,8 @@
     "notApplicable": "—",
     "print": "Print",
     "draftLanguage": "draft",
-    "close": "Close"
+    "close": "Close",
+    "notOfficialShort": "Illustrative prototype for Smart India Hackathon 2026. Not an official Government of India service."
   },
   "a11y": {
     "skipToContent": "Skip to main content",
@@ -945,5 +946,64 @@
     "applicationTitle": "Routed to a Channel Partner",
     "applicationBody": "The draft is filled from the profile, the citizen confirms it, and it goes to a partner authorised for that loan category. SamarthSetu never lends.",
     "applicationTip": "The reference number tracks it without an account. The API walkthrough, with runnable requests, is at /demo."
+  },
+  "ekyc": {
+    "eyebrow": "e-KYC · liveness capture",
+    "cardTitle": "Video liveness capture",
+    "cardBody": "Record a four-second selfie clip on this device, so a Channel Partner can see you completed a liveness step before you reach the counter.",
+    "badge": "Liveness capture · not a UIDAI check",
+    "title": "e-KYC Video Capture",
+    "sub": "A four-second selfie clip, recorded and checked entirely on your own device. Nothing is uploaded.",
+    "back": "Back to profile",
+    "start": "Start camera",
+    "retry": "Try again",
+    "again": "Capture again",
+    "notDone": "Not captured yet",
+    "captureComplete": "Capture complete",
+    "capturedOn": "Captured {when}",
+    "refLabel": "Reference",
+    "readyTitle": "Ready when you are",
+    "readyBody": "Tap Start camera, place your face inside the outline, then record a four-second clip.",
+    "deniedTitle": "Camera unavailable",
+    "deniedBody": "Your browser refused the camera, or this device has none. You can still use every other part of SamarthSetu.",
+    "record": "Record {seconds}-second clip",
+    "recording": "Recording…",
+    "rec": "REC · {seconds}s",
+    "checksHeading": "What this device checks",
+    "check": {
+      "cameraLive": "Camera is live and producing frames",
+      "clipRecorded": "Clip recorded for the full four seconds",
+      "clipHasData": "Recording contains usable video data"
+    },
+    "privacyNote": "Your video never leaves this device. The clip is held in memory, checked, and discarded — only a completion flag and a reference are stored.",
+    "notVerified": "This does not verify you against your Aadhaar record. SamarthSetu has no UIDAI Aadhaar Face Auth integration, so no face is compared to a government photograph. A Channel Partner still performs identity verification.",
+    "failedBody": "The capture did not complete. Check that the camera is not covered or in use by another app, then try again."
+  },
+  "govId": {
+    "eyebrow": "Government ID · last four digits",
+    "cardTitle": "Your ID reference",
+    "cardBody": "The last four digits of the ID you will present, so a Channel Partner can match your file and your application form arrives pre-filled.",
+    "notSet": "Not set",
+    "add": "Add last four",
+    "change": "Change",
+    "chip": "Last four digits only",
+    "title": "Which ID will you present?",
+    "body": "A Channel Partner matching your file asks which ID you registered. Four digits answer that. They are not enough to identify you, which is why they are the part that may be kept.",
+    "typeLabel": "ID type",
+    "last4Label": "Last four digits",
+    "hint": "The last four digits only, e.g. 1234.",
+    "errTooLong": "That is more than four digits. Enter only the last four — never the whole number.",
+    "errNotDigits": "Digits only, please.",
+    "errTooShort": "Four digits are needed.",
+    "neverFull": "SamarthSetu never asks for a full Aadhaar number and cannot store one. If you paste the whole number here it is refused, not shortened.",
+    "save": "Save last four",
+    "forget": "Forget this",
+    "storedOnDevice": "Kept on this device only. Nothing is sent anywhere.",
+    "type": {
+      "AADHAAR": "Aadhaar",
+      "PAN": "PAN",
+      "VOTER_ID": "Voter ID",
+      "OTHER": "Other ID"
+    }
   }
 }

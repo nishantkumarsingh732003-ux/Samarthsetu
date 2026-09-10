@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { JudgeTour } from "@/components/JudgeTour";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { ChunkReloader } from "@/components/ChunkReloader";
 import { ServiceWorker } from "@/components/ServiceWorker";
 import { Toaster } from "@/components/ui/sonner";
 import { LOCALES, isLocale, type Locale } from "@/i18n/config";
@@ -77,6 +78,7 @@ export default async function LocaleLayout({
               across it — landing, onboarding, matches, partners. Nothing but a storage
               read ships until a judge presses the button; see components/JudgeTour.tsx. */}
           <JudgeTour />
+          <ChunkReloader />
           <ServiceWorker />
         </NextIntlClientProvider>
       </body>

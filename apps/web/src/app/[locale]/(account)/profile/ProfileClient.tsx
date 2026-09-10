@@ -34,6 +34,8 @@ import { useState } from "react";
 
 import { useAccount } from "@/components/account/AccountProvider";
 import { DbtCheckDialog } from "@/components/account/DbtCheckDialog";
+import { EkycCard } from "@/components/account/EkycCard";
+import { GovIdCard } from "@/components/account/GovIdCard";
 import { DisplayPreferences } from "@/components/account/DisplayPreferences";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -159,6 +161,10 @@ export function ProfileClient({ locale }: { locale: Locale }) {
         </div>
       </header>
 
+      {/* e-KYC liveness capture. Reports a completed capture, never a verified identity
+          — see components/account/EkycCard.tsx. */}
+      <EkycCard locale={locale} />
+
       {/* Aadhaar-DBT. Explained, never asserted — see the file header. */}
       <Card interactive>
         <CardContent className="flex flex-wrap items-start justify-between gap-4">
@@ -180,6 +186,10 @@ export function ProfileClient({ locale }: { locale: Locale }) {
         </CardContent>
       </Card>
       <DbtCheckDialog open={dbtOpen} onOpenChange={setDbtOpen} />
+
+      {/* The last four digits of a government ID — four, never twelve.
+          See components/account/GovIdDialog.tsx. */}
+      <GovIdCard />
 
       <DisplayPreferences locale={locale} />
 
