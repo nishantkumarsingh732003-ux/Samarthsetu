@@ -85,11 +85,15 @@ class Settings(BaseSettings):
         consumer at once: the app engine, Alembic online, and Alembic offline (which
         strips the suffix again to render plain SQL).
 
-        `sslmode` is a libpq parameter that asyncpg does not accept and raises on. Render
-        appends it to *external* connection strings. It is dropped rather than translated
-        because the internal URL these services use does not need TLS negotiation at this
-        layer, and silently rewriting someone's security parameter would be worse than
-        ignoring one that cannot apply.
+        `sslmode` is libpq's spelling; asyncpg calls the same thing `ssl`. SQLAlchemy hands
+        query parameters to the driver as keyword arguments, so a URL carrying `sslmode`
+        reaches `asyncpg.connect(sslmode=...)` and dies on an unexpected keyword.
+
+        It is *renamed* rather than dropped. Every managed provider that appends it —
+        Render's external URL, Neon, Supabase — also refuses connections without TLS, so
+        deleting the parameter would trade an obvious error for a connection the server
+        rejects. The value is carried across untouched: `require` stays `require`, and a
+        deployment asking for `verify-full` keeps asking for it.
         """
         if url.startswith("postgres://"):
             url = "postgresql://" + url[len("postgres://"):]
@@ -100,16 +104,19 @@ class Settings(BaseSettings):
             from urllib.parse import urlencode, urlsplit, urlunsplit
 
             parts = urlsplit(url)
-            kept = [
-                (k, v)
-                for k, v in (
-                    pair.split("=", 1) if "=" in pair else (pair, "")
-                    for pair in parts.query.split("&")
-                    if pair
-                )
-                if k != "sslmode"
+            pairs = [
+                (pair.split("=", 1) if "=" in pair else (pair, ""))
+                for pair in parts.query.split("&")
+                if pair
             ]
-            url = urlunsplit(parts._replace(query=urlencode(kept)))
+            # `ssl` wins if both are somehow present: it is the one the driver reads.
+            has_ssl = any(k == "ssl" for k, _ in pairs)
+            renamed = [
+                ("ssl", v) if k == "sslmode" and not has_ssl else (k, v)
+                for k, v in pairs
+                if not (k == "sslmode" and has_ssl)
+            ]
+            url = urlunsplit(parts._replace(query=urlencode(renamed)))
 
         return url
 

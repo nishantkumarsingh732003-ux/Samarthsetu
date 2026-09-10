@@ -42,19 +42,45 @@ class TestDriverIsForced:
         assert Settings().DATABASE_URL.startswith("postgresql+asyncpg://")
 
 
-class TestLibpqOnlyParameters:
-    """`sslmode` is libpq's; asyncpg raises on it. Render appends it to external URLs."""
+class TestTlsParameter:
+    """`sslmode` is libpq's spelling; asyncpg calls it `ssl`.
 
-    def test_sslmode_is_dropped(self) -> None:
+    SQLAlchemy passes query parameters to the driver as keyword arguments, so `sslmode`
+    would reach `asyncpg.connect(sslmode=...)` and raise. It is renamed rather than
+    dropped: every provider that appends it also *requires* TLS, so removing it would
+    trade a clear error for a connection the server refuses.
+    """
+
+    def test_sslmode_is_renamed_not_dropped(self) -> None:
         assert url_for("postgresql://u:p@host/db?sslmode=require") == (
-            "postgresql+asyncpg://u:p@host/db"
+            "postgresql+asyncpg://u:p@host/db?ssl=require"
         )
+
+    def test_the_value_is_carried_across(self) -> None:
+        # A deployment asking for verify-full keeps asking for it.
+        assert url_for("postgresql://u:p@host/db?sslmode=verify-full").endswith("ssl=verify-full")
 
     def test_other_query_parameters_survive(self) -> None:
         out = url_for("postgresql://u:p@host/db?sslmode=require&application_name=setu")
         assert out.startswith("postgresql+asyncpg://u:p@host/db?")
         assert "application_name=setu" in out
+        assert "ssl=require" in out
         assert "sslmode" not in out
+
+    def test_an_explicit_ssl_parameter_wins(self) -> None:
+        out = url_for("postgresql://u:p@host/db?ssl=verify-full&sslmode=require")
+        assert "ssl=verify-full" in out
+        assert "sslmode" not in out
+        assert out.count("ssl=") == 1
+
+    def test_asyncpg_actually_accepts_what_we_produce(self) -> None:
+        """The point of the rename: SQLAlchemy must hand the driver a keyword it knows."""
+        from sqlalchemy.ext.asyncio import create_async_engine
+
+        engine = create_async_engine(url_for("postgresql://u:p@host/db?sslmode=require"))
+        _, connect_args = engine.dialect.create_connect_args(engine.url)
+        assert connect_args["ssl"] == "require"
+        assert "sslmode" not in connect_args
 
 
 class TestCredentialsSurvive:
