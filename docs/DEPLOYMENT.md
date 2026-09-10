@@ -23,8 +23,15 @@ system on a laptop, offline, in about forty seconds, and that is what the run sh
       with the seeded admin credentials from client-side code, which puts an admin password
       in the page source — fine on a laptop over synthetic data, not fine on a URL. The
       WhatsApp simulator alongside it is also a pitch tool, not a citizen surface.
-- [ ] A decision taken on `LLM_PROVIDER`. `none` is fully supported and costs nothing; the service works without it (`make chaos` proves this).
+- [ ] A decision taken on `LLM_PROVIDER`. `none` is fully supported and costs nothing; the service works without it (`make chaos` proves this). If you do set a key, check the plan's **daily** cap — Groq's free tier is 200,000 tokens per day, and once it is spent every answer silently falls back to the deterministic reply. `/readyz` reports the configured provider, but not the remaining quota.
 - [ ] Partner data replaced, or the synthetic-data disclaimer left visibly in place.
+
+**HTTPS is mandatory, not advisory.** The e-KYC liveness capture calls
+`navigator.mediaDevices.getUserMedia`, and every browser refuses that on an insecure
+origin. Over plain HTTP the camera never opens and the citizen sees "Camera unavailable"
+with no explanation of why. Vercel and Render both terminate TLS for you; a self-hosted
+deployment behind plain HTTP will lose that feature silently. `localhost` is exempt, which
+is why it works in development.
 
 Storage note: the API writes redacted document bytes to `STORAGE_DIR`, a local directory.
 On a platform with an ephemeral filesystem those files vanish on redeploy. For anything
@@ -92,10 +99,33 @@ Then, from a phone on mobile data rather than office wifi — this project's who
 is a Rs 6,000 handset on a bad connection, and a deployment verified only on a laptop has
 not been verified:
 
-1. Open the web URL, pick a language, complete Sunita's journey.
+1. Open the web URL, sign in, pick a language, and walk matches → scheme → partners.
 2. Confirm the offline banner appears in aeroplane mode and the saved results still render.
-3. Open `/console/login` and sign in.
-4. Check `X-Request-ID` comes back on a response, so an incident is traceable.
+3. Open the AI assistant and ask a question; confirm the reply carries criterion chips.
+4. Open `/profile` and run the e-KYC capture — this is the check that catches a missing TLS certificate.
+5. Open `/console/login` and sign in.
+6. Check `X-Request-ID` comes back on a response, so an incident is traceable.
+
+The signed-out journey that used to be step 1 (`/assist` → `/results` → `/track`) has been
+removed; everything now begins at sign-in.
+
+---
+
+## Self-hosting the web, if you are not using Vercel
+
+`apps/web/Dockerfile` ends in `CMD ["pnpm", "dev"]` — it is the development container the
+compose stack uses, and it is not a production server: it compiles each route on demand
+and serves unminified. Measured on a laptop, pages take 1–5s in dev against ~80ms from a
+production build.
+
+Use the `demo` profile instead, which builds and then serves:
+
+```bash
+docker compose --profile demo up web-prod    # builds, then `next start`, on :3001
+```
+
+For a real deployment, run `next build && next start` behind your reverse proxy, and give
+it TLS — see the HTTPS note above.
 
 ---
 

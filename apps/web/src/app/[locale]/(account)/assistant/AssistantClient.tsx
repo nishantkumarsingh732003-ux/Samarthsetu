@@ -67,6 +67,28 @@ export function AssistantClient({ locale }: { locale: Locale }) {
   // the citizen meets it.
   const tMatches = useTranslations("matches");
 
+  /**
+   * Rule ids collapsed to the criteria a citizen reads, one chip each.
+   *
+   * Several rules can stand for the same criterion — a Term Loan checks project cost
+   * against both a floor and a ceiling, and both map to "Project cost supported". Mapped
+   * one-to-one that renders the same green chip twice, which reads as a mistake. So chips
+   * are keyed by label, and every id behind a label rides along in its `title` so nothing
+   * stops being checkable.
+   */
+  const criterionChips = useCallback(
+    (ruleIds: string[]) => {
+      const byLabel = new Map<string, string[]>();
+      for (const id of ruleIds) {
+        const key = criterionKey(id);
+        const label = key ? tMatches(`criteria.${key}`) : id;
+        byLabel.set(label, [...(byLabel.get(label) ?? []), id]);
+      }
+      return [...byLabel].map(([label, ids]) => ({ label, ids }));
+    },
+    [tMatches],
+  );
+
   const applications = useMyApplications();
   const [thread, setThread] = useState<Entry[]>([]);
   const [typed, setTyped] = useState("");
@@ -341,22 +363,21 @@ export function AssistantClient({ locale }: { locale: Locale }) {
                       was traceable stops being traceable — it stops being shouted. */}
                   {!mine && entry.ruleIds && entry.ruleIds.length > 0 && (
                     <span className="mt-2.5 flex flex-wrap gap-1.5">
-                      {entry.ruleIds.map((id) => {
-                        const key = criterionKey(id);
-                        return (
-                          <Link
-                            key={id}
-                            href="/schemes"
-                            title={id}
-                            className="inline-flex items-center gap-1 rounded-full bg-good-bg
-                                       px-2.5 py-0.5 text-sm text-good-fg transition-colors
-                                       hover:bg-good-line"
-                          >
-                            <Check className="h-3 w-3 shrink-0" aria-hidden="true" />
-                            {key ? tMatches(`criteria.${key}`) : id}
-                          </Link>
-                        );
-                      })}
+                      {criterionChips(entry.ruleIds).map(({ label, ids }) => (
+                        <Link
+                          key={label}
+                          href="/schemes"
+                          // Every id behind this chip, for anyone checking. The label is
+                          // what the citizen reads; the ids are what an auditor needs.
+                          title={ids.join(" · ")}
+                          className="inline-flex items-center gap-1 rounded-full bg-good-bg
+                                     px-2.5 py-0.5 text-sm text-good-fg transition-colors
+                                     hover:bg-good-line"
+                        >
+                          <Check className="h-3 w-3 shrink-0" aria-hidden="true" />
+                          {label}
+                        </Link>
+                      ))}
                     </span>
                   )}
                 </span>
