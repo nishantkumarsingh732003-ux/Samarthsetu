@@ -11,7 +11,7 @@ Ministry of Social Justice & Empowerment · Department of Social Justice & Empow
 >
 > | | |
 > |---|---|
-> | Citizen app | **http://localhost:3000** |
+> | Citizen app | **https://smarthsetu.vercel.app/** |
 > | Staff console | **http://localhost:3000/console/login** |
 > | Judge walkthrough | press **Judge mode · 3-min tour** in the header |
 > | Judge console (API) | **http://localhost:3000/demo** |
